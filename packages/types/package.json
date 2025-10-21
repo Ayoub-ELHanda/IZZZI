@@ -1,0 +1,16 @@
+{
+  "name": "@izzzi/types",
+  "version": "0.0.1",
+  "description": "Shared TypeScript types and DTOs for IZZZI",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+

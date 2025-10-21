@@ -44,5 +44,8 @@ redis-data/
 *.swp
 *.swo
 
-# Do not push the local README in this folder
-README.md
+# Documentation (keep project docs)
+!README.md
+!docs/*.md
+*.md
+
