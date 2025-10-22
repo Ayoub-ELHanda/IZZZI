@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Mochiy_Pop_One } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -7,6 +9,18 @@ import { Footer } from "@/components/layout/Footer";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const mochiyPopOne = Mochiy_Pop_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-mochiy",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${mochiyPopOne.variable} ${poppins.variable} font-sans antialiased`}>
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-1">{children}</main>
