@@ -2,98 +2,85 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
 import { Button } from '@/components/ui/Button';
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
-    <header className="border-b border-gray-200 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href={routes.home} className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">IZZZI</span>
+    <header className="bg-white">
+      <div className="flex h-20 items-center justify-between px-6">
+        {/* Logo à gauche */}
+        <Link href={routes.home} className="flex items-center">
+          <Image 
+            src="/Logo.svg" 
+            alt="IZZZI" 
+            width={112}
+            height={53}
+            className="h-auto"
+          />
+        </Link>
+
+        {/* Navigation à droite */}
+        <div className="flex items-center" style={{ gap: '40px' }}>
+          {/* Nos tarifs */}
+          <Link
+            href={routes.pricing}
+            style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 400,
+              fontSize: '16px',
+              color: '#2F2E2C',
+              textDecoration: 'none'
+            }}
+          >
+            Nos tarifs
           </Link>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  href={routes.dashboard}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href={routes.classes.list}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Classes
-                </Link>
-                <Link
-                  href={routes.subjects.list}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Matières
-                </Link>
-                <Link
-                  href={routes.account.profile}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Mon compte
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href={routes.home}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Accueil
-                </Link>
-                <Link
-                  href={routes.pricing}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Tarifs
-                </Link>
-              </>
-            )}
-          </nav>
-
-          {/* Auth buttons */}
-          <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <>
-                <span className="text-sm text-gray-700">
-                  {user?.firstName} {user?.lastName}
-                </span>
-                <Button variant="outline" size="sm" onClick={() => logout()}>
-                  Déconnexion
+          {!isAuthenticated && (
+            <>
+              {/* S'inscrire Button */}
+              <Link href={routes.auth.register}>
+                <Button variant="register" size="register">
+                  S'inscrire
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    style={{ marginLeft: '1.99px' }}
+                  >
+                    <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </Button>
-              </>
-            ) : (
-              <>
-                <Link href={routes.auth.login}>
-                  <Button variant="ghost" size="sm">
-                    Connexion
-                  </Button>
-                </Link>
-                <Link href={routes.auth.register}>
-                  <Button size="sm">
-                    Inscription
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
+              </Link>
+
+              {/* Se connecter Button */}
+              <Link href={routes.auth.login}>
+                <Button variant="login" size="login">
+                  Se connecter
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    style={{ marginLeft: '1.99px' }}
+                  >
+                    <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
   );
 }
-
