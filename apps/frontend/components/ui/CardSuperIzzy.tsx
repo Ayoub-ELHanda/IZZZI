@@ -5,28 +5,82 @@ import { routes } from '@/config/routes';
 
 export function CardSuperIzzy() {
   return (
-    <div className="bg-gradient-to-b from-orange-400 to-orange-500 rounded-2xl p-8 text-white relative">
+    <div 
+      style={{
+        width: '521px',
+        minHeight: '972px',
+        backgroundColor: '#F69D04',
+        border: '1px solid rgba(244, 244, 244, 0.05)',
+        borderRadius: '8px',
+        padding: '60px 73px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        position: 'relative',
+        boxSizing: 'border-box',
+        color: 'white'
+      }}
+    >
       {/* Badge Super Izzzi en haut */}
-      <div className="mb-6">
+      <div style={{ marginBottom: '24px' }}>
         <Badge variant="yellow">Super Izzzi</Badge>
       </div>
       
       {/* Section estimation du prix */}
-      <div className="mb-6">
-        <h3 className="text-lg font-medium mb-4">Estimez le prix de votre abonnement</h3>
+      <div style={{ marginBottom: '24px' }}>
+        <h3 style={{ 
+          fontSize: '18px', 
+          fontWeight: 500, 
+          marginBottom: '16px',
+          lineHeight: '1.5'
+        }}>
+          Estimez le prix de votre abonnement
+        </h3>
         
-        {/*Slider de classe - simulation visuelle */}
-        <div className="mb-4">
-          <div className="flex justify-between text-sm mb-2">
+        {/* Slider de classe - simulation visuelle */}
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            fontSize: '14px',
+            marginBottom: '8px'
+          }}>
             <span>7 classes</span>
           </div>
-          <div className="relative">
-            <div className="w-full h-2 bg-orange-300 rounded-full">
-              <div className="w-1/3 h-2 bg-white rounded-full relative">
-                <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border-2 border-orange-500"></div>
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: '100%',
+              height: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              borderRadius: '4px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: '33.33%',
+                height: '100%',
+                backgroundColor: 'white',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translate(50%, -50%)',
+                  width: '16px',
+                  height: '16px',
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  border: '2px solid #F69D04'
+                }}></div>
               </div>
             </div>
-            <div className="flex justify-between text-xs mt-1 opacity-75">
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '12px',
+              marginTop: '4px',
+              opacity: 0.75
+            }}>
               <span>1</span>
               <span>5</span>
               <span>10</span>
@@ -37,107 +91,111 @@ export function CardSuperIzzy() {
         </div>
         
         {/* Prix calculé */}
-        <div className="mb-6">
-          <div className="flex items-baseline">
-            <span className="text-5xl font-bold">17€</span>
-            <span className="ml-2 opacity-90">par mois / par classe</span>
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'baseline',
+            gap: '8px'
+          }}>
+            <span style={{
+              fontSize: '48px',
+              fontWeight: 700,
+              lineHeight: 1
+            }}>17€</span>
+            <span style={{
+              fontSize: '16px',
+              opacity: 0.9
+            }}>par mois / par classe</span>
           </div>
         </div>
       </div>
       
       {/* Bouton principal */}
-      <div className="mb-8">
-        <Link href={routes.auth.register}>
+      <div style={{ marginBottom: '32px' }}>
+        <Link href={routes.auth.register} style={{ textDecoration: 'none' }}>
           <Button 
-            className="w-full bg-[#FFE552] text-gray-900 hover:bg-[#FFD700] border-0"
+            style={{
+              width: '100%',
+              backgroundColor: '#FFE552',
+              color: '#2F2E2C',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '16px 24px',
+              fontSize: '16px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'background-color 0.2s'
+            }}
           >
-            Je choisis ce plan ↗
+            Je choisis ce plan
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </Button>
         </Link>
       </div>
       
       {/* Section "Tout ce qu'il y a dans le plan gratuit, et en plus:" */}
-      <div className="mb-8">
-        <h3 className="text-lg font-medium mb-4">
+      <div style={{ marginBottom: '32px' }}>
+        <h3 style={{
+          fontSize: '18px',
+          fontWeight: 500,
+          marginBottom: '16px',
+          lineHeight: '1.5'
+        }}>
           Tout ce qu'il y a dans le plan gratuit,<br/>
           et en plus:
         </h3>
         
-        <ul className="space-y-4">
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">Nombre de retours illimité</span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">IA générative pour répondre aux alertes</span><br/>
-              <span className="text-sm opacity-90">(un mail prêt à envoyer en un clic)</span>
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">Levée d'anonymat activée par l'étudiant</span><br/>
-              <span className="text-sm opacity-90">(Bientôt disponible)</span>
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">Formulaires personnalisables</span><br/>
-              <span className="text-sm opacity-90">(Bientôt disponible)</span>
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">Envoi automatique du formulaire</span><br/>
-              <span className="text-sm opacity-90">(Bientôt disponible)</span>
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">Branding personnalisé (couleurs, logo)</span><br/>
-              <span className="text-sm opacity-90">(Au début et à la fin du cours, etc.)</span>
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="ml-3">
-              <span className="font-medium">Suppression du logo Izzzi</span><br/>
-              <span className="text-sm opacity-90">(Bientôt disponible)</span>
-            </span>
-          </li>
-        </ul>
-      </div>
-      
-      {/* Lien vers les détails */}
-      <div>
-        <Link href="#" className="inline-flex items-center text-white hover:text-yellow-200 underline">
-          Voir les détails du plan ↗
-        </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {[
+            { text: "Nombre de retours illimité" },
+            { 
+              text: "IA générative pour répondre aux alertes",
+              subtext: "(un mail prêt à envoyer en un clic)"
+            },
+            { 
+              text: "Levée d'anonymat activée par l'étudiant",
+              subtext: "(Bientôt disponible)"
+            },
+            { 
+              text: "Formulaires personnalisables",
+              subtext: "(Bientôt disponible)"
+            }
+          ].map((item, index) => (
+            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <path d="M20 6L9 17L4 12" stroke="#FFE552" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  color: 'white',
+                  lineHeight: '150%',
+                  fontWeight: item.subtext ? 600 : 400
+                }}>
+                  {item.text}
+                </span>
+                {item.subtext && (
+                  <span style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '14px',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    lineHeight: '150%',
+                    marginTop: '2px'
+                  }}>
+                    {item.subtext}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

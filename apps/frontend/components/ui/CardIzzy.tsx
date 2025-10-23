@@ -1,402 +1,210 @@
-import { Badge } from './Badge';
 import { Button } from './Button';
 import Link from 'next/link';
 import { routes } from '@/config/routes';
+import Image from 'next/image';
 
 export function CardIzzy() {
   return (
     <div 
       style={{
         width: '555px',
+        height: '906px', // Hauteur fixe comme demandé
         backgroundColor: '#FBFBFB',
         border: '1px solid #E0E0E0',
         borderRadius: '8px',
-        padding: '60px 73px 60px 73px',
+        padding: '40px 60px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        overflow: 'hidden',
+        position: 'relative'
       }}
     >
-      {/* Badge Izzzi en haut */}
-      <div className="mb-6">
-        <Badge variant="white">Izzzi</Badge>
-      </div>
-      
-      {/* Prix avec spécifications Figma exactes */}
-      <div className="mb-8">
-        <div className="flex items-baseline">
-          <span 
-            style={{
-              fontFamily: 'Mochiy Pop One',
-              fontSize: '58px',
-              fontWeight: 400,
-              lineHeight: '125%',
-              letterSpacing: '0%',
-              color: '#2F2E2C'
-            }}
-          >
-            0€
-          </span>
-          <span 
-            style={{
-              fontFamily: 'Poppins',
-              fontSize: '12px',
-              fontWeight: 700,
-              lineHeight: '100%',
-              letterSpacing: '0%',
-              color: '#2F2E2C',
-              marginLeft: '8px'
-            }}
-          >
-            /mois
+      {/* Section 1: Badge Izzzi */}
+      <div style={{ marginBottom: '32px' }}>
+        <div 
+          style={{
+            display: 'inline-flex',
+            padding: '12px 30px',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: '30px',
+            border: '1px solid #E0E0E0',
+            background: '#FFF',
+            width: 'fit-content'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Poppins',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: '#2F2E2C'
+          }}>
+            Izzzi
           </span>
         </div>
       </div>
-      
-      {/* Bouton avec spécifications Figma exactes */}
-      <div className="mb-8">
-        <Link href={routes.auth.register}>
-          <button
-            style={{
-              width: '337.29px',
-              height: '56px',
-              backgroundColor: '#FFE552',
-              borderRadius: '8px',
-              padding: '20px 26px',
-              border: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '1.99px',
-              cursor: 'pointer',
-              fontFamily: 'Poppins',
-              fontSize: '16px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '100%',
-              letterSpacing: '0%'
-            }}
-            className="hover:bg-[#FFD700] transition-colors"
-          >
-            Démarrer mes 4 mois gratuits
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33333M12.6667 8L8.00001 12.6667" stroke="#2F2E2C" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </Link>
-      </div>
-      
-      {/* Liste des fonctionnalités avec spécifications exactes */}
-      <ul className="space-y-4 mb-8">
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div className="ml-3">
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              4 mois d'essai illimités
-            </div>
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%',
-                marginTop: '4px'
-              }}
-            >
-              (matières, classes, retours)
-            </div>
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div className="ml-3">
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              Puis 5 retours visibles par matière
-            </div>
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%',
-                marginTop: '4px'
-              }}
-            >
-              (les autres sont enregistrés mais masqués)
-            </div>
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div 
-            className="ml-3"
-            style={{
-              fontFamily: 'Poppins',
-              fontSize: '16px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '100%',
-              letterSpacing: '0%'
-            }}
-          >
-            Anonymat garanti pour tous les retours
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div className="ml-3">
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              Relance manuelle possible
-            </div>
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%',
-                marginTop: '4px'
-              }}
-            >
-              (bouton à cliquer)
-            </div>
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div 
-            className="ml-3"
-            style={{
-              fontFamily: 'Poppins',
-              fontSize: '16px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '100%',
-              letterSpacing: '0%'
-            }}
-          >
-            Export des retours en CSV à tout moment
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div 
-            className="ml-3"
-            style={{
-              fontFamily: 'Poppins',
-              fontSize: '16px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '100%',
-              letterSpacing: '0%'
-            }}
-          >
-            QR code généré automatiquement
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div className="ml-3">
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              IA avancée
-            </div>
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%',
-                marginTop: '4px'
-              }}
-            >
-              (alertes négatives & alertes positives)
-            </div>
-          </div>
-        </li>
-        
-        <li className="flex items-start">
-          <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div className="ml-3">
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              Page de suivi des alertes
-            </div>
-            <div 
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%',
-                marginTop: '4px'
-              }}
-            >
-              (notifications, commentaires possibles)
-            </div>
-          </div>
-        </li>
-      </ul>
-      
-      {/* Section Au-delà des 4 mois */}
-      <div className="border-t border-gray-200 pt-6">
-        <h3 
-          style={{
+
+      {/* Section 2: Prix */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <span style={{
+            fontFamily: 'Mochiy Pop One',
+            fontSize: '58px',
+            fontWeight: 400,
+            color: '#2F2E2C',
+            lineHeight: '125%'
+          }}>
+            0€
+          </span>
+          <span style={{
             fontFamily: 'Poppins',
             fontSize: '12px',
             fontWeight: 700,
             color: '#2F2E2C',
-            lineHeight: '100%',
-            letterSpacing: '0%',
-            marginBottom: '16px'
-          }}
-        >
-          Au-delà des 4 mois :
-        </h3>
-        
-        <ul className="space-y-3 mb-6">
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span 
-              className="ml-3"
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              Vos classes restent actives
-            </span>
-          </li>
-          
-          <li className="flex items-start">
-            <svg className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span 
-              className="ml-3"
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '100%',
-                letterSpacing: '0%'
-              }}
-            >
-              Les retours visibles sont limités à 5 par matière
-            </span>
-          </li>
-        </ul>
-        
-        <Link href="#">
+            lineHeight: '100%'
+          }}>
+            /mois
+          </span>
+        </div>
+      </div>
+
+      {/* Section 3: Bouton jaune */}
+      <div style={{ marginBottom: '16px' }}>
+        <Link href={routes.auth.register} style={{ textDecoration: 'none' }}>
           <Button 
-            variant="outline"
-            className="inline-flex items-center justify-center gap-2"
+            variant="yellow"
             style={{
-              width: '278.29px',
-              height: '56px',
-              backgroundColor: '#FBFBFB',
-              border: '1px solid #EAEAE9',
+              width: '100%',
+              padding: '20px 26px',
               borderRadius: '8px',
+              backgroundColor: '#FFE552',
+              color: '#2F2E2C',
               fontFamily: 'Poppins',
               fontSize: '16px',
               fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '100%',
-              letterSpacing: '0%'
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              border: 'none',
+              cursor: 'pointer'
             }}
           >
-            Voir les détails du plan
-            <svg width="8.49" height="8.49" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path 
-                d="M1.5 4.5h6m0 0L4.5 1.5M7.5 4.5L4.5 7.5" 
-                stroke="#2F2E2C" 
-                strokeWidth="1.33" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
+            Démarrer mes 4 mois gratuits
+            <Image 
+              src="/ArrowV.svg" 
+              alt="Flèche" 
+              width={16} 
+              height={16} 
+              style={{ marginLeft: '8px' }}
+            />
           </Button>
         </Link>
+      </div>
+
+      {/* Section 4: Liste des fonctionnalités */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {[
+            { text: "4 mois d'essai illimités", subtext: "(matières, classes, retours)" },
+            { text: "Puis 5 retours visibles par matière", subtext: "(les autres sont enregistrés mais masqués)" },
+            { text: "Anonymat garanti pour tous les retours" },
+            { text: "Relance manuelle possible", subtext: "(bouton à cliquer)" },
+            { text: "Export des retours en CSV à tout moment" },
+            { text: "QR code généré automatiquement" },
+            { text: "IA avancée", subtext: "(alertes négatives & alertes positives)" },
+            { text: "Page de suivi des alertes", subtext: "(notifications, commentaires possibles)" }
+          ].map((item, index) => (
+            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <path d="M20 6L9 17L4 12" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  color: '#2F2E2C',
+                  lineHeight: '150%'
+                }}>
+                  {item.text}
+                </span>
+                {item.subtext && (
+                  <span style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '12px',
+                    color: '#999999',
+                    lineHeight: '150%',
+                    marginTop: '2px'
+                  }}>
+                    {item.subtext}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Section 5: Au-delà des 4 mois */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h3 style={{
+            fontFamily: 'Poppins',
+            fontSize: '16px',
+            fontWeight: 600,
+            color: '#2F2E2C',
+            margin: 0
+          }}>
+            Au-delà des 4 mois :
+          </h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {[
+              "Vos classes restent actives",
+              "Les retours visibles sont limités à 5 par matière"
+            ].map((item, index) => (
+              <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+                  <path d="M20 6L9 17L4 12" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  color: '#2F2E2C',
+                  lineHeight: '150%'
+                }}>
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Section 7: Bouton transparent */}
+      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+        <Button 
+          variant="outline"
+          style={{
+            width: '100%',
+            padding: '20px 26px',
+            borderRadius: '8px',
+            border: '1px solid #E0E0E0',
+            backgroundColor: 'transparent',
+            color: '#2F2E2C',
+            fontFamily: 'Poppins',
+            fontSize: '16px',
+            fontWeight: 400,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer'
+          }}
+        >
+          Voir les détails du plan
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Button>
       </div>
     </div>
   );
