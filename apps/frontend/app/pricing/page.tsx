@@ -117,13 +117,35 @@ export default function PricingPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
+      <div className="py-16 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-center md:items-start gap-8">
           <CardIzzy />
           <CardSuperIzzy />
         </div>
+        
+        {/* Texte "Comparer nos plans" */}
+        <div className="mt-16 text-center">
+          <h2 
+            style={{
+              fontFamily: 'Mochiy Pop One',
+              fontWeight: 400,
+              fontSize: '32px',
+              lineHeight: '100%',
+              letterSpacing: '0%',
+              color: '#2F2E2C',
+              margin: '0 auto',
+              width: '1067.29px',
+              height: '32px',
+              opacity: 1
+            }}
+          >
+            Comparer nos plans
+          </h2>
+        </div>
+      </div>
 
-        {/* FAQ Section */}
+      {/* FAQ Section */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="mt-16 max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
             Questions fréquentes

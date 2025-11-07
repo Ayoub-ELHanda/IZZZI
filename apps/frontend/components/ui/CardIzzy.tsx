@@ -69,33 +69,40 @@ export function CardIzzy() {
       </div>
 
       {/* Section 3: Bouton jaune */}
-      <div style={{ marginBottom: '16px' }}>
-        <Link href={routes.auth.register} style={{ textDecoration: 'none' }}>
+      <div style={{ marginBottom: '16px', width: '337.29px' }}>
+        <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
           <Button 
             variant="yellow"
             style={{
               width: '100%',
-              padding: '20px 26px',
-              borderRadius: '8px',
+              height: '56px',
               backgroundColor: '#FFE552',
               color: '#2F2E2C',
               fontFamily: 'Poppins',
-              fontSize: '16px',
               fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '24px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              padding: '16px 26px',
               border: 'none',
-              cursor: 'pointer'
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
             }}
           >
-            Démarrer mes 4 mois gratuits
+            <span>Démarrer mes 4 mois gratuits</span>
             <Image 
               src="/ArrowV.svg" 
               alt="Flèche" 
               width={16} 
-              height={16} 
-              style={{ marginLeft: '8px' }}
+              height={16}
+              style={{
+                marginLeft: '1.99px',
+                fill: 'currentColor',
+                stroke: 'none'
+              }}
             />
           </Button>
         </Link>
@@ -116,7 +123,7 @@ export function CardIzzy() {
           ].map((item, index) => (
             <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
-                <path d="M20 6L9 17L4 12" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{
@@ -145,11 +152,11 @@ export function CardIzzy() {
       </div>
 
       {/* Section 5: Au-delà des 4 mois */}
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h3 style={{
             fontFamily: 'Poppins',
-            fontSize: '16px',
+            fontSize: '12px',
             fontWeight: 600,
             color: '#2F2E2C',
             margin: 0
@@ -164,7 +171,7 @@ export function CardIzzy() {
             ].map((item, index) => (
               <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
-                  <path d="M20 6L9 17L4 12" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 <span style={{
                   fontFamily: 'Poppins',
@@ -185,25 +192,36 @@ export function CardIzzy() {
         <Button 
           variant="outline"
           style={{
-            width: '100%',
-            padding: '20px 26px',
-            borderRadius: '8px',
-            border: '1px solid #E0E0E0',
+            width: '278.29px',
+            height: '56px',
             backgroundColor: 'transparent',
             color: '#2F2E2C',
             fontFamily: 'Poppins',
-            fontSize: '16px',
             fontWeight: 400,
+            fontSize: '16px',
+            lineHeight: '24px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            cursor: 'pointer'
+            padding: '0 24px',
+            border: '1px solid #E0E0E0',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            boxSizing: 'border-box'
           }}
         >
           Voir les détails du plan
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <Image 
+            src="/ArrowV.svg" 
+            alt="Flèche" 
+            width={16} 
+            height={16}
+            style={{
+              marginLeft: '1.99px',
+              fill: 'currentColor',
+              stroke: 'none'
+            }}
+          />
         </Button>
       </div>
     </div>
