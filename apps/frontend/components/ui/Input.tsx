@@ -18,6 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={id}
             className="block text-sm font-medium text-gray-700 mb-1"
+            style={{ fontFamily: 'var(--font-poppins)' }}
           >
             {label}
           </label>
@@ -29,6 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             error && 'border-red-500 focus:ring-red-600',
             className
           )}
+          style={{ fontFamily: 'var(--font-poppins)', ...props.style }}
           ref={ref}
           {...props}
         />
@@ -46,4 +48,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 export { Input };
-
