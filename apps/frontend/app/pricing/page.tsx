@@ -14,8 +14,14 @@ export default function PricingPage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Header avec background subtil */}
-      <div className="bg-gray-50 py-16 relative">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div 
+        className="bg-gray-50 relative w-full flex items-start justify-center"
+        style={{
+          height: '675px',
+          paddingTop: '64px'
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: '1764px', paddingLeft: '16px', paddingRight: '16px' }}>
           <div className="text-center relative">
             <h1 
               className="font-mochiy text-3xl text-center"
@@ -118,7 +124,7 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <div className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-center md:items-start gap-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-center items-start gap-8">
           <CardIzzy />
           <CardSuperIzzy />
         </div>
