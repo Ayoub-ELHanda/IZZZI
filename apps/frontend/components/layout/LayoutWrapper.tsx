@@ -7,6 +7,7 @@ import { Footer } from "./Footer";
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = pathname?.startsWith("/auth");
+  const isClassesPage = pathname?.startsWith("/classes") || pathname?.startsWith("/create-class");
 
   if (isAuthPage) {
     return <>{children}</>;
@@ -16,7 +17,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <>
       <Header />
       <main className="flex-1">{children}</main>
-      <Footer />
+      {!isClassesPage && <Footer />}
     </>
   );
 }

@@ -15,7 +15,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     | 'toggle-active'
     | 'toggle-inactive'
     | 'switch-button'
-    | 'pricing-card';
+    | 'pricing-card'
+    | 'add-class'
+    | 'export-class'
+    | 'copy-link'
+    | 'archive-modal';
   size?: 
     | 'xs' 
     | 'sm' 
@@ -47,6 +51,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'toggle-inactive': 'bg-transparent text-gray-900 hover:bg-gray-50',
       'switch-button': 'bg-gray-50 text-gray-900 border border-gray-200 hover:bg-gray-100',
       'pricing-card': 'bg-white border-2 border-gray-200 text-gray-900 hover:border-gray-300',
+      'add-class': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'export-class': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
+      'copy-link': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
+      'archive-modal': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
     };
     
     const sizes = {
@@ -107,6 +115,84 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             fontWeight: 400,
             fontSize: '16px',
             borderRadius: '8px',
+          };
+        case 'add-class':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            width: '244.29px',
+            height: '56px',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+          };
+        case 'export-class':
+          return {
+            backgroundColor: '#EAEAE9',
+            color: '#2F2E2C',
+            width: '284.29px',
+            height: '56px',
+            border: '1px solid #EAEAE9',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.99px',
+            whiteSpace: 'nowrap',
+          };
+        case 'copy-link':
+          return {
+            backgroundColor: '#FFFFFF',
+            color: '#2F2E2C',
+            width: '201.29px',
+            height: '56px',
+            border: '1px solid #EAEAE9',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.99px',
+            whiteSpace: 'nowrap',
+          };
+        case 'archive-modal':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            width: '163.29px',
+            height: '56px',
+            border: 'none',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.99px',
+            whiteSpace: 'nowrap',
           };
         default:
           return styles;
