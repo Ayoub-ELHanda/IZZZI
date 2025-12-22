@@ -6,18 +6,22 @@ export interface TrialBannerProps {
   message2: string;
   linkText: string;
   linkHref: string;
+  position?: 'left' | 'right';
 }
 
-export function TrialBanner({ message1, message2, linkText, linkHref }: TrialBannerProps) {
+export function TrialBanner({ message1, message2, linkText, linkHref, position = 'right' }: TrialBannerProps) {
   return (
     <div
       style={{
         width: '680px',
+        height: '58px',
         backgroundColor: '#FFF4E0',
         border: '1px solid #FFE552',
         borderRadius: '8px',
         padding: '16px',
-        marginBottom: '56px',
+        marginBottom: '8px',
+        marginLeft: position === 'right' ? 'auto' : '0',
+        marginRight: position === 'left' ? 'auto' : '0',
         display: 'flex',
         alignItems: 'center',
         gap: '56px',

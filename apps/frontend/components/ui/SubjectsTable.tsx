@@ -14,6 +14,7 @@ interface SubjectRowData {
   status: 'pending' | 'finished';
   feedbackCount: number;
   totalStudents: number;
+  hasQuestionnaire?: boolean; // New prop to determine if questionnaire exists
 }
 
 interface SubjectsTableProps {
@@ -24,7 +25,6 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopyLink = (subjectId: string) => {
-    // Simulate copying link to clipboard
     const link = `https://example.com/feedback/${subjectId}`;
     navigator.clipboard.writeText(link);
     setCopiedId(subjectId);
@@ -32,7 +32,7 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
   };
 
   const handleDownloadQR = (subjectId: string) => {
-    // Simulate QR code download
+
     console.log('Downloading QR code for:', subjectId);
   };
 
@@ -47,7 +47,7 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
         overflow: 'hidden',
       }}
     >
-      {/* Header Row */}
+
       <div
         style={{
           position: 'relative',
@@ -156,6 +156,135 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
   const statusText = subject.status === 'pending' ? 'Pendant le cours' : 'Fin du cours';
   const statusColor = '#2F2E2C';
 
+  if (!subject.hasQuestionnaire) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          width: '1631px',
+          height: '97px',
+          borderBottom: '1px solid #E5E5E5',
+          backgroundColor: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+
+        <div
+          style={{
+            position: 'absolute',
+            left: '30px',
+            top: '35px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+          }}
+        >
+     
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: '8px',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '16px',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 400,
+                color: '#2F2E2C',
+              }}
+            >
+              {subject.subjectName}
+            </span>
+            <span
+              style={{
+                fontSize: '10px',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 600,
+                color: '#2F2E2C',
+              }}
+            >
+              {subject.teacherName}
+            </span>
+          </div>
+        
+          <div
+            style={{
+              fontSize: '11px',
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: 400,
+              color: '#9B9B9B',
+            }}
+          >
+            {subject.startDate} - {subject.endDate}
+          </div>
+        </div>
+
+  
+        <div style={{ position: 'absolute', left: '320px' }}>
+          <button
+            onClick={() => console.log('Choose questionnaire type')}
+            style={{
+              width: '323.29px',
+              height: '56px',
+              backgroundColor: '#F69D04',
+              border: 'none',
+              borderRadius: '8px',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '16px',
+              fontWeight: 400,
+              color: '#2F2E2C',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            Choisir le type de formulaire
+            <ArrowUpRight size={16} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        <div
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
+          <button
+            onClick={() => console.log('Edit', subject.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={() => console.log('Delete', subject.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            <Trash2 size={16} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -168,7 +297,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
         alignItems: 'center',
       }}
     >
-      {/* Subject Info Column */}
+  
       <div
         style={{
           position: 'absolute',
@@ -179,7 +308,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
           gap: '6px',
         }}
       >
-        {/* Subject name and teacher on same line */}
         <div
           style={{
             display: 'flex',
@@ -208,7 +336,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
             {subject.teacherName}
           </span>
         </div>
-        {/* Dates on separate line below */}
+   
         <div
           style={{
             fontSize: '11px',
@@ -219,11 +347,35 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
         >
           {subject.startDate} - {subject.endDate}
         </div>
+
+        {/* Modifier le formulaire button with explanatory text */}
+        <div style={{ marginTop: '16px' }}>
+          <Button 
+            variant="modify-questionnaire"
+            onClick={() => console.log('Modify questionnaire')}
+          >
+            Modifier le formulaire
+            <ArrowUpRight size={16} strokeWidth={1.5} />
+          </Button>
+          <div
+            style={{
+              width: '252px',
+              marginTop: '8px',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '10px',
+              fontWeight: 400,
+              color: '#2F2E2C',
+              lineHeight: '1.1',
+            }}
+          >
+            Le formulaire sélectionné s'applique à tous les moments d'évaluation de cette matière
+          </div>
+        </div>
       </div>
 
-      {/* Two Containers Stacked Vertically */}
+      
       <div style={{ position: 'absolute', left: '320px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {/* First Container */}
+
         <BorderedContainer width="1252.29px">
           <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
             <div
@@ -435,7 +587,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
         </BorderedContainer>
       </div>
 
-      {/* Action Icons - Edit and Delete */}
       <div
         style={{
           position: 'absolute',

@@ -1,17 +1,14 @@
 'use client';
 
 import { SubjectsTable } from '@/components/ui/SubjectsTable';
-import { TrialBanner } from '@/components/ui/TrialBanner';
-import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { Download } from 'lucide-react';
 
-export default function ClassDetailPage() {
+export default function ArchivedClassDetailPage() {
   const params = useParams();
   const classId = params.id;
-  const [searchQuery, setSearchQuery] = useState('');
 
 
   const mockSubjects = [
@@ -24,7 +21,6 @@ export default function ClassDetailPage() {
       status: 'pending' as const,
       feedbackCount: 12,
       totalStudents: 24,
-      hasQuestionnaire: false, 
     },
     {
       id: '2',
@@ -35,7 +31,6 @@ export default function ClassDetailPage() {
       status: 'finished' as const,
       feedbackCount: 18,
       totalStudents: 24,
-      hasQuestionnaire: true,
     },
     {
       id: '3',
@@ -46,22 +41,14 @@ export default function ClassDetailPage() {
       status: 'finished' as const,
       feedbackCount: 24,
       totalStudents: 24,
-      hasQuestionnaire: true,
     },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto" style={{ maxWidth: '1700px' }}>
-
-        <TrialBanner
-          message1="Période d'essai en cours :"
-          message2="Tout est illimité jusqu'au 18 septembre 2025."
-          linkText="Je passe au plan Super Izzzi →"
-          linkHref="/pricing"
-        />
-
-        <Link href="/classes/my-classes" style={{ textDecoration: 'none' }}>
+  
+        <Link href="/classes/archived" style={{ textDecoration: 'none' }}>
           <button
             style={{
               display: 'flex',
@@ -73,7 +60,7 @@ export default function ClassDetailPage() {
               fontSize: '14px',
               fontFamily: 'Poppins, sans-serif',
               cursor: 'pointer',
-              marginBottom: '16px',
+              marginBottom: '32px',
               padding: '8px 0',
             }}
           >
@@ -92,7 +79,7 @@ export default function ClassDetailPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            <span>Retour à mes classes</span>
+            <span>Retour à classes archivées</span>
           </button>
         </Link>
 
@@ -102,51 +89,37 @@ export default function ClassDetailPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '24px',
+            marginBottom: '56px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-            <div
+          <div>
+            <h1
+              className="font-mochiy"
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
+                fontSize: '18px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                lineHeight: '100%',
+                marginBottom: '16px',
               }}
             >
-              <h1
-                className="font-mochiy"
-                style={{
-                  fontSize: '18px',
-                  fontWeight: 400,
-                  color: '#2F2E2C',
-                  lineHeight: '100%',
-                }}
-              >
-                B3UI
-              </h1>
-              <p
-                style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px',
-                  color: '#6B6B6B',
-                }}
-              >
-                24 étudiants
-              </p>
-            </div>
-
-
-            <SearchInput
-              placeholder="Rechercher par intervenant, cours..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+              B3UI
+            </h1>
+            <p
+              style={{
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                color: '#6B6B6B',
+              }}
+            >
+              24 étudiants
+            </p>
           </div>
 
- 
-          <Button variant="add-matiere" onClick={() => console.log('Ajouter une matière')}>
-            Ajouter une matière
-            <span style={{ fontSize: '20px', fontWeight: 300 }}>+</span>
+      
+          <Button variant="export-class" onClick={() => console.log('Export PDF')}>
+            <span>Exporter la classe (PDF)</span>
+            <Download size={16} />
           </Button>
         </div>
 

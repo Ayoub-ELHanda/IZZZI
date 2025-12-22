@@ -35,7 +35,7 @@ export default function ArchivedClassesPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto" style={{ maxWidth: '1650px' }}>
-        {/* Header avec titre + recherche à gauche */}
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '56px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             <div style={{ 
@@ -66,7 +66,6 @@ export default function ArchivedClassesPage() {
               </p>
             </div>
 
-            {/* Input recherche collé au titre */}
             <SearchInput
               placeholder="Rechercher une classe"
               value={searchQuery}
@@ -75,7 +74,7 @@ export default function ArchivedClassesPage() {
           </div>
         </div>
 
-        {/* Liste des cards */}
+
         <div style={{ 
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 531px)',
@@ -95,7 +94,7 @@ export default function ArchivedClassesPage() {
           ))}
         </div>
 
-        {/* Lien classes actives */}
+
         <Link href="/classes/my-classes" style={{ textDecoration: 'none' }}>
           <span
             style={{

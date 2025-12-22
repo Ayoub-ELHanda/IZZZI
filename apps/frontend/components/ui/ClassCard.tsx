@@ -29,7 +29,7 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
         justifyContent: 'space-between',
       }}
     >
-      {/* Header avec infos et bouton */}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h3
@@ -81,9 +81,9 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           )}
         </div>
 
-        {/* Bouton Voir classe */}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href={`/classes/${id}`}>
+          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`}>
             <span
               style={{
                 fontFamily: 'Poppins, sans-serif',
@@ -96,7 +96,7 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
             </span>
           </Link>
 
-          <Link href={`/classes/${id}`}>
+          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`}>
             <div
               style={{
                 width: '43px',
@@ -128,10 +128,10 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
         </div>
       </div>
 
-      {/* Actions en bas */}
+
       {isArchived ? (
         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <Link href={`/classes/${id}`} style={{ textDecoration: 'none' }}>
+          <Link href={`/classes/archived/${id}`} style={{ textDecoration: 'none' }}>
             <button
               style={{
                 fontFamily: 'Poppins, sans-serif',

@@ -17,9 +17,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     | 'switch-button'
     | 'pricing-card'
     | 'add-class'
+    | 'add-matiere'
     | 'export-class'
     | 'copy-link'
-    | 'archive-modal';
+    | 'archive-modal'
+    | 'modify-questionnaire';
   size?: 
     | 'xs' 
     | 'sm' 
@@ -52,9 +54,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'switch-button': 'bg-gray-50 text-gray-900 border border-gray-200 hover:bg-gray-100',
       'pricing-card': 'bg-white border-2 border-gray-200 text-gray-900 hover:border-gray-300',
       'add-class': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'add-matiere': 'bg-gray-10 text-gray-900',
       'export-class': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
       'copy-link': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
       'archive-modal': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'modify-questionnaire': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
     };
     
     const sizes = {
@@ -131,6 +135,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             gap: '8px',
             whiteSpace: 'nowrap',
           };
+        case 'add-matiere':
+          return {
+            backgroundColor: '#FFFFFF',
+            color: '#2F2E2C',
+            width: '244.29px',
+            height: '56px',
+            border: '1px solid #E5E5E5',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            whiteSpace: 'nowrap',
+          };
         case 'export-class':
           return {
             backgroundColor: '#EAEAE9',
@@ -178,6 +202,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             backgroundColor: '#FFE552',
             color: '#2F2E2C',
             width: '163.29px',
+            height: '56px',
+            border: 'none',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.99px',
+            whiteSpace: 'nowrap',
+          };
+        case 'modify-questionnaire':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            width: '267.29px',
             height: '56px',
             border: 'none',
             fontFamily: 'Poppins, sans-serif',

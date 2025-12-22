@@ -9,7 +9,6 @@ export default function CreateClassPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Open modal automatically when page loads
     setIsModalOpen(true);
   }, []);
 
