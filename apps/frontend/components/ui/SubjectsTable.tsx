@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { BorderedContainer } from './BorderedContainer';
 import { Button } from './Button';
 import { ArrowUpRight, Clock, Check, Download, Pencil, Trash2 } from 'lucide-react';
+import { FormTypeSelectionModal } from './FormTypeSelectionModal';
 
 interface SubjectRowData {
   id: string;
@@ -23,6 +24,19 @@ interface SubjectsTableProps {
 
 export function SubjectsTable({ subjects }: SubjectsTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+
+  const handleOpenFormModal = (subjectId: string) => {
+    setSelectedSubjectId(subjectId);
+    setIsFormModalOpen(true);
+  };
+
+  const handleFormTypeValidate = (formType: string) => {
+    console.log('Selected form type:', formType, 'for subject:', selectedSubjectId);
+    // TODO: Update subject with hasQuestionnaire: true and formType
+    // This will be handled by backend later
+  };
 
   const handleCopyLink = (subjectId: string) => {
     const link = `https://example.com/feedback/${subjectId}`;
@@ -138,9 +152,21 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
             onCopyLink={handleCopyLink}
             onDownloadQR={handleDownloadQR}
             isCopied={copiedId === subject.id}
+            onOpenFormModal={handleOpenFormModal}
           />
         ))}
       </div>
+
+      {/* Form Type Selection Modal */}
+      <FormTypeSelectionModal
+        isOpen={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setSelectedSubjectId(null);
+        }}
+        onValidate={handleFormTypeValidate}
+        subjectId={selectedSubjectId || ''}
+      />
     </div>
   );
 }
@@ -150,9 +176,10 @@ interface SubjectRowProps {
   onCopyLink: (id: string) => void;
   onDownloadQR: (id: string) => void;
   isCopied: boolean;
+  onOpenFormModal: (id: string) => void;
 }
 
-function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowProps) {
+function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormModal }: SubjectRowProps) {
   const statusText = subject.status === 'pending' ? 'Pendant le cours' : 'Fin du cours';
   const statusColor = '#2F2E2C';
 
@@ -225,7 +252,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied }: SubjectRowP
   
         <div style={{ position: 'absolute', left: '320px' }}>
           <button
-            onClick={() => console.log('Choose questionnaire type')}
+            onClick={() => onOpenFormModal(subject.id)}
             style={{
               width: '323.29px',
               height: '56px',

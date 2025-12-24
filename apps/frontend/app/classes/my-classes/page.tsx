@@ -7,6 +7,8 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import { ClassModal, ClassFormData } from '@/components/ui/ClassModal';
 import { ArchiveModal } from '@/components/ui/ArchiveModal';
+import { ClassLimitAdminModal } from '@/components/ui/ClassLimitAdminModal';
+import { ClassLimitNonAdminModal } from '@/components/ui/ClassLimitNonAdminModal';
 import Link from 'next/link';
 
 export default function MyClassesPage() {
@@ -15,6 +17,12 @@ export default function MyClassesPage() {
   const [editingClass, setEditingClass] = useState<any>(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [archivingClassId, setArchivingClassId] = useState<string | null>(null);
+  const [isAdminLimitModalOpen, setIsAdminLimitModalOpen] = useState(false);
+  const [isNonAdminLimitModalOpen, setIsNonAdminLimitModalOpen] = useState(false);
+  
+  // Variable temporaire pour simuler le rôle (à remplacer par le backend plus tard)
+  // true = admin, false = non-admin
+  const isAdmin = false;
   
   const mockClasses = [
     {
@@ -31,6 +39,18 @@ export default function MyClassesPage() {
     },
     {
       id: '3',
+      name: 'B2FG',
+      description: 'En alternance',
+      studentCount: 24,
+    },
+     {
+      id: '4',
+      name: 'B2FG',
+      description: 'En alternance',
+      studentCount: 24,
+    },
+     {
+      id: '5',
       name: 'B2FG',
       description: 'En alternance',
       studentCount: 24,
@@ -86,12 +106,26 @@ export default function MyClassesPage() {
           </div>
 
        
-          <Link href="/create-class" style={{ textDecoration: 'none' }}>
-            <Button variant="add-class">
-              Ajouter une classe
-              <span style={{ fontSize: '20px', fontWeight: 300 }}>+</span>
-            </Button>
-          </Link>
+          <Button 
+            variant="add-class"
+            onClick={() => {
+              // Vérifier si la limite de 5 classes est atteinte
+              if (mockClasses.length >= 5) {
+                // Afficher le modal approprié selon le rôle
+                if (isAdmin) {
+                  setIsAdminLimitModalOpen(true);
+                } else {
+                  setIsNonAdminLimitModalOpen(true);
+                }
+              } else {
+                // Ouvrir le modal de création de classe
+                setIsModalOpen(true);
+              }
+            }}
+          >
+            Ajouter une classe
+            <span style={{ fontSize: '20px', fontWeight: 300 }}>+</span>
+          </Button>
         </div>
 
        
@@ -145,11 +179,11 @@ export default function MyClassesPage() {
             setEditingClass(null);
           }}
           onSubmit={(data: ClassFormData) => {
-            console.log('Class updated:', data);
+            console.log(editingClass ? 'Class updated:' : 'Class created:', data);
             setIsModalOpen(false);
             setEditingClass(null);
           }}
-          mode="edit"
+          mode={editingClass ? 'edit' : 'create'}
           initialData={editingClass ? {
             className: editingClass.name,
             studentCount: editingClass.studentCount.toString(),
@@ -170,6 +204,16 @@ export default function MyClassesPage() {
             setArchivingClassId(null);
             // TODO: Implement actual archiving logic
           }}
+        />
+
+        <ClassLimitAdminModal
+          isOpen={isAdminLimitModalOpen}
+          onClose={() => setIsAdminLimitModalOpen(false)}
+        />
+
+        <ClassLimitNonAdminModal
+          isOpen={isNonAdminLimitModalOpen}
+          onClose={() => setIsNonAdminLimitModalOpen(false)}
         />
       </div>
     </div>

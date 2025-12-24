@@ -21,7 +21,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     | 'export-class'
     | 'copy-link'
     | 'archive-modal'
-    | 'modify-questionnaire';
+    | 'modify-questionnaire'
+    | 'class-limit-upgrade';
   size?: 
     | 'xs' 
     | 'sm' 
@@ -59,6 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'copy-link': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
       'archive-modal': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
       'modify-questionnaire': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'class-limit-upgrade': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
     };
     
     const sizes = {
@@ -223,6 +225,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             backgroundColor: '#FFE552',
             color: '#2F2E2C',
             width: '267.29px',
+            height: '56px',
+            border: 'none',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            paddingTop: '20px',
+            paddingRight: '26px',
+            paddingBottom: '20px',
+            paddingLeft: '26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.99px',
+            whiteSpace: 'nowrap',
+          };
+        case 'class-limit-upgrade':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            width: '295.29px',
             height: '56px',
             border: 'none',
             fontFamily: 'Poppins, sans-serif',
