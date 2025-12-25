@@ -18,7 +18,7 @@ export function CardIzzy() {
         position: 'relative'
       }}
     >
-      {/* Badge Izzzi */}
+
       <div style={{ marginBottom: '24px' }}>
         <div 
           style={{
@@ -67,7 +67,7 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Bouton jaune */}
+
       <div style={{ marginBottom: '24px' }}>
         <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block' }}>
           <Button 
@@ -179,7 +179,7 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Bouton transparent */}
+
       <div style={{ marginTop: 'auto' }}>
         <Button 
           variant="outline"

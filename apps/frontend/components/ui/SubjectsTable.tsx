@@ -15,7 +15,7 @@ interface SubjectRowData {
   status: 'pending' | 'finished';
   feedbackCount: number;
   totalStudents: number;
-  hasQuestionnaire?: boolean; // New prop to determine if questionnaire exists
+  hasQuestionnaire?: boolean; 
 }
 
 interface SubjectsTableProps {
@@ -379,7 +379,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
         <div style={{ marginTop: '16px' }}>
           <Button 
             variant="modify-questionnaire"
-            onClick={() => console.log('Modify questionnaire')}
+            onClick={() => onOpenFormModal(subject.id)}
           >
             Modifier le formulaire
             <ArrowUpRight size={16} strokeWidth={1.5} />

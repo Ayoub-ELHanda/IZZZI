@@ -3,6 +3,7 @@
 import { X, ArrowUpRight, Eye, Clock, Check } from 'lucide-react';
 import { Button } from './Button';
 import { useState } from 'react';
+import { FormPreview } from './FormPreview';
 
 interface FormTypeSelectionModalProps {
   isOpen: boolean;
@@ -185,7 +186,7 @@ export function FormTypeSelectionModal({
         </div>
 
         {/* Main Content - Two columns */}
-        <div style={{ display: 'flex', gap: '40px', flex: 1 }}>
+        <div style={{ display: 'flex', gap: '40px', height: '600px', overflow: 'hidden' }}>
           {/* Left Column - Form options */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: '0 0 auto' }}>
             {formOptions.map((option) => (
@@ -277,41 +278,46 @@ export function FormTypeSelectionModal({
             style={{
               flex: 1,
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'center',
               border: '1px solid #E5E5E5',
               borderRadius: '8px',
               backgroundColor: '#F8F8F8',
               padding: '40px',
+              overflowY: 'auto',
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-              <div
-                style={{
-                  width: '56px',
-                  height: '56px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Eye size={16} color="#2F2E2C" strokeWidth={1.5} />
+            {selectedType ? (
+              <FormPreview formType={selectedType} />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Eye size={16} color="#2F2E2C" strokeWidth={1.5} />
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    color: '#6B6B6B',
+                    textAlign: 'center',
+                    maxWidth: '400px',
+                  }}
+                >
+                  Sélectionner un type de formulaire pour le prévisualiser
+                </p>
               </div>
-              <p
-                style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 400,
-                  color: '#6B6B6B',
-                  textAlign: 'center',
-                  maxWidth: '400px',
-                }}
-              >
-                Sélectionner un type de formulaire pour le prévisualiser
-              </p>
-            </div>
+            )}
           </div>
         </div>
 
