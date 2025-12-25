@@ -8,19 +8,18 @@ export function CardIzzy() {
     <div 
       style={{
         width: '555px',
-        height: '906px', // Hauteur fixe comme demandé
+        minHeight: '906px',
         backgroundColor: '#FBFBFB',
         border: '1px solid #E0E0E0',
         borderRadius: '8px',
         padding: '40px 60px',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
         position: 'relative'
       }}
     >
-      {/* Section 1: Badge Izzzi */}
-      <div style={{ marginBottom: '32px' }}>
+      {/* Badge Izzzi */}
+      <div style={{ marginBottom: '24px' }}>
         <div 
           style={{
             display: 'inline-flex',
@@ -44,8 +43,8 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Section 2: Prix */}
-      <div style={{ marginBottom: '32px' }}>
+      {/* Prix */}
+      <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
           <span style={{
             fontFamily: 'Mochiy Pop One',
@@ -68,13 +67,13 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Section 3: Bouton jaune */}
-      <div style={{ marginBottom: '16px', width: '337.29px' }}>
-        <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block', width: '100%' }}>
+      {/* Bouton jaune */}
+      <div style={{ marginBottom: '24px' }}>
+        <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block' }}>
           <Button 
             variant="yellow"
             style={{
-              width: '100%',
+              width: '337.29px',
               height: '56px',
               backgroundColor: '#FFE552',
               color: '#2F2E2C',
@@ -98,18 +97,13 @@ export function CardIzzy() {
               alt="Flèche" 
               width={16} 
               height={16}
-              style={{
-                marginLeft: '1.99px',
-                fill: 'currentColor',
-                stroke: 'none'
-              }}
             />
           </Button>
         </Link>
       </div>
 
-      {/* Section 4: Liste des fonctionnalités */}
-      <div style={{ marginBottom: '16px' }}>
+      {/* Liste des fonctionnalités */}
+      <div style={{ marginBottom: '24px', flex: '1' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
             { text: "4 mois d'essai illimités", subtext: "(matières, classes, retours)" },
@@ -151,44 +145,42 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Section 5: Au-delà des 4 mois */}
-      <div style={{ marginBottom: '12px' }}>
+      {/* Au-delà des 4 mois */}
+      <div style={{ marginBottom: '24px' }}>
+        <h3 style={{
+          fontFamily: 'Poppins',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: '#2F2E2C',
+          margin: '0 0 12px 0'
+        }}>
+          Au-delà des 4 mois :
+        </h3>
+        
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h3 style={{
-            fontFamily: 'Poppins',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: '#2F2E2C',
-            margin: 0
-          }}>
-            Au-delà des 4 mois :
-          </h3>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              "Vos classes restent actives",
-              "Les retours visibles sont limités à 5 par matière"
-            ].map((item, index) => (
-              <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
-                  <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '16px',
-                  color: '#2F2E2C',
-                  lineHeight: '150%'
-                }}>
-                  {item}
-                </span>
-              </div>
-            ))}
-          </div>
+          {[
+            "Vos classes restent actives",
+            "Les retours visibles sont limités à 5 par matière"
+          ].map((item, index) => (
+            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+                <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{
+                fontFamily: 'Poppins',
+                fontSize: '16px',
+                color: '#2F2E2C',
+                lineHeight: '150%'
+              }}>
+                {item}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Section 7: Bouton transparent */}
-      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+      {/* Bouton transparent */}
+      <div style={{ marginTop: 'auto' }}>
         <Button 
           variant="outline"
           style={{
@@ -216,11 +208,6 @@ export function CardIzzy() {
             alt="Flèche" 
             width={16} 
             height={16}
-            style={{
-              marginLeft: '1.99px',
-              fill: 'currentColor',
-              stroke: 'none'
-            }}
           />
         </Button>
       </div>

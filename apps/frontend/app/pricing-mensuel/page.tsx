@@ -7,11 +7,11 @@ import { PlanTableau } from '@/components/ui/PlanTableau';
 import { routes } from '@/config/routes';
 
 export const metadata = {
-  title: 'Tarifs - IZZZI',
-  description: 'Découvrez nos offres et tarifs',
+  title: 'Tarifs Mensuel - IZZZI',
+  description: 'Découvrez nos offres et tarifs mensuels',
 };
 
-export default function PricingPage() {
+export default function PricingMensuelPage() {
   return (
     <div className="bg-white min-h-screen">
      
@@ -63,18 +63,47 @@ export default function PricingPage() {
             <div 
               className="flex items-center mt-8 mx-auto"
               style={{
-                width: '328px',
+                width: '380px',
                 height: '67px',
                 backgroundColor: '#FBFBFB',
                 border: '1px solid #E0E0E0',
                 borderRadius: '8px',
-                padding: '10px 40px 10px 10px',
-                gap: '30px'
+                padding: '10px',
+                gap: '10px'
               }}
             >
+              <Link href="/pricing" style={{ textDecoration: 'none' }}>
+                <div
+                  style={{
+                    width: '181px',
+                    height: '47px',
+                    backgroundColor: 'transparent',
+                    borderRadius: '8px',
+                    padding: '18px 40px 18px 30px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <span
+                    style={{
+                      color: '#2F2E2C',
+                      fontFamily: 'var(--font-poppins), Poppins, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '100%',
+                      letterSpacing: '0%'
+                    }}
+                  >
+                    Annuel -30%
+                  </span>
+                </div>
+              </Link>
+              
               <div
                 style={{
-                  width: '181px',
+                  width: '147px',
                   height: '47px',
                   backgroundColor: '#2F2E2C',
                   borderRadius: '8px',
@@ -95,29 +124,9 @@ export default function PricingPage() {
                     letterSpacing: '0%'
                   }}
                 >
-                  Annuel -30%
-                </span>
-              </div>
-              
-              <Link href="/pricing-mensuel" style={{ textDecoration: 'none' }}>
-                <span
-                  style={{
-                    width: '67px',
-                    height: '11px',
-                    color: '#2F2E2C',
-                    fontFamily: 'var(--font-poppins), Poppins, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    letterSpacing: '0%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
                   Mensuel
                 </span>
-              </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -145,7 +154,7 @@ export default function PricingPage() {
           }}
         >
           <CardIzzy />
-          <CardSuperIzzy />
+          <CardSuperIzzy key="mensuel" />
         </div>
       </div>
       

@@ -1,9 +1,18 @@
+'use client';
+
 import { Badge } from './Badge';
 import { Button } from './Button';
+import { Slider } from './Slider';
 import Link from 'next/link';
 import { routes } from '@/config/routes';
+import { useState } from 'react';
 
 export function CardSuperIzzy() {
+  const [classCount, setClassCount] = useState(7);
+  
+  // Prix par classe par mois
+  const pricePerClass = 19;
+  const totalPrice = classCount * pricePerClass;
   return (
     <div 
       style={{
@@ -41,49 +50,24 @@ export function CardSuperIzzy() {
         
         {/* Slider et prix */}
         <div style={{ marginBottom: '32px' }}>
-          {/* Slider de classe - simulation visuelle */}
+          {/* Slider de classe */}
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              fontSize: '14px',
-              marginBottom: '8px'
-            }}>
-              <span>7 classes</span>
-            </div>
             <div style={{ position: 'relative' }}>
-              <div style={{
-                width: '100%',
-                height: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                borderRadius: '4px',
-                overflow: 'hidden'
-              }}>
-                <div style={{
-                  width: '33.33%',
-                  height: '100%',
-                  backgroundColor: 'white',
-                  position: 'relative'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: '50%',
-                    transform: 'translate(50%, -50%)',
-                    width: '16px',
-                    height: '16px',
-                    backgroundColor: 'white',
-                    borderRadius: '50%',
-                    border: '2px solid #F69D04'
-                  }}></div>
-                </div>
-              </div>
+              <Slider
+                defaultValue={[7]}
+                min={1}
+                max={20}
+                step={1}
+                onValueChange={(value) => setClassCount(value[0])}
+                className="w-full"
+              />
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 fontSize: '12px',
-                marginTop: '4px',
-                opacity: 0.75
+                marginTop: '8px',
+                opacity: 0.75,
+                color: '#2F2E2C'
               }}>
                 <span>1</span>
                 <span>5</span>
@@ -104,7 +88,7 @@ export function CardSuperIzzy() {
                 color: '#2F2E2C',
                 lineHeight: '125%'
               }}>
-                17€
+                {totalPrice}€
               </span>
               <span style={{
                 fontFamily: 'Poppins',
