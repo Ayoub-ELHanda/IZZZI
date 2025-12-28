@@ -134,13 +134,18 @@ export class AuthService {
 
     InvitationStore.create(invitation);
 
-    // Send invitation email
+    // Send invitation email (non-blocking - don't fail if email service is down)
     const inviterName = `${inviter.firstName} ${inviter.lastName}`;
-    await this.mailerService.sendInvitationEmail(
-      dto.email,
-      inviterName,
-      inviteToken,
-    );
+    try {
+      await this.mailerService.sendInvitationEmail(
+        dto.email,
+        inviterName,
+        inviteToken,
+      );
+    } catch (error) {
+      console.error('Error sending invitation email (non-blocking):', error);
+      // Don't throw - invitation is still created and token is returned
+    }
 
     return {
       message: 'Invitation envoyée avec succès',
