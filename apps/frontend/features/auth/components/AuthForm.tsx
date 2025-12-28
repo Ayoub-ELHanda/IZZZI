@@ -87,11 +87,11 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
 
   // Handle Google OAuth
   const handleGoogleAuth = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
     if (inviteToken) {
-      window.location.href = `${apiUrl}/api/auth/google?inviteToken=${inviteToken}`;
+      window.location.href = `${apiUrl}/auth/google?inviteToken=${inviteToken}`;
     } else {
-      window.location.href = `${apiUrl}/api/auth/google`;
+      window.location.href = `${apiUrl}/auth/google`;
     }
   };
 
