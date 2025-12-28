@@ -28,7 +28,7 @@ export function RegisterGuestForm() {
 
     try {
       const { authService } = await import('@/services/auth/auth.service');
-      await authService.registerGuest({ ...formData, inviteToken: inviteToken || '' });
+      await authService.registerInvited({ ...formData, inviteToken: inviteToken || '' });
       router.push(routes.dashboard);
     } catch (error: any) {
       console.error('Registration error:', error);

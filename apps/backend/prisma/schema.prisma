@@ -11,9 +11,9 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN           // Person who creates the establishment account
-  TEACHER         // Teacher invited by admin (can create classes and invite students)
-  STUDENT         // Student invited by teacher (responds to questionnaires)
+  VISITEUR                    // Visiteur : accès uniquement à Accueil, Tarifs, Inscription/Connexion
+  RESPONSABLE_PEDAGOGIQUE     // Responsable pédagogique : crée classes/matières, consulte avis, envoie emails aux étudiants
+  ADMIN                       // Admin : super responsable pédagogique + accès facturation
 }
 
 enum AuthProvider {
@@ -27,7 +27,7 @@ model User {
   password          String?       // Null for OAuth users
   firstName         String
   lastName          String
-  role              UserRole
+  role              UserRole      @default(VISITEUR)
   authProvider      AuthProvider  @default(LOCAL)
   googleId          String?       @unique
   establishmentId   String?

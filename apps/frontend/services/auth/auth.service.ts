@@ -8,7 +8,7 @@ export interface RegisterAdminData {
   password: string;
 }
 
-export interface RegisterGuestData {
+export interface RegisterInvitedData {
   email: string;
   firstName: string;
   lastName: string;
@@ -36,8 +36,8 @@ export const authService = {
     return response;
   },
 
-  async registerGuest(data: RegisterGuestData): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/register/guest', data);
+  async registerInvited(data: RegisterInvitedData): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>('/auth/register/invited', data);
     if (response.token) {
       localStorage.setItem('auth_token', response.token);
     }
