@@ -1,115 +1,81 @@
-// Authentication service
 import { apiClient } from '@/lib/api/client';
-import { LoginDto, RegisterDto, ApiResponse } from '@/types/dto';
-import { User } from '@/types/entities';
 
-export interface AuthTokens {
-  access_token: string;
-  refresh_token: string;
+export interface RegisterAdminData {
+  establishmentName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
 }
 
-export interface AuthResponse extends ApiResponse {
-  data: {
-    user: User;
-    tokens: AuthTokens;
-  };
+export interface RegisterGuestData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  inviteToken: string;
 }
 
-export class AuthService {
-  async login(credentials: LoginDto): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
-    
-    // Store tokens
-    if (response.data?.tokens) {
-      this.setTokens(response.data.tokens);
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: any;
+  establishment?: any;
+  token: string;
+}
+
+export const authService = {
+  async registerAdmin(data: RegisterAdminData): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>('/auth/register/admin', data);
+    if (response.token) {
+      localStorage.setItem('auth_token', response.token);
     }
-    
     return response;
-  }
+  },
 
-  async register(data: RegisterDto): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/register', data);
-    
-    // Store tokens
-    if (response.data?.tokens) {
-      this.setTokens(response.data.tokens);
+  async registerGuest(data: RegisterGuestData): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>('/auth/register/guest', data);
+    if (response.token) {
+      localStorage.setItem('auth_token', response.token);
     }
-    
     return response;
-  }
+  },
 
-  async logout(): Promise<void> {
-    try {
-      await apiClient.post('/auth/logout');
-    } finally {
-      this.clearTokens();
+  async login(data: LoginData): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>('/auth/login', data);
+    if (response.token) {
+      localStorage.setItem('auth_token', response.token);
     }
-  }
+    return response;
+  },
 
-  async refreshToken(): Promise<AuthTokens> {
-    const refreshToken = this.getRefreshToken();
-    
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>('/auth/forgot-password', { email });
+    return response;
+  },
 
-    const response = await apiClient.post<{ data: AuthTokens }>('/auth/refresh', {
-      refresh_token: refreshToken,
-    });
+  async resetPassword(token: string, password: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>('/auth/reset-password', { token, password });
+    return response;
+  },
 
-    this.setTokens(response.data);
-    return response.data;
-  }
+  async getProfile(): Promise<any> {
+    const response = await apiClient.get<any>('/auth/me');
+    return response;
+  },
 
-  async forgotPassword(email: string): Promise<ApiResponse> {
-    return apiClient.post<ApiResponse>('/auth/forgot-password', { email });
-  }
+  logout() {
+    localStorage.removeItem('auth_token');
+  },
 
-  async resetPassword(token: string, password: string): Promise<ApiResponse> {
-    return apiClient.post<ApiResponse>('/auth/reset-password', { token, password });
-  }
-
-  async getCurrentUser(): Promise<User> {
-    const response = await apiClient.get<{ data: User }>('/auth/me');
-    return response.data;
-  }
-
-  // Token management
-  private setTokens(tokens: AuthTokens): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('access_token', tokens.access_token);
-      localStorage.setItem('refresh_token', tokens.refresh_token);
-    }
-  }
-
-  private clearTokens(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-    }
-  }
-
-  getAccessToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('access_token');
-    }
-    return null;
-  }
-
-  private getRefreshToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('refresh_token');
-    }
-    return null;
-  }
+  getToken(): string | null {
+    return localStorage.getItem('auth_token');
+  },
 
   isAuthenticated(): boolean {
-    return !!this.getAccessToken();
-  }
-}
-
-// Export singleton instance
-export const authService = new AuthService();
-
-
-
+    return !!this.getToken();
+  },
+};

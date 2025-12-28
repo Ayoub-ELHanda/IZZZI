@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN           // Person who creates the establishment account
+  GUEST           // Person invited by an admin (pedagogical responsible)
+}
+
+enum AuthProvider {
+  LOCAL           // Email/password
+  GOOGLE          // Google OAuth
+}
+
+model User {
+  id                String        @id @default(uuid())
+  email             String        @unique
+  password          String?       // Null for OAuth users
+  firstName         String
+  lastName          String
+  role              UserRole
+  authProvider      AuthProvider  @default(LOCAL)
+  googleId          String?       @unique
+  establishmentId   String?
+  establishment     Establishment? @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  
+  isEmailVerified   Boolean       @default(false)
+  isActive          Boolean       @default(true)
+  profilePicture    String?
+  
+  resetPasswordToken      String?   @unique
+  resetPasswordExpires    DateTime?
+  emailVerificationToken  String?   @unique
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  classes           Class[]
+  subjects          Subject[]
+  
+  @@index([email])
+  @@index([establishmentId])
+}
+
+model Establishment {
+  id          String    @id @default(uuid())
+  name        String
+  createdBy   String    // User ID of the admin who created this
+  
+  users       User[]
+  classes     Class[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([createdBy])
+}
+
+model Class {
+  id              String        @id @default(uuid())
+  name            String
+  createdBy       String
+  user            User          @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  establishmentId String
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  
+  subjects        Subject[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([createdBy])
+  @@index([establishmentId])
+}
+
+model Subject {
+  id              String    @id @default(uuid())
+  name            String
+  classId         String
+  class           Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  createdBy       String
+  user            User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  
+  questionnaires  Questionnaire[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([classId])
+  @@index([createdBy])
+}
+
+enum QuestionnaireType {
+  DURING_COURSE   // Questionnaire pendant le cours
+  AFTER_COURSE    // Questionnaire après le cours
+}
+
+model Questionnaire {
+  id              String              @id @default(uuid())
+  type            QuestionnaireType
+  subjectId       String
+  subject         Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  token           String              @unique  // Public access token
+  qrCodeUrl       String?
+  
+  responses       Response[]
+  
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  @@index([subjectId])
+  @@index([token])
+}
+
+model Response {
+  id                String         @id @default(uuid())
+  questionnaireId   String
+  questionnaire     Questionnaire  @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  // Student feedback
+  rating            Int            // 1-5 stars
+  comment           String?
+  isAnonymous       Boolean        @default(true)
+  studentEmail      String?
+  
+  createdAt         DateTime       @default(now())
+  
+  @@index([questionnaireId])
+  @@index([createdAt])
+}

@@ -5,70 +5,42 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
 import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/assets/Logo';
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="bg-white py-4">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href={routes.home} className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">IZZZI</span>
+          <Link href={routes.home} className="flex items-center">
+            <Logo className="h-12 w-auto" />
           </Link>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Right side navigation */}
+          <div className="flex items-center gap-6">
             {isAuthenticated ? (
               <>
                 <Link
                   href={routes.dashboard}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-800 hover:text-gray-600 transition-colors text-sm font-medium"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href={routes.classes.list}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-800 hover:text-gray-600 transition-colors text-sm font-medium"
                 >
                   Classes
                 </Link>
                 <Link
                   href={routes.subjects.list}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-800 hover:text-gray-600 transition-colors text-sm font-medium"
                 >
                   Matières
                 </Link>
-                <Link
-                  href={routes.account.profile}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Mon compte
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href={routes.home}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Accueil
-                </Link>
-                <Link
-                  href={routes.pricing}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Tarifs
-                </Link>
-              </>
-            )}
-          </nav>
-
-          {/* Auth buttons */}
-          <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <>
                 <span className="text-sm text-gray-700">
                   {user?.firstName} {user?.lastName}
                 </span>
@@ -78,15 +50,28 @@ export function Header() {
               </>
             ) : (
               <>
-                <Link href={routes.auth.login}>
-                  <Button variant="ghost" size="sm">
-                    Connexion
-                  </Button>
+                <Link
+                  href={routes.pricing}
+                  className="text-gray-800 hover:text-gray-600 transition-colors text-sm font-medium"
+                >
+                  Nos tarifs
                 </Link>
                 <Link href={routes.auth.register}>
-                  <Button size="sm">
-                    Inscription
-                  </Button>
+                  <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                    S'inscrire
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </Link>
+                <Link
+                  href={routes.auth.login}
+                  className="text-gray-800 hover:text-gray-600 transition-colors text-sm font-medium flex items-center gap-2"
+                >
+                  Se connecter
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </Link>
               </>
             )}
