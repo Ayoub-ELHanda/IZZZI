@@ -1,90 +1,165 @@
 // Footer component
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="border-t border-gray-200 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1">
-            <h3 className="text-xl font-bold text-blue-600 mb-4">IZZZI</h3>
-            <p className="text-gray-600 text-sm">
-              Plateforme de recueil d'avis étudiants pour l'enseignement supérieur
-            </p>
-          </div>
-
-          {/* Product */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Produit</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/features" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Fonctionnalités
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Tarifs
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-gray-600 hover:text-blue-600 text-sm">
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Entreprise</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/about" className="text-gray-600 hover:text-blue-600 text-sm">
-                  À propos
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Légal</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/legal/terms" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Conditions d'utilisation
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/privacy" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Politique de confidentialité
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/mentions" className="text-gray-600 hover:text-blue-600 text-sm">
-                  Mentions légales
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <>
+      {/* Decorative Hashtags Section - Above Footer */}
+      <section className="relative w-full h-[250px] bg-gradient-to-b from-white to-[#FFF9D8] overflow-hidden">
+        {/* Hashtag Pills */}
+        <div 
+          className="absolute bg-[#FFD93D] px-8 py-4 rounded-full font-bold text-gray-900 shadow-lg"
+          style={{ 
+            top: '80px', 
+            left: '5%', 
+            transform: 'rotate(-25deg)',
+            fontSize: '18px'
+          }}
+        >
+          #Love
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <p className="text-center text-gray-600 text-sm">
-            © {currentYear} IZZZI - Jedy Formation. Tous droits réservés.
-          </p>
+        <div 
+          className="absolute bg-white border-2 border-gray-200 px-6 py-3 rounded-full text-gray-800 shadow-md"
+          style={{ 
+            top: '100px', 
+            left: '18%',
+            fontSize: '16px'
+          }}
+        >
+          IA + education = &lt;3
         </div>
-      </div>
-    </footer>
+
+        <div 
+          className="absolute bg-[#FF8C42] px-10 py-5 rounded-full font-bold text-gray-900 shadow-lg"
+          style={{ 
+            top: '60px', 
+            left: '35%', 
+            transform: 'rotate(-15deg)',
+            fontSize: '18px'
+          }}
+        >
+          #QualiopiFriendly
+        </div>
+
+        <div 
+          className="absolute bg-[#FFD93D] px-8 py-4 rounded-full font-bold text-gray-900 shadow-lg"
+          style={{ 
+            top: '40px', 
+            left: '52%', 
+            transform: 'rotate(15deg)',
+            fontSize: '18px'
+          }}
+        >
+          #Simple
+        </div>
+
+        <div 
+          className="absolute bg-white border-2 border-gray-200 px-6 py-3 rounded-full text-gray-800 shadow-md"
+          style={{ 
+            top: '100px', 
+            left: '62%',
+            fontSize: '16px'
+          }}
+        >
+          #DoubleSatisfaction
+        </div>
+
+        <div 
+          className="absolute bg-[#FF8C42] px-8 py-4 rounded-full font-bold text-gray-900 shadow-lg"
+          style={{ 
+            top: '70px', 
+            left: '75%', 
+            transform: 'rotate(20deg)',
+            fontSize: '18px'
+          }}
+        >
+          #LiveReview
+        </div>
+
+        <div 
+          className="absolute bg-[#FFD93D] px-8 py-4 rounded-full font-bold text-gray-900 shadow-lg"
+          style={{ 
+            top: '20px', 
+            left: '88%', 
+            transform: 'rotate(35deg)',
+            fontSize: '18px'
+          }}
+        >
+          #Sincère
+        </div>
+
+        {/* Orange Bar at bottom */}
+        <div className="absolute bottom-0 w-full h-2 bg-[#F26103]"></div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#F26103] text-white">
+        <div className="max-w-7xl mx-auto px-[80px] py-16">
+          <div className="relative min-h-[280px]">
+            <div className="flex items-start justify-between">
+              {/* Left - Logo */}
+              <div className="flex-shrink-0">
+                <Image 
+                  src="/logo-footre.png" 
+                  alt="IZZZI Logo" 
+                  width={150} 
+                  height={50}
+                  className="object-contain"
+                />
+              </div>
+
+              {/* Right - Navigation sections */}
+              <div className="flex gap-32">
+                {/* Plan du site */}
+                <div>
+                  <h4 className="font-semibold text-white mb-4 text-base">Plan du site</h4>
+                  <ul className="space-y-3">
+                    <li>
+                      <Link href="/pricing" className="text-white hover:text-white/80 text-sm transition-colors">
+                        Nos tarifs
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/auth/register" className="text-white hover:text-white/80 text-sm transition-colors">
+                        S'inscrire
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/auth/login" className="text-white hover:text-white/80 text-sm transition-colors">
+                        Se connecter
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Nous contacter */}
+                <div>
+                  <h4 className="font-semibold text-white mb-4 text-base">Nous contacter</h4>
+                  <a 
+                    href="mailto:hello@izzzi.io" 
+                    className="inline-block text-white text-sm border-2 border-white rounded-lg px-6 py-2 hover:bg-white hover:text-[#F26103] transition-colors"
+                  >
+                    hello@izzzi.io
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Legal Links - Bottom Right */}
+            <div className="absolute bottom-0 right-0 flex gap-8">
+              <Link href="/legal/mentions" className="text-white hover:text-white/80 text-sm transition-colors">
+                Mentions légales
+              </Link>
+              <Link href="/legal/faq" className="text-white hover:text-white/80 text-sm transition-colors">
+                FAQ
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }
 

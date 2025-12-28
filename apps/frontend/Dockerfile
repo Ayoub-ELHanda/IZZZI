@@ -13,6 +13,9 @@ COPY packages/ui/package*.json ./packages/ui/
 # Install dependencies
 RUN npm ci
 
+# Install @svgr/webpack for SVG handling
+COPY --from=deps /app/node_modules/@svgr ./node_modules/@svgr
+
 # Build the application
 FROM base AS builder
 WORKDIR /app
@@ -44,4 +47,6 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "apps/frontend/server.js"]
+
+
 

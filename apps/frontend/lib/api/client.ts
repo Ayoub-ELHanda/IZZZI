@@ -30,7 +30,7 @@ export class ApiClient {
 
     // Get token from storage if available
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('auth_token');
       if (token) {
         config.headers = {
           ...config.headers,
@@ -106,4 +106,7 @@ export class ApiClient {
 
 // Export singleton instance
 export const apiClient = new ApiClient();
+
+
+
 

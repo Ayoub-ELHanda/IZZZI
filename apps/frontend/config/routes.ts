@@ -8,7 +8,9 @@ export const routes = {
   auth: {
     login: '/auth/login',
     register: '/auth/register',
+    registerGuest: (token: string) => `/auth/register?token=${token}`,
     forgotPassword: '/auth/forgot-password',
+    resetPassword: (token: string) => `/auth/reset-password?token=${token}`,
   },
   
   // Protected routes
@@ -42,4 +44,7 @@ export const routes = {
     billing: '/account/billing',
   },
 } as const;
+
+
+
 

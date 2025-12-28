@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
 import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/assets/Logo';
 
 export function Header() {
   const { isAuthenticated } = useAuth();
