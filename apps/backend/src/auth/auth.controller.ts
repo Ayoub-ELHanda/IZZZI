@@ -3,10 +3,11 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { RegisterAdminDto } from './dto/register-admin.dto';
-import { RegisterGuestDto } from './dto/register-guest.dto';
+import { RegisterInvitedDto } from './dto/register-guest.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 
@@ -22,9 +23,15 @@ export class AuthController {
     return this.authService.registerAdmin(dto);
   }
 
-  @Post('register/guest')
-  async registerGuest(@Body() dto: RegisterGuestDto) {
-    return this.authService.registerGuest(dto);
+  @Post('register/invited')
+  async registerInvited(@Body() dto: RegisterInvitedDto) {
+    return this.authService.registerInvited(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('invite')
+  async inviteUser(@Req() req, @Body() dto: InviteUserDto) {
+    return this.authService.inviteUser(req.user.userId, dto);
   }
 
   @Post('login')

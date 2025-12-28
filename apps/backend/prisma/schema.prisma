@@ -7,12 +7,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserRole {
   ADMIN           // Person who creates the establishment account
-  GUEST           // Person invited by an admin (pedagogical responsible)
+  TEACHER         // Teacher invited by admin (can create classes and invite students)
+  STUDENT         // Student invited by teacher (responds to questionnaires)
 }
 
 enum AuthProvider {
@@ -39,6 +39,7 @@ model User {
   resetPasswordToken      String?   @unique
   resetPasswordExpires    DateTime?
   emailVerificationToken  String?   @unique
+  invitedBy         String?       // User ID who invited this user
   
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
@@ -48,6 +49,7 @@ model User {
   
   @@index([email])
   @@index([establishmentId])
+  @@index([invitedBy])
 }
 
 model Establishment {
