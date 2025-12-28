@@ -1,4 +1,4 @@
-import { LoginForm } from '@/features/auth/components/LoginForm';
+import { AuthForm } from '@/features/auth/components/AuthForm';
 
 export const metadata = {
   title: 'Connexion - IZZZI',
@@ -6,11 +6,7 @@ export const metadata = {
 };
 
 export default function LoginPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-      <LoginForm />
-    </div>
-  );
+  return <AuthForm defaultTab="login" />;
 }
 
 
