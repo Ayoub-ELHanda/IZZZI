@@ -61,11 +61,23 @@ export class ApiClient {
 
       return response.json();
     } catch (error) {
-      if (error instanceof Error && 'status' in error) {
+      // If it's already an ApiError, throw it as is
+      if (error && typeof error === 'object' && 'status' in error && 'message' in error) {
         throw error;
       }
+      
+      // Handle network errors (fetch failed, CORS, etc.)
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw {
+          message: 'Erreur de connexion au serveur. Vérifiez que le backend est démarré.',
+          status: 0,
+        } as ApiError;
+      }
+      
+      // Handle other errors
+      const errorMessage = error instanceof Error ? error.message : 'Erreur réseau inconnue';
       throw {
-        message: 'Network error',
+        message: errorMessage || 'Erreur réseau',
         status: 0,
       } as ApiError;
     }
