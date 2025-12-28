@@ -11,10 +11,12 @@ import { MailerService } from '../mailer/mailer.service';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
-import { RegisterGuestDto } from './dto/register-guest.dto';
+import { RegisterInvitedDto } from './dto/register-guest.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
+import { Invitation, InvitationStore } from './entities/invitation.entity';
 
 @Injectable()
 export class AuthService {
@@ -82,10 +84,86 @@ export class AuthService {
     };
   }
 
-  async registerGuest(dto: RegisterGuestDto) {
-    // TODO: Validate invite token and get establishment ID
-    // For now, throw error as invitation system needs to be implemented
-    throw new BadRequestException('Le système d\'invitation n\'est pas encore implémenté');
+  async inviteUser(invitedBy: string, dto: InviteUserDto) {
+    // Verify the inviter exists and has permission
+    const inviter = await this.prisma.user.findUnique({
+      where: { id: invitedBy },
+      include: { establishment: true },
+    });
+
+    if (!inviter) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+
+    // Verify permissions: ADMIN can invite TEACHER, TEACHER can invite STUDENT
+    if (inviter.role === 'ADMIN' && dto.role !== 'TEACHER') {
+      throw new BadRequestException('Un administrateur peut uniquement inviter des enseignants');
+    }
+
+    if (inviter.role === 'TEACHER' && dto.role !== 'STUDENT') {
+      throw new BadRequestException('Un enseignant peut uniquement inviter des étudiants');
+    }
+
+    if (inviter.role === 'STUDENT') {
+      throw new BadRequestException('Un étudiant ne peut pas inviter d\'autres utilisateurs');
+    }
+
+    // Check if email already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Un utilisateur avec cet email existe déjà');
+    }
+
+    // Generate invitation token
+    const inviteToken = randomBytes(32).toString('hex');
+
+    // Store invitation (expires in 7 days)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    const invitation: Invitation = {
+      token: inviteToken,
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      role: dto.role,
+      invitedBy: inviter.id,
+      establishmentId: inviter.establishmentId!,
+      expiresAt,
+      createdAt: new Date(),
+    };
+
+    InvitationStore.create(invitation);
+
+    // Send invitation email
+    const inviterName = `${inviter.firstName} ${inviter.lastName}`;
+    await this.mailerService.sendInvitationEmail(
+      dto.email,
+      inviterName,
+      inviteToken,
+    );
+
+    return {
+      message: 'Invitation envoyée avec succès',
+      inviteToken, // For testing purposes
+    };
+  }
+
+  async registerInvited(dto: RegisterInvitedDto) {
+    // Validate invite token
+    const invitation = InvitationStore.findByToken(dto.inviteToken);
+
+    if (!invitation) {
+      throw new BadRequestException('Le lien d\'invitation est invalide ou expiré');
+    }
+
+    // Verify email matches
+    if (invitation.email !== dto.email) {
+      throw new BadRequestException('L\'email ne correspond pas à l\'invitation');
+    }
 
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -99,8 +177,35 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    // Create guest user (will be implemented with invitation system)
-    // const user = await this.prisma.user.create({ ... });
+    // Create user with invited role
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        password: hashedPassword,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        role: invitation.role,
+        establishmentId: invitation.establishmentId,
+        invitedBy: invitation.invitedBy,
+        authProvider: 'LOCAL',
+      },
+      include: { establishment: true },
+    });
+
+    // Delete invitation after successful registration
+    InvitationStore.delete(dto.inviteToken);
+
+    // Generate JWT token
+    const token = await this.generateToken(user.id, user.email, user.role);
+
+    // Send welcome email
+    this.mailerService.sendWelcomeEmail(user.email, user.firstName).catch(console.error);
+
+    return {
+      user: this.sanitizeUser(user),
+      establishment: user.establishment,
+      token,
+    };
   }
 
   async login(dto: LoginDto) {
