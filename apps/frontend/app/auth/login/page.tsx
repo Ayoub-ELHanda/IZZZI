@@ -1,4 +1,4 @@
-"use client"
+import { AuthForm } from '@/features/auth/components/AuthForm';
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -26,41 +26,9 @@ const loginFields: FormField[] = [
 ]
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login, error, clearError } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
-
-  async function handleSubmit(data: any) {
-    clearError()
-    setIsLoading(true)
-
-    try {
-      await login(data)
-      toast.success("Connexion réussie!", {
-        position: "bottom-right",
-      })
-      router.push(routes.dashboard)
-    } catch (err) {
-      toast.error(error || "Erreur de connexion", {
-        position: "bottom-right",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <AuthForm
-      fields={loginFields}
-      submitButtonText="Se connecter"
-      bottomText="Pas encore de compte ?"
-      bottomLinkText="Inscription"
-      bottomLinkHref={routes.auth.register}
-      defaultTab="login"
-      submitButtonWidth="203.29px"
-      showForgotPassword={true}
-      onSubmit={handleSubmit}
-      isLoading={isLoading}
-    />
-  )
+  return <AuthForm defaultTab="login" />;
 }
+
+
+
+

@@ -25,10 +25,12 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      await login(formData);
+      const { authService } = await import('@/services/auth/auth.service');
+      await authService.login(formData);
       router.push(routes.dashboard);
-    } catch (error) {
-      // Error is handled by the store
+    } catch (error: any) {
+      console.error('Login error:', error);
+      alert(error.message || 'Email ou mot de passe incorrect');
     } finally {
       setIsLoading(false);
     }
@@ -105,4 +107,7 @@ export function LoginForm() {
     </div>
   );
 }
+
+
+
 

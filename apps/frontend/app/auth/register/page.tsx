@@ -1,4 +1,4 @@
-"use client"
+import { AuthForm } from '@/features/auth/components/AuthForm';
 
 import { toast } from "sonner"
 import * as z from "zod"
@@ -44,26 +44,9 @@ const adminSignupFields: FormField[] = [
 ]
 
 export default function RegisterPage() {
-  function handleSubmit(data: any) {
-    toast.success("Inscription admin réussie!", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-    })
-  }
-
-  return (
-    <AuthForm
-      fields={adminSignupFields}
-      submitButtonText="Créer un compte"
-      bottomText="Vous avez déjà un compte ?"
-      bottomLinkText="Se connecter"
-      bottomLinkHref={routes.auth.login}
-      defaultTab="signup"
-      onSubmit={handleSubmit}
-    />
-  )
+  return <AuthForm defaultTab="register" />;
 }
+
+
+
+
