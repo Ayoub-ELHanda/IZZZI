@@ -95,17 +95,13 @@ export class AuthService {
       throw new NotFoundException('Utilisateur introuvable');
     }
 
-    // Verify permissions: ADMIN can invite TEACHER, TEACHER can invite STUDENT
-    if (inviter.role === 'ADMIN' && dto.role !== 'TEACHER') {
-      throw new BadRequestException('Un administrateur peut uniquement inviter des enseignants');
+    // Verify permissions: Only ADMIN can invite RESPONSABLE_PEDAGOGIQUE
+    if (inviter.role !== 'ADMIN') {
+      throw new BadRequestException('Seuls les administrateurs peuvent inviter des responsables pédagogiques');
     }
 
-    if (inviter.role === 'TEACHER' && dto.role !== 'STUDENT') {
-      throw new BadRequestException('Un enseignant peut uniquement inviter des étudiants');
-    }
-
-    if (inviter.role === 'STUDENT') {
-      throw new BadRequestException('Un étudiant ne peut pas inviter d\'autres utilisateurs');
+    if (dto.role !== 'RESPONSABLE_PEDAGOGIQUE') {
+      throw new BadRequestException('Un administrateur peut uniquement inviter des responsables pédagogiques');
     }
 
     // Check if email already exists

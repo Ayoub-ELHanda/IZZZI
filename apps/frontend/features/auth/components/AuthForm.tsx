@@ -58,8 +58,8 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
       const { authService } = await import('@/services/auth/auth.service');
       
       if (inviteToken) {
-        // Guest registration
-        await authService.registerGuest({
+        // Invited user registration (Responsable Pédagogique)
+        await authService.registerInvited({
           email: registerData.email,
           lastName: registerData.lastName,
           firstName: registerData.firstName,
@@ -109,7 +109,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     }));
   };
 
-  const isGuestRegistration = !!inviteToken;
+  const isInvitedRegistration = !!inviteToken;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
@@ -232,7 +232,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           {activeTab === 'register' && (
             <form onSubmit={handleRegister} className="space-y-4">
               {/* Establishment Name - Only for Admin */}
-              {!isGuestRegistration && (
+              {!isInvitedRegistration && (
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
                     Nom de l'établissement

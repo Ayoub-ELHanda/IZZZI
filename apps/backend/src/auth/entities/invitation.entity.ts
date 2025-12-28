@@ -6,7 +6,7 @@ export interface Invitation {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'TEACHER' | 'STUDENT';
+  role: 'RESPONSABLE_PEDAGOGIQUE';
   invitedBy: string; // User ID who sent the invitation
   establishmentId: string;
   expiresAt: Date;

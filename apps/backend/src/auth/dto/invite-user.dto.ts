@@ -11,8 +11,8 @@ export class InviteUserDto {
   @IsNotEmpty()
   lastName: string;
 
-  @IsEnum(['TEACHER', 'STUDENT'])
+  @IsEnum(['RESPONSABLE_PEDAGOGIQUE'])
   @IsNotEmpty()
-  role: 'TEACHER' | 'STUDENT';
+  role: 'RESPONSABLE_PEDAGOGIQUE';
 }
 
