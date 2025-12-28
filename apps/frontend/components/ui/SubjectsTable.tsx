@@ -143,7 +143,7 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
         </div>
       </div>
 
-      {/* Subject Rows */}
+   
       <div>
         {subjects.map((subject) => (
           <SubjectRow
@@ -157,7 +157,7 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
         ))}
       </div>
 
-      {/* Form Type Selection Modal */}
+   
       <FormTypeSelectionModal
         isOpen={isFormModalOpen}
         onClose={() => {
@@ -375,7 +375,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
           {subject.startDate} - {subject.endDate}
         </div>
 
-        {/* Modifier le formulaire button with explanatory text */}
         <div style={{ marginTop: '16px' }}>
           <Button 
             variant="modify-questionnaire"
@@ -501,7 +500,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
           </a>
         </BorderedContainer>
 
-        {/* Second Container */}
+   
         <BorderedContainer width="1252.29px">
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '30px' }}>
             <div

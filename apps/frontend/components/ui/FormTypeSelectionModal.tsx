@@ -135,7 +135,6 @@ export function FormTypeSelectionModal({
           <X size={20} color="#2F2E2C" strokeWidth={2} />
         </button>
 
-        {/* Header */}
         <div style={{ marginBottom: '32px' }}>
           <h2
             style={{
@@ -152,7 +151,7 @@ export function FormTypeSelectionModal({
             Deux moments clés pour recueillir les retours des étudiants
           </h2>
 
-          {/* Explanations */}
+     
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Clock size={16} color="#2F2E2C" strokeWidth={1.5} />
@@ -185,9 +184,9 @@ export function FormTypeSelectionModal({
           </div>
         </div>
 
-        {/* Main Content - Two columns */}
+       
         <div style={{ display: 'flex', gap: '40px', height: '600px', overflow: 'hidden' }}>
-          {/* Left Column - Form options */}
+       
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: '0 0 auto' }}>
             {formOptions.map((option) => (
               <button
@@ -210,7 +209,7 @@ export function FormTypeSelectionModal({
                   transition: 'all 0.2s',
                 }}
               >
-                {/* Icon container */}
+              
                 <div
                   style={{
                     width: '56px',
@@ -226,7 +225,7 @@ export function FormTypeSelectionModal({
                   <Eye size={16} color="#2F2E2C" strokeWidth={1.5} />
                 </div>
 
-                {/* Text content */}
+               
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
                   <div
                     style={{
@@ -256,7 +255,7 @@ export function FormTypeSelectionModal({
                   </div>
                 </div>
 
-                {/* Plus icon for disabled option */}
+              
                 {option.disabled && (
                   <div
                     style={{
@@ -273,7 +272,7 @@ export function FormTypeSelectionModal({
             ))}
           </div>
 
-          {/* Right Column - Preview */}
+      
           <div
             style={{
               flex: 1,
@@ -321,7 +320,7 @@ export function FormTypeSelectionModal({
           </div>
         </div>
 
-        {/* Validate Button */}
+     
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
           <button
             onClick={handleValidate}

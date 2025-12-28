@@ -10,7 +10,7 @@ import { useState } from 'react';
 export function CardSuperIzzy() {
   const [classCount, setClassCount] = useState(7);
   
-  // Prix par classe par mois
+
   const pricePerClass = 19;
   const totalPrice = classCount * pricePerClass;
   return (
@@ -30,12 +30,12 @@ export function CardSuperIzzy() {
         color: 'white'
       }}
     >
-      {/* Badge Super Izzzi en haut */}
+
       <div style={{ marginBottom: '32px' }}>
         <Badge variant="yellow">Super Izzzi</Badge>
       </div>
       
-      {/* Section estimation du prix */}
+   
       <div style={{ marginBottom: '32px' }}>
         <h3 style={{ 
           fontFamily: 'Poppins',
@@ -48,9 +48,9 @@ export function CardSuperIzzy() {
           Estimez le prix de votre abonnement
         </h3>
         
-        {/* Slider et prix */}
+ 
         <div style={{ marginBottom: '32px' }}>
-          {/* Slider de classe */}
+     
           <div style={{ marginBottom: '16px' }}>
             <div style={{ position: 'relative' }}>
               <Slider
@@ -78,7 +78,7 @@ export function CardSuperIzzy() {
             </div>
           </div>
           
-          {/* Prix calculé */}
+         
           <div style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <span style={{
@@ -104,7 +104,6 @@ export function CardSuperIzzy() {
           </div>
         </div>
         
-        {/* Bouton principal */}
         <div style={{ marginBottom: '16px' }}>
           <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}>
             <Button 
@@ -137,7 +136,7 @@ export function CardSuperIzzy() {
         </div>
       </div>
       
-      {/* Section "Tout ce qu'il y a dans le plan gratuit, et en plus:" */}
+ 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <h3 style={{
           fontFamily: 'Poppins',
@@ -209,7 +208,7 @@ export function CardSuperIzzy() {
         </div>
       </div>
       
-      {/* Bouton Voir les détails du plan */}
+  
       <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
         <Button 
           variant="outline"

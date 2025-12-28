@@ -43,7 +43,7 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Prix */}
+    
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
           <span style={{
@@ -102,7 +102,6 @@ export function CardIzzy() {
         </Link>
       </div>
 
-      {/* Liste des fonctionnalités */}
       <div style={{ marginBottom: '24px', flex: '1' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
@@ -145,7 +144,7 @@ export function CardIzzy() {
         </div>
       </div>
 
-      {/* Au-delà des 4 mois */}
+  
       <div style={{ marginBottom: '24px' }}>
         <h3 style={{
           fontFamily: 'Poppins',
