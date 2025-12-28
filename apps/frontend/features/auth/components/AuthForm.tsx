@@ -57,9 +57,10 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     try {
       const { authService } = await import('@/services/auth/auth.service');
       
+      let response;
       if (inviteToken) {
         // Invited user registration (Responsable Pédagogique)
-        await authService.registerInvited({
+        response = await authService.registerInvited({
           email: registerData.email,
           lastName: registerData.lastName,
           firstName: registerData.firstName,
@@ -68,7 +69,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
         });
       } else {
         // Admin registration
-        await authService.registerAdmin({
+        response = await authService.registerAdmin({
           establishmentName: registerData.establishmentName,
           email: registerData.email,
           lastName: registerData.lastName,
@@ -76,10 +77,21 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           password: registerData.password,
         });
       }
+      
+      // Show success message with role information
+      const roleName = response.user.role === 'ADMIN' 
+        ? 'Administrateur' 
+        : response.user.role === 'RESPONSABLE_PEDAGOGIQUE'
+        ? 'Responsable Pédagogique'
+        : 'Visiteur';
+      
+      alert(`Inscription réussie !\n\nRôle: ${roleName}\nEmail: ${response.user.email}\n\nVous allez être redirigé vers votre tableau de bord.`);
+      
       router.push(routes.dashboard);
     } catch (error: any) {
       console.error('Registration error:', error);
-      alert(error.message || 'Une erreur est survenue lors de l\'inscription');
+      const errorMessage = error?.message || error?.toString() || 'Une erreur est survenue lors de l\'inscription';
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
