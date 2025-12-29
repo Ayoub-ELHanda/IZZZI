@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClassCard } from '@/components/ui/ClassCard';
 import { TrialBanner } from '@/components/ui/TrialBanner';
 import { SearchInput } from '@/components/ui/SearchInput';
@@ -9,53 +9,96 @@ import { ClassModal, ClassFormData } from '@/components/ui/ClassModal';
 import { ArchiveModal } from '@/components/ui/ArchiveModal';
 import { ClassLimitAdminModal } from '@/components/ui/ClassLimitAdminModal';
 import { ClassLimitNonAdminModal } from '@/components/ui/ClassLimitNonAdminModal';
+import { classesService, Class } from '@/services/api/classes.service';
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/types/entities';
+import { toast } from 'sonner';
 import Link from 'next/link';
 
 export default function MyClassesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingClass, setEditingClass] = useState<any>(null);
+  const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [archivingClassId, setArchivingClassId] = useState<string | null>(null);
   const [isAdminLimitModalOpen, setIsAdminLimitModalOpen] = useState(false);
   const [isNonAdminLimitModalOpen, setIsNonAdminLimitModalOpen] = useState(false);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Variable temporaire pour simuler le rôle (à remplacer par le backend plus tard)
-  // true = admin, false = non-admin
-  const isAdmin = false;
-  
-  const mockClasses = [
-    {
-      id: '1',
-      name: 'M2DG',
-      description: 'Description de la classe',
-      studentCount: 24,
-    },
-    {
-      id: '2',
-      name: 'B3MD',
-      description: 'Description de la classe',
-      studentCount: 24,
-    },
-    {
-      id: '3',
-      name: 'B2FG',
-      description: 'En alternance',
-      studentCount: 24,
-    },
-     {
-      id: '4',
-      name: 'B2FG',
-      description: 'En alternance',
-      studentCount: 24,
-    },
-     {
-      id: '5',
-      name: 'B2FG',
-      description: 'En alternance',
-      studentCount: 24,
-    },
-  ];
+  const { user } = useAuth();
+  const isAdmin = user?.role === UserRole.ADMIN;
+
+  useEffect(() => {
+    loadClasses();
+  }, []);
+
+  const loadClasses = async () => {
+    try {
+      setIsLoading(true);
+      const data = await classesService.getAll(false);
+      setClasses(data);
+    } catch (error) {
+      console.error('Error loading classes:', error);
+      toast.error('Erreur lors du chargement des classes');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateClass = async (data: ClassFormData) => {
+    try {
+      await classesService.create({
+        name: data.className,
+        studentCount: parseInt(data.studentCount),
+        studentEmails: data.studentEmails.split(';').map(e => e.trim()).filter(e => e),
+        description: data.description || undefined,
+      });
+      toast.success('Classe créée avec succès');
+      setIsModalOpen(false);
+      loadClasses();
+    } catch (error: any) {
+      console.error('Error creating class:', error);
+      toast.error(error.message || 'Erreur lors de la création de la classe');
+    }
+  };
+
+  const handleUpdateClass = async (data: ClassFormData) => {
+    if (!editingClass) return;
+    try {
+      await classesService.update(editingClass.id, {
+        name: data.className,
+        studentCount: parseInt(data.studentCount),
+        studentEmails: data.studentEmails.split(';').map(e => e.trim()).filter(e => e),
+        description: data.description || undefined,
+      });
+      toast.success('Classe modifiée avec succès');
+      setIsModalOpen(false);
+      setEditingClass(null);
+      loadClasses();
+    } catch (error: any) {
+      console.error('Error updating class:', error);
+      toast.error(error.message || 'Erreur lors de la modification');
+    }
+  };
+
+  const handleArchiveClass = async () => {
+    if (!archivingClassId) return;
+    try {
+      await classesService.archive(archivingClassId);
+      toast.success('Classe archivée avec succès');
+      setIsArchiveModalOpen(false);
+      setArchivingClassId(null);
+      loadClasses();
+    } catch (error: any) {
+      console.error('Error archiving class:', error);
+      toast.error(error.message || 'Erreur lors de l\'archivage');
+    }
+  };
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -84,7 +127,7 @@ export default function MyClassesPage() {
                   lineHeight: '100%',
                 }}
               >
-                {mockClasses.length} classes disponibles
+                {classes.length} classes disponibles
               </h1>
               <p
                 style={{
@@ -97,7 +140,6 @@ export default function MyClassesPage() {
               </p>
             </div>
 
-       
             <SearchInput
               placeholder="Rechercher une classe"
               value={searchQuery}
@@ -105,20 +147,16 @@ export default function MyClassesPage() {
             />
           </div>
 
-       
           <Button 
             variant="add-class"
             onClick={() => {
-              // Vérifier si la limite de 5 classes est atteinte
-              if (mockClasses.length >= 5) {
-                // Afficher le modal approprié selon le rôle
+              if (classes.length >= 5) {
                 if (isAdmin) {
                   setIsAdminLimitModalOpen(true);
                 } else {
                   setIsNonAdminLimitModalOpen(true);
                 }
               } else {
-                // Ouvrir le modal de création de classe
                 setIsModalOpen(true);
               }
             }}
@@ -128,19 +166,18 @@ export default function MyClassesPage() {
           </Button>
         </div>
 
-       
         <div style={{ 
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 531px)',
           gap: '17px', 
           marginBottom: '32px',
         }}>
-          {mockClasses.map((classItem) => (
+          {classes.map((classItem) => (
             <ClassCard
               key={classItem.id}
               id={classItem.id}
               name={classItem.name}
-              description={classItem.description}
+              description={classItem.description || ''}
               studentCount={classItem.studentCount}
               onModify={() => {
                 setEditingClass(classItem);
@@ -178,17 +215,13 @@ export default function MyClassesPage() {
             setIsModalOpen(false);
             setEditingClass(null);
           }}
-          onSubmit={(data: ClassFormData) => {
-            console.log(editingClass ? 'Class updated:' : 'Class created:', data);
-            setIsModalOpen(false);
-            setEditingClass(null);
-          }}
+          onSubmit={editingClass ? handleUpdateClass : handleCreateClass}
           mode={editingClass ? 'edit' : 'create'}
           initialData={editingClass ? {
             className: editingClass.name,
             studentCount: editingClass.studentCount.toString(),
-            studentEmails: '',
-            description: editingClass.description,
+            studentEmails: editingClass.studentEmails.join('; '),
+            description: editingClass.description || '',
           } : undefined}
         />
 
@@ -198,12 +231,7 @@ export default function MyClassesPage() {
             setIsArchiveModalOpen(false);
             setArchivingClassId(null);
           }}
-          onConfirm={() => {
-            console.log('Archiving class:', archivingClassId);
-            setIsArchiveModalOpen(false);
-            setArchivingClassId(null);
-            // TODO: Implement actual archiving logic
-          }}
+          onConfirm={handleArchiveClass}
         />
 
         <ClassLimitAdminModal

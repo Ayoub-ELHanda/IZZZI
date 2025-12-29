@@ -70,6 +70,14 @@ model Establishment {
 model Class {
   id              String        @id @default(uuid())
   name            String
+  description     String?
+  studentCount    Int
+  studentEmails   String[]
+  
+  isArchived      Boolean       @default(false)
+  archivedAt      DateTime?
+  archivedBy      String?
+  
   createdBy       String
   user            User          @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   establishmentId String
@@ -82,11 +90,15 @@ model Class {
   
   @@index([createdBy])
   @@index([establishmentId])
+  @@index([isArchived])
 }
 
 model Subject {
   id              String    @id @default(uuid())
   name            String
+  teacherName     String
+  startDate       DateTime
+  endDate         DateTime
   classId         String
   class           Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
   createdBy       String

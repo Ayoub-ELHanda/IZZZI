@@ -67,7 +67,11 @@ export const authService = {
     return response;
   },
 
-  logout() {
+  async getCurrentUser(): Promise<any> {
+    return this.getProfile();
+  },
+
+  async logout(): Promise<void> {
     localStorage.removeItem('auth_token');
   },
 

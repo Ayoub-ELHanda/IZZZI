@@ -1,10 +1,8 @@
-// Shared TypeScript types and DTOs for IZZZI
 
-// User roles
 export enum UserRole {
-  VISITOR = 'visiteur',
-  PEDAGOGICAL_MANAGER = 'responsable_pedagogique',
-  ADMINISTRATOR = 'administrateur',
+  VISITEUR = 'VISITEUR',
+  RESPONSABLE_PEDAGOGIQUE = 'RESPONSABLE_PEDAGOGIQUE',
+  ADMIN = 'ADMIN',
 }
 
 // Common types
@@ -97,7 +95,3 @@ export interface ApiResponse<T = any> {
   message?: string;
   error?: string;
 }
-
-
-
-

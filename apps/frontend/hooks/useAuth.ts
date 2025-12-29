@@ -34,7 +34,7 @@ export const useAuth = create<AuthState>()(
         try {
           const response = await authService.login(credentials);
           set({
-            user: response.data.user,
+            user: response.user,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -50,9 +50,9 @@ export const useAuth = create<AuthState>()(
       register: async (data) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await authService.register(data);
+          const response = await authService.registerAdmin(data as any);
           set({
-            user: response.data.user,
+            user: response.user,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -117,7 +117,3 @@ export const useAuth = create<AuthState>()(
     }
   )
 );
-
-
-
-

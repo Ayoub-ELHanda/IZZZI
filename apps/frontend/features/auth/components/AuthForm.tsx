@@ -57,9 +57,10 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     try {
       const { authService } = await import('@/services/auth/auth.service');
       
+      let response;
       if (inviteToken) {
-        // Invited user registration (Responsable Pédagogique)
-        await authService.registerInvited({
+        // Invited user registration (Responsable PÃ©dagogique)
+        response = await authService.registerInvited({
           email: registerData.email,
           lastName: registerData.lastName,
           firstName: registerData.firstName,
@@ -68,7 +69,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
         });
       } else {
         // Admin registration
-        await authService.registerAdmin({
+        response = await authService.registerAdmin({
           establishmentName: registerData.establishmentName,
           email: registerData.email,
           lastName: registerData.lastName,
@@ -76,10 +77,21 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           password: registerData.password,
         });
       }
+      
+      // Show success message with role information
+      const roleName = response.user.role === 'ADMIN' 
+        ? 'Administrateur' 
+        : response.user.role === 'RESPONSABLE_PEDAGOGIQUE'
+        ? 'Responsable PÃ©dagogique'
+        : 'Visiteur';
+      
+      alert(`Inscription rÃ©ussie !\n\nRÃ´le: ${roleName}\nEmail: ${response.user.email}\n\nVous allez Ãªtre redirigÃ© vers votre tableau de bord.`);
+      
       router.push(routes.dashboard);
     } catch (error: any) {
       console.error('Registration error:', error);
-      alert(error.message || 'Une erreur est survenue lors de l\'inscription');
+      const errorMessage = error?.message || error?.toString() || 'Une erreur est survenue lors de l\'inscription';
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -87,11 +99,11 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
 
   // Handle Google OAuth
   const handleGoogleAuth = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
     if (inviteToken) {
-      window.location.href = `${apiUrl}/api/auth/google?inviteToken=${inviteToken}`;
+      window.location.href = `${apiUrl}/auth/google?inviteToken=${inviteToken}`;
     } else {
-      window.location.href = `${apiUrl}/api/auth/google`;
+      window.location.href = `${apiUrl}/auth/google`;
     }
   };
 
@@ -206,7 +218,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   href={routes.auth.forgotPassword}
                   className="text-sm text-gray-600 hover:text-gray-900"
                 >
-                  Mot de passe oublié ?
+                  Mot de passe oubliÃ© ?
                 </Link>
               </div>
 
@@ -235,12 +247,12 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
               {!isInvitedRegistration && (
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Nom de l'établissement
+                    Nom de l'Ã©tablissement
                   </label>
                   <input
                     type="text"
                     name="establishmentName"
-                    placeholder="Entrez le nom de l'établissement"
+                    placeholder="Entrez le nom de l'Ã©tablissement"
                     value={registerData.establishmentName}
                     onChange={handleRegisterChange}
                     required
@@ -287,12 +299,12 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
               {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Prénom
+                  PrÃ©nom
                 </label>
                 <input
                   type="text"
                   name="firstName"
-                  placeholder="Entrez votre prénom"
+                  placeholder="Entrez votre prÃ©nom"
                   value={registerData.firstName}
                   onChange={handleRegisterChange}
                   required
@@ -341,7 +353,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    Créer un compte
+                    CrÃ©er un compte
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
@@ -402,7 +414,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
 
           {activeTab === 'register' && (
             <p className="mt-6 text-center text-sm text-gray-600">
-              Vous avez déjà un compte ?{' '}
+              Vous avez dÃ©jÃ  un compte ?{' '}
               <button
                 onClick={() => setActiveTab('login')}
                 className="text-gray-900 font-medium hover:underline"
@@ -437,4 +449,3 @@ function AuthFormWithParams({ defaultTab }: { defaultTab?: 'login' | 'register' 
 
   return <AuthFormContent defaultTab={defaultTab} inviteToken={inviteToken} />;
 }
-

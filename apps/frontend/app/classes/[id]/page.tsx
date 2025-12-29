@@ -6,49 +6,63 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { classesService } from '@/services/api/classes.service';
+import { subjectsService, Subject } from '@/services/api/subjects.service';
+import { toast } from 'sonner';
 
 export default function ClassDetailPage() {
   const params = useParams();
-  const classId = params.id;
+  const classId = params.id as string;
   const [searchQuery, setSearchQuery] = useState('');
+  const [classData, setClassData] = useState<any>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    loadData();
+  }, [classId]);
 
-  const mockSubjects = [
-    {
-      id: '1',
-      subjectName: 'UI design',
-      teacherName: 'Kathleen Alcini',
-      startDate: '21/01/2024',
-      endDate: '21/01/2024',
-      status: 'pending' as const,
-      feedbackCount: 12,
-      totalStudents: 24,
-      hasQuestionnaire: false, 
-    },
-    {
-      id: '2',
-      subjectName: 'Développement Web',
-      teacherName: 'Jean Dupont',
-      startDate: '22/01/2024',
-      endDate: '22/01/2024',
-      status: 'finished' as const,
-      feedbackCount: 18,
-      totalStudents: 24,
-      hasQuestionnaire: true,
-    },
-    {
-      id: '3',
-      subjectName: 'Marketing Digital',
-      teacherName: 'Marie Martin',
-      startDate: '23/01/2024',
-      endDate: '23/01/2024',
-      status: 'finished' as const,
-      feedbackCount: 24,
-      totalStudents: 24,
-      hasQuestionnaire: true,
-    },
-  ];
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      const [classInfo, subjectsData] = await Promise.all([
+        classesService.getById(classId),
+        subjectsService.getByClassId(classId),
+      ]);
+      setClassData(classInfo);
+      setSubjects(subjectsData);
+    } catch (error) {
+      console.error('Error loading class data:', error);
+      toast.error('Erreur lors du chargement des données');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Transform subjects to match SubjectsTable format
+  const transformedSubjects = subjects.map((subject) => {
+    const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
+    const totalResponses = hasQuestionnaires
+      ? subject.questionnaires.reduce((acc, q) => acc + (q._count?.responses || 0), 0)
+      : 0;
+
+    return {
+      id: subject.id,
+      subjectName: subject.name,
+      teacherName: subject.teacherName,
+      startDate: new Date(subject.startDate).toLocaleDateString('fr-FR'),
+      endDate: new Date(subject.endDate).toLocaleDateString('fr-FR'),
+      status: new Date(subject.endDate) < new Date() ? ('finished' as const) : ('pending' as const),
+      feedbackCount: totalResponses,
+      totalStudents: classData?.studentCount || 0,
+      hasQuestionnaire: hasQuestionnaires,
+    };
+  });
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -122,7 +136,7 @@ export default function ClassDetailPage() {
                   lineHeight: '100%',
                 }}
               >
-                B3UI
+                {classData?.name || 'Classe'}
               </h1>
               <p
                 style={{
@@ -131,7 +145,7 @@ export default function ClassDetailPage() {
                   color: '#6B6B6B',
                 }}
               >
-                24 étudiants
+                {classData?.studentCount || 0} étudiants
               </p>
             </div>
 
@@ -151,7 +165,7 @@ export default function ClassDetailPage() {
         </div>
 
 
-        <SubjectsTable subjects={mockSubjects} />
+        <SubjectsTable subjects={transformedSubjects} />
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ClassesModule } from './classes/classes.module';
+import { SubjectsModule } from './subjects/subjects.module';
 
 @Module({
   imports: [
@@ -14,13 +16,15 @@ import { MailerModule } from './mailer/mailer.module';
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 minute
-        limit: 10, // 10 requests per minute
+        ttl: 60000,
+        limit: 10,
       },
     ]),
     PrismaModule,
     AuthModule,
     MailerModule,
+    ClassesModule,
+    SubjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
