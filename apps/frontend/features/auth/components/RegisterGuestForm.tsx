@@ -40,8 +40,8 @@ export function RegisterGuestForm() {
 
   const handleGoogleSignup = async () => {
     // Redirect to backend Google OAuth with invitation token
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-    window.location.href = `${apiUrl}/api/auth/google?inviteToken=${inviteToken}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
+    window.location.href = `${apiUrl}/auth/google?inviteToken=${inviteToken}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,4 +238,3 @@ export function RegisterGuestForm() {
     </div>
   );
 }
-

@@ -8,7 +8,17 @@ import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/assets/Logo';
 
 export function Header() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  
+  const getInitials = () => {
+    if (!user) return '?';
+    return `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+  };
+
+  const getFullName = () => {
+    if (!user) return '';
+    return `${user.firstName} ${user.lastName}`;
+  };
 
   return (
     <header className="bg-white">
@@ -94,22 +104,34 @@ export function Header() {
                   </svg>
                 </button>
                 
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#FFE552',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'Poppins, sans-serif',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                    color: '#2F2E2C',
-                  }}
-                >
-                  YC
+                <div className="flex items-center gap-2">
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: '#FFE552',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'Poppins, sans-serif',
+                      fontWeight: 600,
+                      fontSize: '14px',
+                      color: '#2F2E2C',
+                    }}
+                  >
+                    {getInitials()}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      color: '#2F2E2C',
+                    }}
+                  >
+                    {getFullName()}
+                  </div>
                 </div>
               </div>
             </>

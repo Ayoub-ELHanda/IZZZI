@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -40,8 +41,8 @@ export function RegisterAdminForm() {
 
   const handleGoogleSignup = async () => {
     // Redirect to backend Google OAuth
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-    window.location.href = `${apiUrl}/api/auth/google`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,4 +256,3 @@ export function RegisterAdminForm() {
     </div>
   );
 }
-

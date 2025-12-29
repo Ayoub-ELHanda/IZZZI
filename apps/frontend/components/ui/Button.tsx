@@ -22,7 +22,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     | 'copy-link'
     | 'archive-modal'
     | 'modify-questionnaire'
-    | 'class-limit-upgrade';
+    | 'class-limit-upgrade'
+    | 'download-csv'
+    | 'import-csv'
+    | 'create';
   size?: 
     | 'xs' 
     | 'sm' 
@@ -61,6 +64,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'archive-modal': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
       'modify-questionnaire': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
       'class-limit-upgrade': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'download-csv': 'bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200',
+      'import-csv': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
+      'create': 'bg-yellow-400 text-gray-900 hover:bg-yellow-500',
     };
     
     const sizes = {
@@ -260,6 +266,58 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             alignItems: 'center',
             justifyContent: 'center',
             gap: '1.99px',
+            whiteSpace: 'nowrap',
+          };
+        case 'download-csv':
+          return {
+            backgroundColor: '#FFFFFF',
+            color: '#2F2E2C',
+            height: '56px',
+            border: '1px solid #E5E5E5',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            padding: '20px 26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+          };
+        case 'import-csv':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            height: '56px',
+            border: 'none',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            padding: '20px 26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+          };
+        case 'create':
+          return {
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            height: '56px',
+            border: 'none',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            padding: '20px 26px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
             whiteSpace: 'nowrap',
           };
         default:

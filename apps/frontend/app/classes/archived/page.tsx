@@ -1,36 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ClassCard } from '@/components/ui/ClassCard';
 import { SearchInput } from '@/components/ui/SearchInput';
+import { classesService, Class } from '@/services/api/classes.service';
+import { toast } from 'sonner';
 import Link from 'next/link';
 
 export default function ArchivedClassesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const mockArchivedClasses = [
-    {
-      id: '1',
-      name: 'M2DG',
-      description: 'Description de la classe',
-      studentCount: 24,
-      archivedDate: '23 mars 2025',
-    },
-    {
-      id: '2',
-      name: 'B2WD',
-      description: 'Description de la classe',
-      studentCount: 24,
-      archivedDate: '23 mars 2025',
-    },
-    {
-      id: '3',
-      name: 'B3UI',
-      description: 'Description de la classe',
-      studentCount: 24,
-      archivedDate: '23 mars 2025',
-    },
-  ];
+  const [archivedClasses, setArchivedClasses] = useState<Class[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadArchivedClasses();
+  }, []);
+
+  const loadArchivedClasses = async () => {
+    try {
+      setIsLoading(true);
+      const data = await classesService.getAll(true);
+      setArchivedClasses(data);
+    } catch (error) {
+      console.error('Error loading archived classes:', error);
+      toast.error('Erreur lors du chargement des classes archivées');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -52,7 +53,7 @@ export default function ArchivedClassesPage() {
                   lineHeight: '100%',
                 }}
               >
-                {mockArchivedClasses.length} classes archivées
+                {archivedClasses.length} classes archivées
               </h1>
               <p
                 style={{
@@ -81,14 +82,21 @@ export default function ArchivedClassesPage() {
           gap: '17px', 
           marginBottom: '32px',
         }}>
-          {mockArchivedClasses.map((classItem) => (
+          {archivedClasses.map((classItem) => (
             <ClassCard
               key={classItem.id}
               id={classItem.id}
               name={classItem.name}
-              description={classItem.description}
+              description={classItem.description || ''}
               studentCount={classItem.studentCount}
-              archivedDate={classItem.archivedDate}
+              archivedDate={classItem.archivedAt 
+                ? new Date(classItem.archivedAt).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })
+                : ''
+              }
               isArchived={true}
             />
           ))}

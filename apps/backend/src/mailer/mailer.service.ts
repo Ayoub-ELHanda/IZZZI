@@ -147,6 +147,23 @@ export class MailerService {
     `;
   }
 
+  async sendClassArchivedEmail(email: string, data: { userName: string; className: string; archivedAt: string }) {
+    const mailOptions = {
+      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      to: email,
+      subject: `Classe archivée : ${data.className}`,
+      html: this.getClassArchivedTemplate(data),
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Class archived email sent to ${email}`);
+    } catch (error) {
+      console.error('Error sending class archived email:', error);
+      throw error;
+    }
+  }
+
   private getInvitationTemplate(inviterName: string, inviteUrl: string): string {
     return `
       <!DOCTYPE html>
@@ -181,5 +198,44 @@ export class MailerService {
       </html>
     `;
   }
-}
 
+  private getClassArchivedTemplate(data: { userName: string; className: string; archivedAt: string }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .logo { text-align: center; margin-bottom: 30px; }
+          .info-box { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .button { display: inline-block; padding: 12px 30px; background: #FFD93D; color: #2F2E2C; text-decoration: none; border-radius: 8px; font-weight: 600; }
+          .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">
+            <h1 style="color: #2F2E2C;">izzzi</h1>
+          </div>
+          <h2>Classe archivée</h2>
+          <p>Bonjour ${data.userName},</p>
+          <p>Votre classe a été archivée avec succès.</p>
+          <div class="info-box">
+            <strong>Nom de la classe :</strong> ${data.className}<br>
+            <strong>Date d'archivage :</strong> ${data.archivedAt}
+          </div>
+          <p>Cette classe reste accessible en consultation dans la section "Classes archivées".</p>
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/classes/archived" class="button">Voir mes classes archivées</a>
+          </p>
+          <div class="footer">
+            <p>Cordialement,<br>L'équipe IZZZI</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+}
