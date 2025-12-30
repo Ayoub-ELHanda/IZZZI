@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, Edit, Archive } from 'lucide-react';
+import { Eye, Edit } from 'lucide-react';
 
 interface ClassCardProps {
   id: string;

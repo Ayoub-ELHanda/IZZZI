@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { BorderedContainer } from './BorderedContainer';
-import { Button } from './Button';
+import { BorderedContainer } from '@/components/ui/BorderedContainer';
+import { Button } from '@/components/ui/Button';
 import { ArrowUpRight, Clock, Check, Download, Pencil, Trash2 } from 'lucide-react';
 import { FormTypeSelectionModal } from './FormTypeSelectionModal';
 

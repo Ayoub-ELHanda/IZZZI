@@ -1,6 +1,6 @@
 'use client';
 
-import { SubjectsTable } from '@/components/ui/SubjectsTable';
+import { SubjectsTable, SubjectModal, SubjectFormData } from '@/features/subjects';
 import { TrialBanner } from '@/components/ui/TrialBanner';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
@@ -18,6 +18,8 @@ export default function ClassDetailPage() {
   const [classData, setClassData] = useState<any>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -38,6 +40,37 @@ export default function ClassDetailPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const parseDate = (dateStr: string): string => {
+    const [day, month, year] = dateStr.split('/');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString();
+  };
+
+  const handleCreateSubject = async (formData: SubjectFormData) => {
+    setIsCreating(true);
+    try {
+      await subjectsService.create({
+        name: formData.name,
+        teacherName: formData.teacherName,
+        startDate: parseDate(formData.startDate),
+        endDate: parseDate(formData.endDate),
+        classId: classId,
+      });
+      toast.success('Matière créée avec succès');
+      setIsModalOpen(false);
+      await loadData(); // Recharger la liste
+    } catch (error: any) {
+      console.error('Error creating subject:', error);
+      toast.error(error.message || 'Erreur lors de la création de la matière');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCSVImport = (file: File) => {
+    toast.info('Import CSV en cours de développement');
+    console.log('CSV file:', file);
   };
 
   // Transform subjects to match SubjectsTable format
@@ -158,7 +191,7 @@ export default function ClassDetailPage() {
           </div>
 
  
-          <Button variant="add-matiere" onClick={() => console.log('Ajouter une matière')}>
+          <Button variant="add-matiere" onClick={() => setIsModalOpen(true)}>
             Ajouter une matière
             <span style={{ fontSize: '20px', fontWeight: 300 }}>+</span>
           </Button>
@@ -166,6 +199,16 @@ export default function ClassDetailPage() {
 
 
         <SubjectsTable subjects={transformedSubjects} />
+
+        {/* Modal pour ajouter une matière */}
+        <SubjectModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleCreateSubject}
+          onCSVImport={handleCSVImport}
+          classId={classId}
+          isLoading={isCreating}
+        />
       </div>
     </div>
   );

@@ -97,6 +97,7 @@ model Subject {
   id              String    @id @default(uuid())
   name            String
   teacherName     String
+  teacherEmail    String?   // Optional teacher email
   startDate       DateTime
   endDate         DateTime
   classId         String

@@ -3,27 +3,25 @@
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useState, useEffect } from 'react';
+import { ClassFormData } from '../types';
 
-export interface ClassFormData {
-  className: string;
-  studentCount: string;
-  studentEmails: string;
-  description: string;
-}
-
-interface FormClasseProps {
+interface ClassFormProps {
   onSubmit: (data: ClassFormData) => void;
   initialData?: ClassFormData;
   submitButtonText?: string;
   mode?: 'create' | 'edit';
+  isLoading?: boolean;
+  isModal?: boolean;
 }
 
-export function FormClasse({
+export function ClassForm({
   onSubmit,
   initialData,
   submitButtonText = 'Créer la classe',
   mode = 'create',
-}: FormClasseProps) {
+  isLoading = false,
+  isModal = false,
+}: ClassFormProps) {
   const [formData, setFormData] = useState<ClassFormData>({
     className: '',
     studentCount: '',
@@ -43,8 +41,8 @@ export function FormClasse({
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="relative flex items-center justify-center" style={{ minHeight: 'calc(100vh - 80px)' }}>
+    <div className={isModal ? '' : 'min-h-screen bg-white'}>
+      <div className="relative flex items-center justify-center" style={isModal ? { padding: '40px 20px' } : { minHeight: 'calc(100vh - 80px)' }}>
         <div className="text-center relative">
           {/* Step indicator - only in create mode */}
           {mode === 'create' && (
@@ -236,6 +234,7 @@ export function FormClasse({
 
               <Button
                 type="submit"
+                disabled={isLoading}
                 style={{
                   width: mode === 'edit' ? '236.29px' : '216.29px',
                   height: '56px',
@@ -251,19 +250,22 @@ export function FormClasse({
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '1.99px',
+                  opacity: isLoading ? 0.5 : 1,
                 }}
               >
-                {submitButtonText}
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2"
-                >
-                  <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                {isLoading ? 'Chargement...' : submitButtonText}
+                {!isLoading && (
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
               </Button>
             </form>
           </div>

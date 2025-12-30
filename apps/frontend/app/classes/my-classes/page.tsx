@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ClassCard } from '@/components/ui/ClassCard';
+import { 
+  ClassCard, 
+  ClassModal, 
+  ArchiveModal, 
+  ClassLimitAdminModal, 
+  ClassLimitNonAdminModal,
+  ClassFormData 
+} from '@/features/classes';
 import { TrialBanner } from '@/components/ui/TrialBanner';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
-import { ClassModal, ClassFormData } from '@/components/ui/ClassModal';
-import { ArchiveModal } from '@/components/ui/ArchiveModal';
-import { ClassLimitAdminModal } from '@/components/ui/ClassLimitAdminModal';
-import { ClassLimitNonAdminModal } from '@/components/ui/ClassLimitNonAdminModal';
 import { classesService, Class } from '@/services/api/classes.service';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/types/entities';

@@ -1,7 +1,7 @@
 'use client';
 
 import { X, ArrowUpRight } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 
 interface ClassLimitAdminModalProps {
@@ -47,7 +47,6 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           style={{
@@ -63,7 +62,6 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
           <X size={16} color="#2F2E2C" strokeWidth={2} />
         </button>
 
-        {/* Title */}
         <h2
           style={{
             fontFamily: 'Mochiy Pop One, sans-serif',
@@ -77,7 +75,6 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
           Limite de classes atteinte
         </h2>
 
-        {/* Description - Premier paragraphe */}
         <p
           style={{
             fontFamily: 'Poppins, sans-serif',
@@ -91,7 +88,6 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
           Vous avez atteint le nombre maximum de classes inclus dans votre offre actuelle.
         </p>
 
-        {/* Description - Deuxième paragraphe */}
         <p
           style={{
             fontFamily: 'Poppins, sans-serif',
@@ -105,7 +101,6 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
           Pour créer de nouvelles classes et continuer à utiliser Izzzi sans limite, vous pouvez passer à un plan supérieur.
         </p>
 
-        {/* Buttons */}
         <div
           style={{
             display: 'flex',
@@ -113,13 +108,11 @@ export function ClassLimitAdminModal({ isOpen, onClose }: ClassLimitAdminModalPr
             alignItems: 'center',
           }}
         >
-          {/* Upgrade Button */}
           <Button variant="class-limit-upgrade" onClick={handleUpgrade}>
             <span>Passer au plan supérieur</span>
             <ArrowUpRight size={16} strokeWidth={1.5} />
           </Button>
 
-          {/* Cancel Button */}
           <button
             onClick={onClose}
             style={{
