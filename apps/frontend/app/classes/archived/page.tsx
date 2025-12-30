@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ClassCard } from '@/components/ui/ClassCard';
+import { ClassCard } from '@/features/classes';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { classesService, Class } from '@/services/api/classes.service';
 import { toast } from 'sonner';

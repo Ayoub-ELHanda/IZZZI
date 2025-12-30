@@ -3,6 +3,7 @@ import { apiClient } from '@/lib/api/client';
 export interface CreateSubjectDto {
   name: string;
   teacherName: string;
+  teacherEmail?: string;
   startDate: string;
   endDate: string;
   classId: string;
@@ -12,6 +13,7 @@ export interface Subject {
   id: string;
   name: string;
   teacherName: string;
+  teacherEmail?: string;
   startDate: string;
   endDate: string;
   classId: string;

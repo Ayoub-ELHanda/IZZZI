@@ -1,6 +1,6 @@
 'use client';
 
-import { SubjectsTable } from '@/components/ui/SubjectsTable';
+import { SubjectsTable } from '@/features/subjects';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

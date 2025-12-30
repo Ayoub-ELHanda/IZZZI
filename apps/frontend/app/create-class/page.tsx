@@ -1,34 +1,17 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { FormClasse, ClassFormData } from '@/components/ui/FormClasse';
-import { classesService } from '@/services/api/classes.service';
-import { toast } from 'sonner';
+import { ClassForm } from '@/features/classes/components/ClassForm';
+import { useCreateClass } from '@/features/classes/hooks/useCreateClass';
 
 export default function CreateClassPage() {
-  const router = useRouter();
-
-  const handleClassSubmit = async (data: ClassFormData) => {
-    try {
-      const newClass = await classesService.create({
-        name: data.className,
-        studentCount: parseInt(data.studentCount),
-        studentEmails: data.studentEmails.split(';').map(e => e.trim()).filter(e => e),
-        description: data.description || undefined,
-      });
-      toast.success('Classe créée avec succès');
-      router.push(`/create-subject?classId=${newClass.id}`);
-    } catch (error: any) {
-      console.error('Error creating class:', error);
-      toast.error(error.message || 'Erreur lors de la création de la classe');
-    }
-  };
+  const { createClass, isLoading } = useCreateClass();
 
   return (
-    <FormClasse
-      onSubmit={handleClassSubmit}
+    <ClassForm
+      onSubmit={createClass}
       submitButtonText="Créer la classe"
       mode="create"
+      isLoading={isLoading}
     />
   );
 }

@@ -1,26 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { Input } from './Input';
-import { Button } from './Button';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 import { ArrowUpRight, Download, Upload } from 'lucide-react';
+import { SubjectFormData } from '../types';
 
-interface FormMatiereProps {
+interface SubjectFormProps {
   onBack: () => void;
-  onSubmit: (data: MatiereFormData) => void;
+  onSubmit: (data: SubjectFormData) => void;
   onCSVImport: (file: File) => void;
+  isLoading?: boolean;
+  isModal?: boolean;
 }
 
-export interface MatiereFormData {
-  name: string;
-  teacherName: string;
-  teacherEmail?: string;
-  startDate: string;
-  endDate: string;
-}
-
-export function FormMatiere({ onBack, onSubmit, onCSVImport }: FormMatiereProps) {
-  const [formData, setFormData] = useState<MatiereFormData>({
+export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, isModal = false }: SubjectFormProps) {
+  const [formData, setFormData] = useState<SubjectFormData>({
     name: '',
     teacherName: '',
     teacherEmail: '',
@@ -28,7 +23,7 @@ export function FormMatiere({ onBack, onSubmit, onCSVImport }: FormMatiereProps)
     endDate: '',
   });
 
-  const handleInputChange = (field: keyof MatiereFormData, value: string) => {
+  const handleInputChange = (field: keyof SubjectFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -50,98 +45,102 @@ export function FormMatiere({ onBack, onSubmit, onCSVImport }: FormMatiereProps)
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center',
-      padding: '80px 0',
+      padding: isModal ? '0' : '80px 0',
       position: 'relative',
     }}>
 
-      <button
-        onClick={onBack}
-        style={{
-          position: 'absolute',
-          top: '120px',
-          left: '80px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'none',
-          border: 'none',
-          color: '#2F2E2C',
-          fontSize: '14px',
-          fontFamily: 'Poppins, sans-serif',
-          cursor: 'pointer',
-          padding: '8px 0',
-        }}
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 16L6 10L12 4"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span>Retour aux informations de la classe</span>
-      </button>
-
-      <div className="text-center relative">
-        <div
-          className="flex items-center justify-center mx-auto"
+      {!isModal && (
+        <button
+          onClick={onBack}
           style={{
-            width: '38px',
-            height: '38px',
-            backgroundColor: 'white',
-            border: '1px solid #E0E0E0',
-            borderRadius: '750px',
-            fontFamily: 'Poppins, sans-serif',
+            position: 'absolute',
+            top: '120px',
+            left: '80px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'none',
+            border: 'none',
+            color: '#2F2E2C',
             fontSize: '14px',
-            fontWeight: 400,
-            color: '#2F2E2C',
-            marginBottom: '24px',
+            fontFamily: 'Poppins, sans-serif',
+            cursor: 'pointer',
+            padding: '8px 0',
           }}
         >
-          2/2
-        </div>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 16L6 10L12 4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>Retour aux informations de la classe</span>
+        </button>
+      )}
 
-        {/* Title */}
-        <h2
-          className="font-mochiy mx-auto"
-          style={{
-            width: '356px',
-            height: '23px',
-            fontSize: '28px',
-            fontWeight: 400,
-            lineHeight: '100%',
-            marginBottom: '24px',
-            color: '#2F2E2C',
-            textAlign: 'center',
-          }}
-        >
-          Entrer les matières
-        </h2>
+      {!isModal && (
+        <div className="text-center relative">
+          <div
+            className="flex items-center justify-center mx-auto"
+            style={{
+              width: '38px',
+              height: '38px',
+              backgroundColor: 'white',
+              border: '1px solid #E0E0E0',
+              borderRadius: '750px',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#2F2E2C',
+              marginBottom: '24px',
+            }}
+          >
+            2/2
+          </div>
 
-        {/* Decorative text - EXACTEMENT comme "C'est partiii !" */}
-        <div
-          className="absolute"
-          style={{
-            top: '-40px',
-            right: '50px',
-            transform: 'rotate(-12.18deg)',
-            fontFamily: 'Caveat, cursive',
-            fontSize: '20px',
-            color: '#2F2E2C',
-            lineHeight: '1.3',
-          }}
-        >
-          On y est<br />presque !
+          {/* Title */}
+          <h2
+            className="font-mochiy mx-auto"
+            style={{
+              width: '356px',
+              height: '23px',
+              fontSize: '28px',
+              fontWeight: 400,
+              lineHeight: '100%',
+              marginBottom: '24px',
+              color: '#2F2E2C',
+              textAlign: 'center',
+            }}
+          >
+            Entrer les matières
+          </h2>
+
+          {/* Decorative text */}
+          <div
+            className="absolute"
+            style={{
+              top: '-40px',
+              right: '50px',
+              transform: 'rotate(-12.18deg)',
+              fontFamily: 'Caveat, cursive',
+              fontSize: '20px',
+              color: '#2F2E2C',
+              lineHeight: '1.3',
+            }}
+          >
+            On y est<br />presque !
+          </div>
         </div>
-      </div>
+      )}
 
    
       <div style={{
@@ -381,9 +380,16 @@ export function FormMatiere({ onBack, onSubmit, onCSVImport }: FormMatiereProps)
           </p>
         </div>
 
-        <Button variant="create" onClick={handleSubmit}>
-          Créer la matière
-          <ArrowUpRight size={16} strokeWidth={1.5} />
+        <Button 
+          variant="create" 
+          onClick={handleSubmit}
+          disabled={isLoading}
+          style={{
+            opacity: isLoading ? 0.5 : 1,
+          }}
+        >
+          {isLoading ? 'Création...' : 'Créer la matière'}
+          {!isLoading && <ArrowUpRight size={16} strokeWidth={1.5} />}
         </Button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsOptional, IsEmail } from 'class-validator';
 
 export class CreateSubjectDto {
   @IsString()
@@ -8,6 +8,10 @@ export class CreateSubjectDto {
   @IsString()
   @IsNotEmpty()
   teacherName: string;
+
+  @IsEmail()
+  @IsOptional()
+  teacherEmail?: string;
 
   @IsDateString()
   @IsNotEmpty()
