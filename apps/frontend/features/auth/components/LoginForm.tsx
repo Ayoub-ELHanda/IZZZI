@@ -26,8 +26,14 @@ export function LoginForm() {
 
     try {
       const { authService } = await import('@/services/auth/auth.service');
-      await authService.login(formData);
-      router.push(routes.dashboard);
+      const response = await authService.login(formData);
+      // Redirect admin users to profile page, others to dashboard
+      const userRole = response?.user?.role || response?.role;
+      if (userRole === 'ADMIN') {
+        router.push(routes.account.profile);
+      } else {
+        router.push(routes.dashboard);
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       alert(error.message || 'Email ou mot de passe incorrect');

@@ -67,6 +67,29 @@ export const authService = {
     return response;
   },
 
+  async getCurrentUser(): Promise<any> {
+    return this.getProfile();
+  },
+
+  async updateProfile(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    establishmentName?: string;
+    profilePicture?: string;
+  }): Promise<any> {
+    const response = await apiClient.post<any>('/auth/profile', data);
+    return response;
+  },
+
+  async changePassword(data: {
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>('/auth/change-password', data);
+    return response;
+  },
+
   logout() {
     localStorage.removeItem('auth_token');
   },
