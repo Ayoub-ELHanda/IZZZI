@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
-import { Button } from '@/components/ui/Button';
-import { Logo } from '@/components/assets/Logo';
+import { Bell } from 'lucide-react';
 
 export function Header() {
   const router = useRouter();
@@ -17,128 +17,290 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white">
-      <div className="flex h-20 items-center justify-between px-6">
-        <Link href={routes.home} className="flex items-center">
-          <Image 
-            src="/Logo.svg" 
-            alt="IZZZI" 
-            width={112}
-            height={53}
-            className="h-auto"
-          />
+    <header 
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '80px',
+        backgroundColor: '#FFFFFF',
+        borderBottom: '1px solid #E5E5E5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 40px',
+      }}
+    >
+      {/* Logo - Left */}
+      <div style={{ flex: '1' }}>
+        <Link href={routes.home} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', width: 'fit-content' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div 
+              style={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: '#2F2E2C',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <span 
+              style={{
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '24px',
+                fontWeight: 600,
+                color: '#2F2E2C',
+              }}
+            >
+              izzzi
+            </span>
+          </div>
         </Link>
+      </div>
 
-        <div className="flex items-center" style={{ gap: '40px' }}>
-          {isAuthenticated ? (
-            <>
+      {/* Navigation buttons - Absolutely centered */}
+      {isAuthenticated && (
+        <div 
+          style={{ 
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex', 
+            gap: '12px',
+            zIndex: 1,
+          }}
+        >
+          <Link href="/classes/my-classes">
+            <button
+              style={{
+                padding: '10px 24px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E5E5',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#F8F8F8';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+              }}
+            >
+              Mes classes
+            </button>
+          </Link>
+          <Link href="/dashboard">
+            <button
+              style={{
+                padding: '10px 24px',
+                backgroundColor: '#2F2E2C',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#2F2E2C';
+              }}
+            >
+              Dashboard
+            </button>
+          </Link>
+        </div>
+      )}
+
+      {/* Right side - Profile and Actions */}
+      {isAuthenticated ? (
+        <div style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '24px' }}>
+          {/* Bell icon */}
+          <button
+            style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#F8F8F8';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <Bell size={20} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+
+          {/* User profile */}
+          <Link 
+            href={routes.account.profile} 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px', 
+              textDecoration: 'none',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.opacity = '0.8';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.opacity = '1';
+            }}
+          >
+            {user?.profilePicture ? (
               <div 
-                className="flex items-center gap-4"
                 style={{
-                  width: '346px',
-                  height: '71px',
-                  backgroundColor: '#D9D9D9',
-                  borderRadius: '8px',
-                  padding: '10px',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  backgroundColor: '#E5E5E5',
                 }}
               >
-                <Link href="/classes">
-                  <button
-                    style={{
-                      width: '176px',
-                      height: '51px',
-                      backgroundColor: '#FBFBFB',
-                      border: '1px solid #E0E0E0',
-                      borderRadius: '8px',
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      color: '#2F2E2C',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Mes classes
-                  </button>
-                </Link>
-                <Link href="/dashboard">
-                  <button
-                    style={{
-                      width: '176px',
-                      height: '51px',
-                      backgroundColor: 'transparent',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      color: '#2F2E2C',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Dashboard
-                  </button>
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
+                <img
+                  src={user.profilePicture}
+                  alt={`${user.firstName} ${user.lastName}`}
                   style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#F4F4F4',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
                   }}
-                >
-                  Matières
-                </Link>
-                <Link href={routes.account.profile} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                  {user?.profilePicture ? (
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
-                      <img
-                        src={user.profilePicture}
-                        alt={`${user.firstName} ${user.lastName}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-600">
-                      {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
-                    </div>
-                  )}
-                  <span className="text-sm text-gray-700">
-                    {user?.firstName} {user?.lastName}
-                  </span>
-                </Link>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Déconnexion
-                </Button>
-              </Link>
+                />
+              </div>
+            ) : (
+              <div 
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  backgroundColor: '#E5E5E5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: '#2F2E2C',
+                }}
+              >
+                {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span 
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: '#2F2E2C',
+                  lineHeight: '1.2',
+                }}
+              >
+                {user?.firstName} {user?.lastName}
+              </span>
+              <span 
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  color: '#6B6B6B',
+                  lineHeight: '1.2',
+                }}
+              >
+                Plan gratuit
+              </span>
+            </div>
+          </Link>
 
-              <Link href={routes.auth.login}>
-                <Button variant="login" size="login">
-                  Se connecter
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    style={{ marginLeft: '1.99px' }}
-                  >
-                    <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Button>
-              </Link>
-            </>
-          )}
+          {/* Logout button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: 'transparent',
+              border: '1px solid #E5E5E5',
+              borderRadius: '8px',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#2F2E2C',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#F8F8F8';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            Déconnexion
+          </button>
         </div>
-      </div>
+      ) : (
+        <div style={{ flex: '1', display: 'flex', justifyContent: 'flex-end' }}>
+          <Link href={routes.auth.login}>
+            <button
+              style={{
+                padding: '10px 24px',
+                backgroundColor: '#2F2E2C',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#1a1a1a';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#2F2E2C';
+              }}
+            >
+              Se connecter
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2"
+              >
+                <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

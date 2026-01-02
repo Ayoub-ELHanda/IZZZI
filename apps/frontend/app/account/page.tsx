@@ -224,62 +224,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto relative flex items-center justify-between">
-          {/* Logo on the left */}
-          <div className="flex-1">
-            <Link href={routes.home} className="inline-flex items-center">
-              <Logo className="h-8 w-auto" />
-            </Link>
-          </div>
-
-          {/* Navigation buttons in center - absolutely centered */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-3">
-            <Link
-              href={routes.classes.list}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 bg-white"
-            >
-              Mes classes
-            </Link>
-            <Link
-              href={routes.dashboard}
-              className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
-            >
-              Dashboard
-            </Link>
-          </div>
-
-          {/* Right side - Bell and User */}
-          <div className="flex-1 flex items-center justify-end gap-4">
-            <button className="relative p-2 hover:bg-gray-100 rounded-lg bg-gray-50">
-              <Bell className="h-5 w-5 text-gray-600" />
-            </button>
-            <div className="flex items-center gap-3">
-              {user.profilePicture ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
-                  <img
-                    src={user.profilePicture}
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-600">
-                  {getInitials()}
-                </div>
-              )}
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-xs text-gray-500">Plan gratuit</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
         {successMessage && (
@@ -697,4 +641,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
