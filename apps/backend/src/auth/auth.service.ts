@@ -16,6 +16,8 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { InviteUserDto } from './dto/invite-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { Invitation, InvitationStore } from './entities/invitation.entity';
 
 @Injectable()
@@ -382,6 +384,87 @@ export class AuthService {
     }
 
     return this.sanitizeUser(user);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { establishment: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+
+    // Check if email is already taken by another user
+    if (dto.email !== user.email) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: dto.email },
+      });
+      if (existingUser) {
+        throw new ConflictException('Cet email est déjà utilisé');
+      }
+    }
+
+    // Update user
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        email: dto.email,
+        ...(dto.profilePicture && { profilePicture: dto.profilePicture }),
+      },
+      include: { establishment: true },
+    });
+
+    // Update establishment name if provided and user has an establishment
+    if (dto.establishmentName && user.establishmentId) {
+      await this.prisma.establishment.update({
+        where: { id: user.establishmentId },
+        data: { name: dto.establishmentName },
+      });
+    }
+
+    // Refetch user with updated establishment
+    const userWithEstablishment = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { establishment: true },
+    });
+
+    return this.sanitizeUser(userWithEstablishment);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+
+    if (!user.password) {
+      throw new BadRequestException('Ce compte utilise Google OAuth et n\'a pas de mot de passe');
+    }
+
+    // Verify old password
+    const isPasswordValid = await bcrypt.compare(dto.oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Ancien mot de passe incorrect');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+
+    // Update password
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    return { message: 'Mot de passe modifié avec succès' };
   }
 }
 
