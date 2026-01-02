@@ -59,7 +59,7 @@ export default function ClassDetailPage() {
       });
       toast.success('Matière créée avec succès');
       setIsModalOpen(false);
-      await loadData(); // Recharger la liste
+      await loadData(); 
     } catch (error: any) {
       console.error('Error creating subject:', error);
       toast.error(error.message || 'Erreur lors de la création de la matière');
@@ -73,23 +73,44 @@ export default function ClassDetailPage() {
     console.log('CSV file:', file);
   };
 
-  // Transform subjects to match SubjectsTable format
+  // Fonction pour formater une date en dd/MM/yyyy
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const transformedSubjects = subjects.map((subject) => {
     const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
     const totalResponses = hasQuestionnaires
       ? subject.questionnaires.reduce((acc, q) => acc + (q._count?.responses || 0), 0)
       : 0;
 
+    const duringCourseQuestionnaire = subject.questionnaires?.find(
+      (q) => q.type === 'DURING_COURSE'
+    );
+    const afterCourseQuestionnaire = subject.questionnaires?.find(
+      (q) => q.type === 'AFTER_COURSE'
+    );
+
+    const status: 'pending' | 'finished' = new Date(subject.endDate) > new Date() ? 'pending' : 'finished';
+
     return {
       id: subject.id,
       subjectName: subject.name,
       teacherName: subject.teacherName,
-      startDate: new Date(subject.startDate).toLocaleDateString('fr-FR'),
-      endDate: new Date(subject.endDate).toLocaleDateString('fr-FR'),
-      status: new Date(subject.endDate) < new Date() ? ('finished' as const) : ('pending' as const),
+      startDate: formatDate(subject.startDate),
+      endDate: formatDate(subject.endDate),
+      status,
       feedbackCount: totalResponses,
       totalStudents: classData?.studentCount || 0,
       hasQuestionnaire: hasQuestionnaires,
+      duringCourseToken: duringCourseQuestionnaire?.token,
+      afterCourseToken: afterCourseQuestionnaire?.token,
+      duringCourseId: duringCourseQuestionnaire?.id,
+      afterCourseId: afterCourseQuestionnaire?.id,
     };
   });
 
@@ -198,7 +219,7 @@ export default function ClassDetailPage() {
         </div>
 
 
-        <SubjectsTable subjects={transformedSubjects} />
+        <SubjectsTable subjects={transformedSubjects} onRefresh={loadData} />
 
         {/* Modal pour ajouter une matière */}
         <SubjectModal

@@ -119,9 +119,17 @@ enum QuestionnaireType {
   AFTER_COURSE    // Questionnaire après le cours
 }
 
+enum FormType {
+  BASIC           // Basique - adapté à tous les cours
+  TECHNICAL       // Adapté aux cours techniques
+  SOFT_SKILLS     // Adapté aux soft skills
+  LOGICIEL        // Adapté aux cours logiciel
+}
+
 model Questionnaire {
   id              String              @id @default(uuid())
   type            QuestionnaireType
+  formType        FormType            @default(BASIC)
   subjectId       String
   subject         Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   token           String              @unique  // Public access token

@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import { BorderedContainer } from '@/components/ui/BorderedContainer';
 import { Button } from '@/components/ui/Button';
-import { ArrowUpRight, Clock, Check, Download, Pencil, Trash2 } from 'lucide-react';
+import { ArrowUpRight, Clock, Check, Download, Pencil, Trash2, RefreshCw } from 'lucide-react';
 import { FormTypeSelectionModal } from './FormTypeSelectionModal';
+import { EmailReminderModal } from './EmailReminderModal';
+import { questionnairesService, FormType } from '@/services/api/questionnaires.service';
+import { toast } from 'sonner';
 
 interface SubjectRowData {
   id: string;
@@ -15,40 +18,109 @@ interface SubjectRowData {
   status: 'pending' | 'finished';
   feedbackCount: number;
   totalStudents: number;
-  hasQuestionnaire?: boolean; 
+  hasQuestionnaire?: boolean;
+  duringCourseToken?: string;
+  afterCourseToken?: string;
+  duringCourseId?: string;
+  afterCourseId?: string;
 }
 
 interface SubjectsTableProps {
   subjects: SubjectRowData[];
+  onRefresh?: () => void;
 }
 
-export function SubjectsTable({ subjects }: SubjectsTableProps) {
+export function SubjectsTable({ subjects, onRefresh }: SubjectsTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedType, setCopiedType] = useState<'during' | 'after' | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<SubjectRowData | null>(null);
+  const [selectedQuestionnaireId, setSelectedQuestionnaireId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenFormModal = (subjectId: string) => {
+    const subject = subjects.find(s => s.id === subjectId);
     setSelectedSubjectId(subjectId);
+    setSelectedSubject(subject || null);
     setIsFormModalOpen(true);
   };
 
-  const handleFormTypeValidate = (formType: string) => {
-    console.log('Selected form type:', formType, 'for subject:', selectedSubjectId);
-    // TODO: Update subject with hasQuestionnaire: true and formType
-    // This will be handled by backend later
+  const handleFormTypeValidate = async (formType: string) => {
+    if (!selectedSubjectId) return;
+
+    setIsLoading(true);
+    try {
+      const subject = subjects.find(s => s.id === selectedSubjectId);
+      
+      if (subject?.hasQuestionnaire) {
+        // Vérifier si la modification est possible
+        const { canModify, reason } = await questionnairesService.canModify(selectedSubjectId);
+        
+        if (!canModify) {
+          toast.error(reason || 'Impossible de modifier les questionnaires');
+          return;
+        }
+
+        // Mettre à jour les questionnaires
+        await questionnairesService.update(selectedSubjectId, formType as FormType);
+        toast.success('Questionnaires mis à jour avec succès');
+      } else {
+        // Créer les questionnaires
+        await questionnairesService.create(selectedSubjectId, formType as FormType);
+        toast.success('Questionnaires créés avec succès');
+      }
+
+      setIsFormModalOpen(false);
+      setSelectedSubjectId(null);
+      setSelectedSubject(null);
+      
+      // Recharger les données
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error: any) {
+      console.error('Error with questionnaires:', error);
+      toast.error(error.message || 'Une erreur est survenue');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCopyLink = (subjectId: string) => {
-    const link = `https://example.com/feedback/${subjectId}`;
+  const handleCopyLink = (token: string, type: 'during' | 'after') => {
+    const link = questionnairesService.getPublicQuestionnaireUrl(token);
     navigator.clipboard.writeText(link);
-    setCopiedId(subjectId);
-    setTimeout(() => setCopiedId(null), 2000);
+    setCopiedId(token);
+    setCopiedType(type);
+    toast.success('Lien copié dans le presse-papier !');
+    setTimeout(() => {
+      setCopiedId(null);
+      setCopiedType(null);
+    }, 2000);
   };
 
-  const handleDownloadQR = (subjectId: string) => {
-
-    console.log('Downloading QR code for:', subjectId);
+  const handleDownloadQR = async (token: string) => {
+    try {
+      await questionnairesService.downloadQRCode(token);
+      toast.success('QR Code téléchargé avec succès');
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      toast.error('Erreur lors du téléchargement du QR code');
+    }
   };
+
+  const handleOpenEmailModal = (questionnaireId: string, subject: SubjectRowData) => {
+  setSelectedQuestionnaireId(questionnaireId);
+  setSelectedSubject(subject);
+  setIsEmailModalOpen(true);
+};
+
+const handleSendReminders = async () => {
+  if (!selectedQuestionnaireId) return;
+  await questionnairesService.sendReminders(selectedQuestionnaireId);
+  toast.success('Emails envoyés avec succès !');
+};
 
   return (
     <div
@@ -151,7 +223,9 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
             subject={subject}
             onCopyLink={handleCopyLink}
             onDownloadQR={handleDownloadQR}
-            isCopied={copiedId === subject.id}
+            onOpenEmailModal={handleOpenEmailModal}
+            copiedId={copiedId}
+            copiedType={copiedType}
             onOpenFormModal={handleOpenFormModal}
           />
         ))}
@@ -167,21 +241,37 @@ export function SubjectsTable({ subjects }: SubjectsTableProps) {
         onValidate={handleFormTypeValidate}
         subjectId={selectedSubjectId || ''}
       />
+
+      {selectedSubject && (
+        <EmailReminderModal
+          isOpen={isEmailModalOpen}
+          onClose={() => setIsEmailModalOpen(false)}
+          onSend={handleSendReminders}
+          subjectName={selectedSubject.subjectName}
+          teacherName={selectedSubject.teacherName}
+          studentCount={selectedSubject.totalStudents}
+        />
+      )}
     </div>
   );
 }
 
 interface SubjectRowProps {
   subject: SubjectRowData;
-  onCopyLink: (id: string) => void;
-  onDownloadQR: (id: string) => void;
-  isCopied: boolean;
+  onCopyLink: (token: string, type: 'during' | 'after') => void;
+  onDownloadQR: (token: string) => void;
+  onOpenEmailModal: (questionnaireId: string, subject: SubjectRowData) => void;
+  copiedId: string | null;
+  copiedType: 'during' | 'after' | null;
   onOpenFormModal: (id: string) => void;
 }
 
-function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormModal }: SubjectRowProps) {
+function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copiedId, copiedType, onOpenFormModal }: SubjectRowProps) {
   const statusText = subject.status === 'pending' ? 'Pendant le cours' : 'Fin du cours';
   const statusColor = '#2F2E2C';
+  
+  const isDuringCopied = copiedId === subject.duringCourseToken && copiedType === 'during';
+  const isAfterCopied = copiedId === subject.afterCourseToken && copiedType === 'after';
 
   if (!subject.hasQuestionnaire) {
     return (
@@ -429,16 +519,16 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
 
             <Button 
               variant="copy-link"
-              onClick={() => onCopyLink(subject.id)}
+              onClick={() => subject.duringCourseToken && onCopyLink(subject.duringCourseToken, 'during')}
               style={{ gap: '29.29px' }}
             >
-              <span>{isCopied ? 'Lien copié !' : 'Copier le lien'}</span>
+              <span>{isDuringCopied ? 'Lien copié !' : 'Copier le lien'}</span>
               <ArrowUpRight size={16} strokeWidth={1.5} />
             </Button>
           </div>
 
           <button
-            onClick={() => onDownloadQR(subject.id)}
+            onClick={() => subject.duringCourseToken && onDownloadQR(subject.duringCourseToken)}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -463,6 +553,34 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
               Télécharger le QR code
             </span>
             <Download size={12} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+
+          <button
+            onClick={() => subject.duringCourseId && onOpenEmailModal(subject.duringCourseId, subject)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '16px',
+                fontWeight: 400,
+                lineHeight: '100%',
+                textDecoration: 'underline',
+                textDecorationStyle: 'solid',
+                color: '#2F2E2C',
+              }}
+            >
+              Relancer les étudiants
+            </span>
+            <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
           <a
@@ -541,16 +659,16 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
 
             <Button 
               variant="copy-link"
-              onClick={() => onCopyLink(subject.id)}
+              onClick={() => subject.afterCourseToken && onCopyLink(subject.afterCourseToken, 'after')}
               style={{ gap: '29.29px' }}
             >
-              <span>{isCopied ? 'Lien copié !' : 'Copier le lien'}</span>
+              <span>{isAfterCopied ? 'Lien copié !' : 'Copier le lien'}</span>
               <ArrowUpRight size={16} strokeWidth={1.5} />
             </Button>
           </div>
 
           <button
-            onClick={() => onDownloadQR(subject.id)}
+            onClick={() => subject.afterCourseToken && onDownloadQR(subject.afterCourseToken)}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -575,6 +693,34 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, isCopied, onOpenFormMod
               Télécharger le QR code
             </span>
             <Download size={12} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+
+          <button
+            onClick={() => subject.afterCourseId && onOpenEmailModal(subject.afterCourseId, subject)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '16px',
+                fontWeight: 400,
+                lineHeight: '100%',
+                textDecoration: 'underline',
+                textDecorationStyle: 'solid',
+                color: '#2F2E2C',
+              }}
+            >
+              Relancer les étudiants
+            </span>
+            <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
           <a
