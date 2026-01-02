@@ -29,7 +29,7 @@ export function SubjectModal({ isOpen, onClose, onSubmit, onCSVImport, classId, 
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
-        overflow: 'auto',
+        padding: '20px',
       }}
       onClick={onClose}
     >
@@ -38,13 +38,14 @@ export function SubjectModal({ isOpen, onClose, onSubmit, onCSVImport, classId, 
         style={{
           position: 'relative',
           width: '900px',
-          maxHeight: '95vh',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
           backgroundColor: '#F8F8F8',
           borderRadius: '16px',
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.08)',
-          padding: '40px',
-          overflow: 'auto',
-          margin: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         {/* Close button */}
@@ -64,14 +65,32 @@ export function SubjectModal({ isOpen, onClose, onSubmit, onCSVImport, classId, 
           <X size={20} color="#6B6B6B" />
         </button>
 
-        {/* Form (without back button and step indicator) */}
-        <SubjectForm
-          onBack={onClose}
-          onSubmit={onSubmit}
-          onCSVImport={onCSVImport}
-          isLoading={isLoading}
-          isModal={true}
-        />
+        {/* Scrollable form content - scrollbar hidden */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            // Hide scrollbar for Chrome, Safari and Opera
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none', // Firefox
+            msOverflowStyle: 'none', // IE and Edge
+          }}
+          className="hide-scrollbar"
+        >
+          <style jsx>{`
+            .hide-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          <SubjectForm
+            onBack={onClose}
+            onSubmit={onSubmit}
+            onCSVImport={onCSVImport}
+            isLoading={isLoading}
+            isModal={true}
+          />
+        </div>
       </div>
     </div>
   );

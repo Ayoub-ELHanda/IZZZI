@@ -45,7 +45,7 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center',
-      padding: isModal ? '0' : '80px 0',
+      padding: isModal ? ' 20px 50px 40px' : '80px 0',
       position: 'relative',
     }}>
 
