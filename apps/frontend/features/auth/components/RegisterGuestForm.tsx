@@ -100,7 +100,7 @@ export function RegisterGuestForm() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
 
@@ -117,7 +117,7 @@ export function RegisterGuestForm() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
 
@@ -134,7 +134,7 @@ export function RegisterGuestForm() {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
 
