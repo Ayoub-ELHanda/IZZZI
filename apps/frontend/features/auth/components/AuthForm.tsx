@@ -59,7 +59,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
       
       let response;
       if (inviteToken) {
-        // Invited user registration (Responsable PÃ©dagogique)
+        // Invited user registration (Responsable Pédagogique)
         response = await authService.registerInvited({
           email: registerData.email,
           lastName: registerData.lastName,
@@ -82,10 +82,10 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
       const roleName = response.user.role === 'ADMIN' 
         ? 'Administrateur' 
         : response.user.role === 'RESPONSABLE_PEDAGOGIQUE'
-        ? 'Responsable PÃ©dagogique'
+        ? 'Responsable Pédagogique'
         : 'Visiteur';
       
-      alert(`Inscription rÃ©ussie !\n\nRÃ´le: ${roleName}\nEmail: ${response.user.email}\n\nVous allez Ãªtre redirigÃ© vers votre tableau de bord.`);
+      alert(`Inscription réussie !\n\nRôle: ${roleName}\nEmail: ${response.user.email}\n\nVous allez être redirigé vers votre tableau de bord.`);
       
       router.push(routes.dashboard);
     } catch (error: any) {
@@ -178,7 +178,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   onChange={handleLoginChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
 
@@ -196,7 +196,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                     onChange={handleLoginChange}
                     required
                     disabled={isLoading}
-                    className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                   />
                   <button
                     type="button"
@@ -257,7 +257,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                     onChange={handleRegisterChange}
                     required
                     disabled={isLoading}
-                    className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                   />
                 </div>
               )}

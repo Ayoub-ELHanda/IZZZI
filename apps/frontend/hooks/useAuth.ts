@@ -91,7 +91,7 @@ export const useAuth = create<AuthState>()(
 
         set({ isLoading: true });
         try {
-          const user = await authService.getCurrentUser();
+          const user = await authService.getProfile();
           set({
             user,
             isAuthenticated: true,

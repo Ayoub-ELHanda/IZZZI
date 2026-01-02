@@ -15,8 +15,23 @@ function GoogleCallbackContent() {
     if (token) {
       // Save token to localStorage
       localStorage.setItem('auth_token', token);
-      // Redirect to dashboard
-      router.push(routes.dashboard);
+      // Fetch user profile to check role
+      const fetchUserAndRedirect = async () => {
+        try {
+          const { authService } = await import('@/services/auth/auth.service');
+          const user = await authService.getProfile();
+          // Redirect admin users to profile page, others to dashboard
+          if (user?.role === 'ADMIN') {
+            router.push(routes.account.profile);
+          } else {
+            router.push(routes.dashboard);
+          }
+        } catch (error) {
+          // If fetching profile fails, redirect to dashboard as fallback
+          router.push(routes.dashboard);
+        }
+      };
+      fetchUserAndRedirect();
     } else if (error) {
       // Redirect to login with error message
       router.push(`${routes.auth.login}?error=${encodeURIComponent(error)}`);

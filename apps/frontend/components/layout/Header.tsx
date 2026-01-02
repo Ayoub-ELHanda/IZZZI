@@ -1,23 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/assets/Logo';
 
 export function Header() {
-  const { isAuthenticated, user } = useAuth();
-  
-  const getInitials = () => {
-    if (!user) return '?';
-    return `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
-  };
+  const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
 
-  const getFullName = () => {
-    if (!user) return '';
-    return `${user.firstName} ${user.lastName}`;
+  const handleLogout = async () => {
+    await logout();
+    router.push(routes.auth.login);
   };
 
   return (
@@ -98,72 +94,28 @@ export function Header() {
                     cursor: 'pointer',
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F2E2C" strokeWidth="2">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                  </svg>
-                </button>
-                
-                <div className="flex items-center gap-2">
-                  <div
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      backgroundColor: '#FFE552',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      color: '#2F2E2C',
-                    }}
-                  >
-                    {getInitials()}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      color: '#2F2E2C',
-                    }}
-                  >
-                    {getFullName()}
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <Link
-                href={routes.pricing}
-                style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  color: '#2F2E2C',
-                  textDecoration: 'none'
-                }}
-              >
-                Nos tarifs
-              </Link>
-
-              <Link href={routes.auth.register}>
-                <Button variant="register" size="register">
-                  S'inscrire
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    style={{ marginLeft: '1.99px' }}
-                  >
-                    <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  Matières
+                </Link>
+                <Link href={routes.account.profile} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  {user?.profilePicture ? (
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300">
+                      <img
+                        src={user.profilePicture}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-600">
+                      {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
+                    </div>
+                  )}
+                  <span className="text-sm text-gray-700">
+                    {user?.firstName} {user?.lastName}
+                  </span>
+                </Link>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  Déconnexion
                 </Button>
               </Link>
 
