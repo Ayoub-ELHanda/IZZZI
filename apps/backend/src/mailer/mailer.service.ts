@@ -238,4 +238,143 @@ export class MailerService {
       </html>
     `;
   }
+
+  async sendQuestionnaireReminderEmail(email: string, data: { subjectName: string; teacherName: string; questionnaireUrl: string }) {
+    const mailOptions = {
+      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      to: email,
+      subject: `Un petit retour sur votre cours ${data.subjectName} ?`,
+      html: this.getQuestionnaireReminderTemplate(data),
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Questionnaire reminder email sent to ${email}`);
+    } catch (error) {
+      console.error('Error sending questionnaire reminder email:', error);
+      throw error;
+    }
+  }
+
+  private getQuestionnaireReminderTemplate(data: { subjectName: string; teacherName: string; questionnaireUrl: string }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { 
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #2F2E2C; 
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+          }
+          .container { 
+            max-width: 600px; 
+            margin: 40px auto; 
+            padding: 40px 30px;
+            background: #FFFFFF;
+          }
+          .logo { 
+            text-align: center; 
+            margin-bottom: 40px; 
+          }
+          .logo h1 {
+            color: #2F2E2C;
+            font-family: 'Mochiy Pop One', sans-serif;
+            font-size: 32px;
+            margin: 0;
+          }
+          .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2F2E2C;
+            margin-bottom: 20px;
+            text-align: center;
+          }
+          .content {
+            font-size: 16px;
+            color: #2F2E2C;
+            margin-bottom: 20px;
+          }
+          .highlight {
+            font-weight: 600;
+          }
+          .info-text {
+            font-size: 14px;
+            color: #6B6B6B;
+            margin: 15px 0;
+            line-height: 1.4;
+          }
+          .button-container {
+            text-align: center;
+            margin: 30px 0;
+          }
+          .button { 
+            display: inline-block; 
+            padding: 14px 32px; 
+            background: #FFD93D; 
+            color: #2F2E2C; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.3s;
+          }
+          .button:hover {
+            background: #F6C700;
+          }
+          .footer { 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #E5E5E5; 
+            font-size: 14px; 
+            color: #6B6B6B;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">
+            <h1>izzzi</h1>
+          </div>
+          
+          <div class="title">
+            Un petit retour sur votre cours<br>${data.subjectName} ?
+          </div>
+          
+          <div class="content">
+            <p>Bonjour,</p>
+            <p>Vous avez suivi le cours <span class="highlight">${data.subjectName}</span> avec <span class="highlight">${data.teacherName}</span>.</p>
+            <p class="info-text">
+              Un petit retour de votre part serait super utile pour faire évoluer les choses dans le bon sens.
+            </p>
+            <p class="info-text">
+              Laisser un retour prend moins d'une minute :<br>
+              <span class="highlight">Donner mon avis</span>
+            </p>
+            <p class="info-text">
+              Votre avis compte, qu'il soit positif ou plus critique.
+            </p>
+          </div>
+
+          <div class="button-container">
+            <a href="${data.questionnaireUrl}" class="button">Donner mon avis</a>
+          </div>
+
+          <div class="content">
+            <p>Merci pour votre participation à l'amélioration des cours !</p>
+          </div>
+          
+          <div class="footer">
+            <p>À bientôt,<br>L'équipe Izzzi</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
 }

@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module';
+import { QuestionnairesModule } from './questionnaires/questionnaires.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SubjectsModule } from './subjects/subjects.module';
     MailerModule,
     ClassesModule,
     SubjectsModule,
+    QuestionnairesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
