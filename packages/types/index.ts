@@ -13,6 +13,7 @@ export interface User {
   lastName: string;
   role: UserRole;
   espaceId: string;
+  profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
 }
