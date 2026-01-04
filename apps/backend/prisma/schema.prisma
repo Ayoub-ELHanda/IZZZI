@@ -21,29 +21,40 @@ enum AuthProvider {
   GOOGLE          // Google OAuth
 }
 
+enum SubscriptionPlan {
+  FREE            // Plan gratuit (4 mois d'essai, 5 retours visibles par matière)
+  PREMIUM         // Plan premium (abonnement payant, fonctionnalités illimitées)
+}
+
 model User {
-  id                String        @id @default(uuid())
-  email             String        @unique
-  password          String?       // Null for OAuth users
+  id                String            @id @default(uuid())
+  email             String            @unique
+  password          String?           // Null for OAuth users
   firstName         String
   lastName          String
-  role              UserRole      @default(VISITEUR)
-  authProvider      AuthProvider  @default(LOCAL)
-  googleId          String?       @unique
+  role              UserRole          @default(VISITEUR)
+  authProvider      AuthProvider      @default(LOCAL)
+  googleId          String?           @unique
   establishmentId   String?
-  establishment     Establishment? @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  establishment     Establishment?    @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   
-  isEmailVerified   Boolean       @default(false)
-  isActive          Boolean       @default(true)
+  // Subscription management
+  subscriptionPlan  SubscriptionPlan  @default(FREE)
+  trialStartDate    DateTime?         // Date de début de l'essai gratuit (4 mois)
+  subscriptionStartDate DateTime?     // Date de début de l'abonnement payant
+  subscriptionEndDate   DateTime?     // Date de fin de l'abonnement (pour renouvellement)
+  
+  isEmailVerified   Boolean           @default(false)
+  isActive          Boolean           @default(true)
   profilePicture    String?
   
-  resetPasswordToken      String?   @unique
+  resetPasswordToken      String?     @unique
   resetPasswordExpires    DateTime?
-  emailVerificationToken  String?   @unique
-  invitedBy         String?       // User ID who invited this user
+  emailVerificationToken  String?     @unique
+  invitedBy         String?           // User ID who invited this user
   
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   
   classes           Class[]
   subjects          Subject[]
@@ -51,6 +62,7 @@ model User {
   @@index([email])
   @@index([establishmentId])
   @@index([invitedBy])
+  @@index([subscriptionPlan])
 }
 
 model Establishment {

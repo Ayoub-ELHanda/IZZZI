@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
@@ -5,13 +7,11 @@ import { CardIzzy } from '@/components/ui/CardIzzy';
 import { CardSuperIzzy } from '@/components/ui/CardSuperIzzy';
 import { PlanTableau } from '@/components/ui/PlanTableau';
 import { routes } from '@/config/routes';
-
-export const metadata = {
-  title: 'Tarifs Mensuel - IZZZI',
-  description: 'Découvrez nos offres et tarifs mensuels',
-};
+import { useAuth } from '@/hooks/useAuth';
 
 export default function PricingMensuelPage() {
+  const { isAuthenticated } = useAuth();
+  
   return (
     <div className="bg-white min-h-screen">
      
@@ -154,74 +154,77 @@ export default function PricingMensuelPage() {
           }}
         >
           <CardIzzy />
-          <CardSuperIzzy key="mensuel" />
+          <CardSuperIzzy isAnnual={false} />
         </div>
       </div>
       
-     
-      <div className="bg-white py-16">
-        <div 
-          style={{
-            width: '1067.29px',
-            margin: '0 auto',
-            marginBottom: '40px',
-          }}
-        >
-          <h2 
-            style={{
-              fontFamily: 'Mochiy Pop One',
-              fontWeight: 400,
-              fontSize: '32px',
-              lineHeight: '100%',
-              letterSpacing: '0%',
-              color: '#2F2E2C',
-              textAlign: 'left',
-            }}
-          >
-            Comparez nos plans
-          </h2>
-        </div>
-
-        <PlanTableau />
-      </div>
-
-    
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="mt-16 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
-            Questions fréquentes
-          </h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Comment est calculé le prix ?
-              </h3>
-              <p className="text-gray-600">
-                Le prix est calculé en fonction du nombre de classes actives dans votre espace.
-                Une classe est considérée comme active dès qu'elle contient au moins une matière.
-              </p>
+      {/* Section tableau de comparaison et FAQ - uniquement pour visiteurs */}
+      {!isAuthenticated && (
+        <>
+          <div className="bg-white py-16">
+            <div 
+              style={{
+                width: '1067.29px',
+                margin: '0 auto',
+                marginBottom: '40px',
+              }}
+            >
+              <h2 
+                style={{
+                  fontFamily: 'Mochiy Pop One',
+                  fontWeight: 400,
+                  fontSize: '32px',
+                  lineHeight: '100%',
+                  letterSpacing: '0%',
+                  color: '#2F2E2C',
+                  textAlign: 'left',
+                }}
+              >
+                Comparez nos plans
+              </h2>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Puis-je changer de formule ?
-              </h3>
-              <p className="text-gray-600">
-                Oui, vous pouvez passer du plan mensuel au plan annuel à tout moment.
-                La différence sera calculée au prorata.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Y a-t-il une période d'essai ?
-              </h3>
-              <p className="text-gray-600">
-                Oui, vous bénéficiez de 14 jours d'essai gratuit pour tester la plateforme
-                sans engagement ni carte bancaire requise.
-              </p>
+
+            <PlanTableau isAnnual={false} />
+          </div>
+
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+            <div className="mt-16 max-w-3xl mx-auto">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                Questions fréquentes
+              </h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Comment est calculé le prix ?
+                  </h3>
+                  <p className="text-gray-600">
+                    Le prix est calculé en fonction du nombre de classes actives dans votre espace.
+                    Une classe est considérée comme active dès qu'elle contient au moins une matière.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Puis-je changer de formule ?
+                  </h3>
+                  <p className="text-gray-600">
+                    Oui, vous pouvez passer du plan mensuel au plan annuel à tout moment.
+                    La différence sera calculée au prorata.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Y a-t-il une période d'essai ?
+                  </h3>
+                  <p className="text-gray-600">
+                    Oui, vous bénéficiez de 14 jours d'essai gratuit pour tester la plateforme
+                    sans engagement ni carte bancaire requise.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }

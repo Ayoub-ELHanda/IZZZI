@@ -5,6 +5,11 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum SubscriptionPlan {
+  FREE = 'FREE',
+  PREMIUM = 'PREMIUM',
+}
+
 // Common types
 export interface User {
   id: string;
@@ -14,6 +19,10 @@ export interface User {
   role: UserRole;
   espaceId: string;
   profilePicture?: string;
+  subscriptionPlan: SubscriptionPlan;
+  trialStartDate?: Date;
+  subscriptionStartDate?: Date;
+  subscriptionEndDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

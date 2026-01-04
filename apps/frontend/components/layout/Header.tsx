@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/config/routes';
 import { Bell } from 'lucide-react';
+import { SubscriptionPlan } from '@izzzi/types';
 
 export function Header() {
   const router = useRouter();
@@ -14,6 +15,18 @@ export function Header() {
   const handleLogout = async () => {
     await logout();
     router.push(routes.auth.login);
+  };
+  
+  
+  const getPlanDisplayName = (plan: SubscriptionPlan) => {
+    switch (plan) {
+      case SubscriptionPlan.FREE:
+        return 'Plan gratuit';
+      case SubscriptionPlan.PREMIUM:
+        return 'Super Izzy';
+      default:
+        return 'Plan gratuit';
+    }
   };
 
   return (
@@ -230,7 +243,7 @@ export function Header() {
                   lineHeight: '1.2',
                 }}
               >
-                Plan gratuit
+                {user?.subscriptionPlan ? getPlanDisplayName(user.subscriptionPlan) : 'Plan gratuit'}
               </span>
             </div>
           </Link>

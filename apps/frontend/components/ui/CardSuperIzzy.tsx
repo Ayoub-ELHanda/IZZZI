@@ -7,11 +7,21 @@ import Link from 'next/link';
 import { routes } from '@/config/routes';
 import { useState } from 'react';
 
-export function CardSuperIzzy() {
+interface CardSuperIzzyProps {
+  isAnnual?: boolean;
+}
+
+export function CardSuperIzzy({ isAnnual = true }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
   
-
-  const pricePerClass = 19;
+  // Prix de base mensuel par classe
+  const monthlyPricePerClass = 19;
+  
+  // Prix annuel avec -30% de réduction
+  const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
+  
+  // Prix utilisé selon le mode
+  const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
   const totalPrice = classCount * pricePerClass;
   return (
     <div 
