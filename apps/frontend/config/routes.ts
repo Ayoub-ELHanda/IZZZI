@@ -38,6 +38,11 @@ export const routes = {
     public: (token: string) => `/feedback/${token}`,
   },
   
+  retours: {
+    list: '/dashboard',
+    detail: (questionnaireId: string) => `/retours/${questionnaireId}`,
+  },
+  
   account: {
     profile: '/account',
     settings: '/account/settings',

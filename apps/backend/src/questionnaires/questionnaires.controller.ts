@@ -97,6 +97,40 @@ export class QuestionnairesController {
   }
 
   /**
+   * Récupère tous les questionnaires avec leurs retours pour le dashboard
+   */
+  @Get('my-responses')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
+  getMyResponses(@Request() req) {
+    // TODO: Vérifier le plan de l'utilisateur (pour l'instant, par défaut gratuit)
+    const isPaidPlan = false; // À remplacer par la vérification du plan Stripe
+    return this.questionnairesService.getAllQuestionnairesWithResponses(
+      req.user.userId,
+      isPaidPlan
+    );
+  }
+
+  /**
+   * Récupère les détails d'un questionnaire avec toutes ses statistiques
+   */
+  @Get(':questionnaireId/details')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
+  getQuestionnaireDetails(
+    @Request() req,
+    @Param('questionnaireId') questionnaireId: string
+  ) {
+    // TODO: Vérifier le plan de l'utilisateur (pour l'instant, par défaut gratuit)
+    const isPaidPlan = false; // À remplacer par la vérification du plan Stripe
+    return this.questionnairesService.getQuestionnaireDetails(
+      req.user.userId,
+      questionnaireId,
+      isPaidPlan
+    );
+  }
+
+  /**
    * Envoie des emails de relance aux étudiants pour un questionnaire
    */
   @Post(':questionnaireId/send-reminders')

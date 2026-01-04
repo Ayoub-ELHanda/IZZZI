@@ -1,6 +1,7 @@
 // Custom authentication hook
 'use client';
 
+import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/types/entities';
@@ -21,7 +22,7 @@ interface AuthState {
   clearError: () => void;
 }
 
-export const useAuth = create<AuthState>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
@@ -117,3 +118,57 @@ export const useAuth = create<AuthState>()(
     }
   )
 );
+
+// Wrapper hook that handles hydration properly to avoid SSR mismatches
+export function useAuth() {
+  const store = useAuthStore();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    // Load user if authenticated but not loaded yet
+    if (authService.isAuthenticated() && !store.isAuthenticated) {
+      store.loadUser();
+    }
+  }, []);
+
+  // During SSR and initial render, check localStorage for auth state
+  // Zustand persist should hydrate automatically, but we check localStorage as fallback
+  if (!isMounted) {
+    // Check if user is authenticated in localStorage to avoid flash of "Se connecter"
+    let initialAuth = false;
+    let initialUser = null;
+    if (typeof window !== 'undefined') {
+      try {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+          const parsed = JSON.parse(authStorage);
+          if (parsed.state) {
+            initialAuth = parsed.state.isAuthenticated === true;
+            initialUser = parsed.state.user || null;
+          }
+        }
+        // Also check if token exists as fallback
+        if (!initialAuth && authService.isAuthenticated()) {
+          initialAuth = true;
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+
+    return {
+      user: initialUser,
+      isAuthenticated: initialAuth,
+      isLoading: true,
+      error: null,
+      login: store.login,
+      register: store.register,
+      logout: store.logout,
+      loadUser: store.loadUser,
+      clearError: store.clearError,
+    };
+  }
+
+  return store;
+}

@@ -9,9 +9,13 @@ export class MailerService {
   constructor(private configService: ConfigService) {
     // Configure nodemailer transporter
     // In development, use Mailhog (SMTP server for testing)
+    // Support both MAIL_* and SMTP_* environment variables for compatibility
+    const host = this.configService.get('MAIL_HOST') || this.configService.get('SMTP_HOST') || 'localhost';
+    const port = parseInt(this.configService.get('MAIL_PORT') || this.configService.get('SMTP_PORT') || '1025', 10);
+    
     this.transporter = nodemailer.createTransport({
-      host: this.configService.get('MAIL_HOST') || 'localhost',
-      port: this.configService.get('MAIL_PORT') || 1025,
+      host: host,
+      port: port,
       secure: false,
       auth: this.configService.get('MAIL_USER')
         ? {
@@ -20,13 +24,15 @@ export class MailerService {
           }
         : undefined,
     });
+    
+    console.log(`Mailer configured: ${host}:${port}`);
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string) {
     const resetUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
 
     const mailOptions = {
-      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
       to: email,
       subject: 'Réinitialisation de votre mot de passe - IZZZI',
       html: this.getPasswordResetTemplate(resetUrl),
@@ -43,7 +49,7 @@ export class MailerService {
 
   async sendWelcomeEmail(email: string, firstName: string) {
     const mailOptions = {
-      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
       to: email,
       subject: 'Bienvenue sur IZZZI ! 🎉',
       html: this.getWelcomeTemplate(firstName),
@@ -61,7 +67,7 @@ export class MailerService {
     const inviteUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/auth/register?token=${inviteToken}`;
 
     const mailOptions = {
-      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
       to: email,
       subject: `${inviterName} vous invite à rejoindre IZZZI`,
       html: this.getInvitationTemplate(inviterName, inviteUrl),
@@ -149,7 +155,7 @@ export class MailerService {
 
   async sendClassArchivedEmail(email: string, data: { userName: string; className: string; archivedAt: string }) {
     const mailOptions = {
-      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
       to: email,
       subject: `Classe archivée : ${data.className}`,
       html: this.getClassArchivedTemplate(data),
@@ -241,7 +247,7 @@ export class MailerService {
 
   async sendQuestionnaireReminderEmail(email: string, data: { subjectName: string; teacherName: string; questionnaireUrl: string }) {
     const mailOptions = {
-      from: this.configService.get('MAIL_FROM') || 'IZZZI <noreply@izzzi.io>',
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
       to: email,
       subject: `Un petit retour sur votre cours ${data.subjectName} ?`,
       html: this.getQuestionnaireReminderTemplate(data),

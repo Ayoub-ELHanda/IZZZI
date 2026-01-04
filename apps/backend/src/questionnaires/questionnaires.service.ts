@@ -238,6 +238,212 @@ export class QuestionnairesService {
   }
 
   /**
+   * Récupère tous les questionnaires avec leurs retours pour un utilisateur
+   * Utilisé pour le dashboard "Mes retours"
+   */
+  async getAllQuestionnairesWithResponses(userId: string, isPaidPlan: boolean = false) {
+    // Get user to check role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Build where clause - admins can see all subjects in their establishment
+    const whereClause: any = {};
+    if (user.role !== 'ADMIN') {
+      whereClause.createdBy = userId;
+    } else if (user.establishmentId) {
+      whereClause.class = { establishmentId: user.establishmentId };
+    }
+
+    // Récupérer tous les sujets de l'utilisateur avec leurs questionnaires
+    const subjects = await this.prisma.subject.findMany({
+      where: whereClause,
+      include: {
+        class: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        questionnaires: {
+          include: {
+            responses: {
+              orderBy: {
+                createdAt: 'desc',
+              },
+              // Limiter à 5 retours pour plan gratuit
+              ...(isPaidPlan ? {} : { take: 5 }),
+            },
+            _count: {
+              select: {
+                responses: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Transformer les données pour le frontend
+    return subjects.map((subject) => ({
+      id: subject.id,
+      name: subject.name,
+      teacherName: subject.teacherName,
+      className: subject.class.name,
+      classId: subject.class.id,
+      startDate: subject.startDate,
+      endDate: subject.endDate,
+      questionnaires: subject.questionnaires.map((questionnaire) => {
+        const totalResponses = questionnaire._count.responses;
+        const visibleResponses = isPaidPlan 
+          ? questionnaire.responses.length 
+          : Math.min(questionnaire.responses.length, 5);
+        const hiddenResponses = isPaidPlan ? 0 : Math.max(0, totalResponses - 5);
+
+        // Calculer le score moyen
+        const averageRating = questionnaire.responses.length > 0
+          ? questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) / questionnaire.responses.length
+          : 0;
+
+        return {
+          id: questionnaire.id,
+          type: questionnaire.type,
+          token: questionnaire.token,
+          totalResponses,
+          visibleResponses,
+          hiddenResponses,
+          averageRating: Math.round(averageRating * 10) / 10, // Arrondir à 1 décimale
+          responses: questionnaire.responses.map((response) => ({
+            id: response.id,
+            rating: response.rating,
+            comment: response.comment,
+            isAnonymous: response.isAnonymous,
+            createdAt: response.createdAt,
+          })),
+        };
+      }),
+    }));
+  }
+
+  /**
+   * Récupère les détails d'un questionnaire avec toutes ses statistiques
+   */
+  async getQuestionnaireDetails(userId: string, questionnaireId: string, isPaidPlan: boolean = false) {
+    // Get user to check role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Build where clause - admins can see all questionnaires in their establishment
+    const whereClause: any = { id: questionnaireId };
+    if (user.role !== 'ADMIN') {
+      whereClause.subject = { createdBy: userId };
+    } else if (user.establishmentId) {
+      whereClause.subject = { class: { establishmentId: user.establishmentId } };
+    }
+
+    const questionnaire = await this.prisma.questionnaire.findFirst({
+      where: whereClause,
+      include: {
+        subject: {
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                studentCount: true,
+              },
+            },
+          },
+        },
+        responses: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+          // Limiter à 5 retours pour plan gratuit
+          ...(isPaidPlan ? {} : { take: 5 }),
+        },
+        _count: {
+          select: {
+            responses: true,
+          },
+        },
+      },
+    });
+
+    if (!questionnaire) {
+      throw new NotFoundException('Questionnaire not found or access denied');
+    }
+
+    const totalResponses = questionnaire._count.responses;
+    const visibleResponses = isPaidPlan 
+      ? questionnaire.responses.length 
+      : Math.min(questionnaire.responses.length, 5);
+    const hiddenResponses = isPaidPlan ? 0 : Math.max(0, totalResponses - 5);
+
+    // Calculer les statistiques
+    const ratings = questionnaire.responses.map((r) => r.rating);
+    const averageRating = ratings.length > 0
+      ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
+      : 0;
+
+    // Distribution des notes (1-5)
+    const ratingDistribution = [1, 2, 3, 4, 5].map((rating) => ({
+      rating,
+      count: ratings.filter((r) => r === rating).length,
+    }));
+
+    // Retours avec commentaires
+    const responsesWithComments = questionnaire.responses.filter((r) => r.comment);
+
+    // Points forts et faibles (basés sur les commentaires - simplifié pour l'instant)
+    // TODO: Utiliser l'IA pour analyser les commentaires
+    const positiveComments = responsesWithComments.filter((r) => r.rating >= 4);
+    const negativeComments = responsesWithComments.filter((r) => r.rating <= 2);
+
+    return {
+      id: questionnaire.id,
+      type: questionnaire.type,
+      token: questionnaire.token,
+      subject: {
+        id: questionnaire.subject.id,
+        name: questionnaire.subject.name,
+        teacherName: questionnaire.subject.teacherName,
+        className: questionnaire.subject.class.name,
+        studentCount: questionnaire.subject.class.studentCount,
+      },
+      totalResponses,
+      visibleResponses,
+      hiddenResponses,
+      averageRating: Math.round(averageRating * 10) / 10,
+      ratingDistribution,
+      responses: questionnaire.responses.map((response) => ({
+        id: response.id,
+        rating: response.rating,
+        comment: response.comment,
+        isAnonymous: response.isAnonymous,
+        createdAt: response.createdAt,
+      })),
+      positiveComments: positiveComments.length,
+      negativeComments: negativeComments.length,
+      isPaidPlan,
+    };
+  }
+
+  /**
    * Envoie des emails de relance aux étudiants pour un questionnaire
    */
   async sendRemindersToStudents(userId: string, questionnaireId: string) {

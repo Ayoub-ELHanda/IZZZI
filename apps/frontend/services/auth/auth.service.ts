@@ -16,6 +16,13 @@ export interface RegisterInvitedData {
   inviteToken: string;
 }
 
+export interface InviteUserData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'RESPONSABLE_PEDAGOGIQUE';
+}
+
 export interface LoginData {
   email: string;
   password: string;
@@ -41,6 +48,11 @@ export const authService = {
     if (response.token) {
       localStorage.setItem('auth_token', response.token);
     }
+    return response;
+  },
+
+  async inviteUser(data: InviteUserData): Promise<{ message: string; inviteToken?: string }> {
+    const response = await apiClient.post<{ message: string; inviteToken?: string }>('/auth/invite', data);
     return response;
   },
 
