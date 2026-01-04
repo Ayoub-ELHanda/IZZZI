@@ -136,4 +136,76 @@ export const questionnairesService = {
       `/questionnaires/${questionnaireId}/send-reminders`
     );
   },
+
+  /**
+   * Récupère tous les questionnaires avec leurs retours pour le dashboard
+   */
+  async getMyResponses(): Promise<SubjectWithResponses[]> {
+    return apiClient.get<SubjectWithResponses[]>('/questionnaires/my-responses');
+  },
+
+  /**
+   * Récupère les détails d'un questionnaire avec toutes ses statistiques
+   */
+  async getQuestionnaireDetails(questionnaireId: string): Promise<QuestionnaireDetails> {
+    return apiClient.get<QuestionnaireDetails>(`/questionnaires/${questionnaireId}/details`);
+  },
 };
+
+// Types pour les retours
+export interface Response {
+  id: string;
+  rating: number;
+  comment: string | null;
+  isAnonymous: boolean;
+  createdAt: string;
+}
+
+export interface QuestionnaireWithResponses {
+  id: string;
+  type: 'DURING_COURSE' | 'AFTER_COURSE';
+  token: string;
+  totalResponses: number;
+  visibleResponses: number;
+  hiddenResponses: number;
+  averageRating: number;
+  responses: Response[];
+}
+
+export interface SubjectWithResponses {
+  id: string;
+  name: string;
+  teacherName: string;
+  className: string;
+  classId: string;
+  startDate: string;
+  endDate: string;
+  questionnaires: QuestionnaireWithResponses[];
+}
+
+export interface RatingDistribution {
+  rating: number;
+  count: number;
+}
+
+export interface QuestionnaireDetails {
+  id: string;
+  type: 'DURING_COURSE' | 'AFTER_COURSE';
+  token: string;
+  subject: {
+    id: string;
+    name: string;
+    teacherName: string;
+    className: string;
+    studentCount: number;
+  };
+  totalResponses: number;
+  visibleResponses: number;
+  hiddenResponses: number;
+  averageRating: number;
+  ratingDistribution: RatingDistribution[];
+  responses: Response[];
+  positiveComments: number;
+  negativeComments: number;
+  isPaidPlan: boolean;
+}

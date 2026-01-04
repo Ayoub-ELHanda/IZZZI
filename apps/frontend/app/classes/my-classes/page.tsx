@@ -28,9 +28,13 @@ export default function MyClassesPage() {
   const [isNonAdminLimitModalOpen, setIsNonAdminLimitModalOpen] = useState(false);
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   
   const { user } = useAuth();
-  const isAdmin = user?.role === UserRole.ADMIN;
+  
+  useEffect(() => {
+    setIsAdmin(user?.role === UserRole.ADMIN);
+  }, [user]);
 
   useEffect(() => {
     loadClasses();

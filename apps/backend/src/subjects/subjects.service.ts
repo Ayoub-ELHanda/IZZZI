@@ -8,12 +8,27 @@ export class SubjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateSubjectDto) {
+    // Get user to check role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
     // Verify that the class belongs to the user's establishment
+    // Admins can create subjects in any class of their establishment
+    const whereClause: any = { id: dto.classId };
+    if (user.role !== 'ADMIN') {
+      whereClause.createdBy = userId;
+    } else if (user.establishmentId) {
+      whereClause.establishmentId = user.establishmentId;
+    }
+
     const classItem = await this.prisma.class.findFirst({
-      where: {
-        id: dto.classId,
-        createdBy: userId,
-      },
+      where: whereClause,
     });
 
     if (!classItem) {
@@ -36,12 +51,26 @@ export class SubjectsService {
   }
 
   async findAllByClass(userId: string, classId: string) {
-    // Verify access to class
+    // Get user to check role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    // Verify access to class - admins can see all classes in their establishment
+    const whereClause: any = { id: classId };
+    if (user.role !== 'ADMIN') {
+      whereClause.createdBy = userId;
+    } else if (user.establishmentId) {
+      whereClause.establishmentId = user.establishmentId;
+    }
+
     const classItem = await this.prisma.class.findFirst({
-      where: {
-        id: classId,
-        createdBy: userId,
-      },
+      where: whereClause,
     });
 
     if (!classItem) {
@@ -70,6 +99,16 @@ export class SubjectsService {
   }
 
   async findOne(id: string, userId: string) {
+    // Get user to check role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
     const subject = await this.prisma.subject.findUnique({
       where: { id },
       include: {
@@ -86,7 +125,16 @@ export class SubjectsService {
       },
     });
 
-    if (!subject || subject.createdBy !== userId) {
+    if (!subject) {
+      throw new NotFoundException('Subject not found');
+    }
+
+    // Admins can see all subjects in their establishment
+    if (user.role !== 'ADMIN') {
+      if (subject.createdBy !== userId) {
+        throw new NotFoundException('Subject not found');
+      }
+    } else if (user.establishmentId && subject.class.establishmentId !== user.establishmentId) {
       throw new NotFoundException('Subject not found');
     }
 

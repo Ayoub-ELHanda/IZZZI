@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { BorderedContainer } from '@/components/ui/BorderedContainer';
 import { Button } from '@/components/ui/Button';
 import { ArrowUpRight, Clock, Check, Download, Pencil, Trash2, RefreshCw } from 'lucide-react';
 import { FormTypeSelectionModal } from './FormTypeSelectionModal';
 import { EmailReminderModal } from './EmailReminderModal';
 import { questionnairesService, FormType } from '@/services/api/questionnaires.service';
+import { routes } from '@/config/routes';
 import { toast } from 'sonner';
 
 interface SubjectRowData {
@@ -583,39 +585,73 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
-          <a
-            href="#"
-            style={{
-              textDecoration: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <div
+          {subject.duringCourseId ? (
+            <Link
+              href={routes.retours.detail(subject.duringCourseId)}
               style={{
-                fontSize: '16px',
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                textDecoration: 'underline',
-                textDecorationStyle: 'solid',
-                marginBottom: '2px',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
-            </div>
+              <div
+                style={{
+                  fontSize: '16px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  textDecoration: 'underline',
+                  textDecorationStyle: 'solid',
+                  marginBottom: '2px',
+                }}
+              >
+                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#6B6B6B',
+                  fontStyle: 'italic',
+                }}
+              >
+                (Tous les retours sont anonymes sur le plan gratuit)
+              </div>
+            </Link>
+          ) : (
             <div
               style={{
-                fontSize: '10px',
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 400,
-                color: '#6B6B6B',
-                fontStyle: 'italic',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                opacity: 0.5,
               }}
             >
-              (Tous les retours sont anonymes sur le plan gratuit)
+              <div
+                style={{
+                  fontSize: '16px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  marginBottom: '2px',
+                }}
+              >
+                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#6B6B6B',
+                  fontStyle: 'italic',
+                }}
+              >
+                (Tous les retours sont anonymes sur le plan gratuit)
+              </div>
             </div>
-          </a>
+          )}
         </BorderedContainer>
 
    
@@ -723,39 +759,73 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
-          <a
-            href="#"
-            style={{
-              textDecoration: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <div
+          {subject.afterCourseId ? (
+            <Link
+              href={routes.retours.detail(subject.afterCourseId)}
               style={{
-                fontSize: '16px',
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                textDecoration: 'underline',
-                textDecorationStyle: 'solid',
-                marginBottom: '2px',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
-            </div>
+              <div
+                style={{
+                  fontSize: '16px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  textDecoration: 'underline',
+                  textDecorationStyle: 'solid',
+                  marginBottom: '2px',
+                }}
+              >
+                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#6B6B6B',
+                  fontStyle: 'italic',
+                }}
+              >
+                (Tous les retours sont anonymes sur le plan gratuit)
+              </div>
+            </Link>
+          ) : (
             <div
               style={{
-                fontSize: '10px',
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: 400,
-                color: '#6B6B6B',
-                fontStyle: 'italic',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                opacity: 0.5,
               }}
             >
-              (Tous les retours sont anonymes sur le plan gratuit)
+              <div
+                style={{
+                  fontSize: '16px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  marginBottom: '2px',
+                }}
+              >
+                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 400,
+                  color: '#6B6B6B',
+                  fontStyle: 'italic',
+                }}
+              >
+                (Tous les retours sont anonymes sur le plan gratuit)
+              </div>
             </div>
-          </a>
+          )}
         </BorderedContainer>
       </div>
 

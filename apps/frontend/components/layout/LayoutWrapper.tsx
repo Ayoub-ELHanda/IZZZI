@@ -7,8 +7,8 @@ import { AuthProvider } from "../providers/AuthProvider";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage = pathname?.startsWith("/auth");
-  const isClassesPage = pathname?.startsWith("/classes") || pathname?.startsWith("/create-class");
+  const isAuthPage = pathname?.startsWith("/auth") ?? false;
+  const isClassesPage = (pathname?.startsWith("/classes") || pathname?.startsWith("/create-class")) ?? false;
 
   if (isAuthPage) {
     return <AuthProvider>{children}</AuthProvider>;

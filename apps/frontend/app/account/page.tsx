@@ -9,7 +9,8 @@ import { authService } from '@/services/auth/auth.service';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Logo } from '@/components/assets/Logo';
-import { ArrowLeft, Edit, Bell, Check, ArrowRight, Trash2, Upload } from 'lucide-react';
+import { ArrowLeft, Edit, Bell, Check, ArrowRight, Trash2, Upload, UserPlus } from 'lucide-react';
+import { InviteUserModal } from '@/components/admin/InviteUserModal';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function ProfilePage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState('');
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -322,6 +324,23 @@ export default function ProfilePage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
+
+              {/* Invite User Card - Only for Admin */}
+              {user.role === 'ADMIN' && (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Inviter un utilisateur</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Invitez un responsable pédagogique à rejoindre votre établissement.
+                  </p>
+                  <Button
+                    onClick={() => setIsInviteModalOpen(true)}
+                    className="w-full bg-[#FFD93D] hover:bg-[#FFC93D] text-gray-900 flex items-center justify-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Inviter un responsable pédagogique
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Middle Column - Personal Info */}
@@ -638,6 +657,14 @@ export default function ProfilePage() {
           </>
         )}
       </div>
+
+      {/* Invite User Modal */}
+      {user?.role === 'ADMIN' && (
+        <InviteUserModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

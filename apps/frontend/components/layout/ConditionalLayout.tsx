@@ -9,7 +9,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   
   // Hide header and footer on authenticated pages (account, dashboard, classes, subjects, questionnaires)
   const authenticatedRoutes = ['/account', '/dashboard', '/classes', '/subjects', '/questionnaires'];
-  const shouldHideLayout = authenticatedRoutes.some(route => pathname?.startsWith(route));
+  const shouldHideLayout = authenticatedRoutes.some(route => (pathname ?? '').startsWith(route));
 
   if (shouldHideLayout) {
     return <main className="flex-1">{children}</main>;
