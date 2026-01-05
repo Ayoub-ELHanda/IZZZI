@@ -44,24 +44,54 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        const profile = await authService.getProfile();
-        setUser(profile);
+      // Use user from auth store if available to avoid unnecessary API call
+      if (authUser) {
+        setUser(authUser);
         setProfileForm({
-          firstName: profile.firstName || '',
-          lastName: profile.lastName || '',
-          email: profile.email || '',
-          establishmentName: profile.establishment?.name || '',
+          firstName: authUser.firstName || '',
+          lastName: authUser.lastName || '',
+          email: authUser.email || '',
+          establishmentName: authUser.establishment?.name || '',
         });
-        // Set avatar preview if profile picture exists
-        if (profile.profilePicture) {
-          setAvatarPreview(profile.profilePicture);
+        if (authUser.profilePicture) {
+          setAvatarPreview(authUser.profilePicture);
         }
-      } catch (error) {
-        console.error('Error loading profile:', error);
-        router.push(routes.auth.login);
-      } finally {
         setIsLoading(false);
+        // Still fetch fresh data in background
+        try {
+          const profile = await authService.getProfile();
+          setUser(profile);
+          setProfileForm({
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
+            email: profile.email || '',
+            establishmentName: profile.establishment?.name || '',
+          });
+          if (profile.profilePicture) {
+            setAvatarPreview(profile.profilePicture);
+          }
+        } catch (error) {
+          console.error('Error refreshing profile:', error);
+        }
+      } else {
+        try {
+          const profile = await authService.getProfile();
+          setUser(profile);
+          setProfileForm({
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
+            email: profile.email || '',
+            establishmentName: profile.establishment?.name || '',
+          });
+          if (profile.profilePicture) {
+            setAvatarPreview(profile.profilePicture);
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error);
+          router.push(routes.auth.login);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -70,7 +100,7 @@ export default function ProfilePage() {
     } else {
       router.push(routes.auth.login);
     }
-  }, [router]);
+  }, [router, authUser]);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

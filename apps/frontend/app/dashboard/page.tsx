@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { routes } from '@/config/routes';
 import { authService } from '@/services/auth/auth.service';
@@ -54,44 +54,41 @@ export default function DashboardPage() {
   };
 
   // Filtrer les matières selon l'onglet actif et la recherche
-  const filteredSubjects = subjects.filter((subject) => {
-    const now = new Date();
-    const endDate = new Date(subject.endDate);
-    const isCompleted = endDate < now;
-    
-    if (activeTab === 'in-progress' && isCompleted) return false;
-    if (activeTab === 'completed' && !isCompleted) return false;
-    
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        subject.name.toLowerCase().includes(query) ||
-        subject.teacherName.toLowerCase().includes(query) ||
-        subject.className.toLowerCase().includes(query)
-      );
-    }
-    
-    return true;
-  });
+  const filteredSubjects = useMemo(() => {
+    return subjects.filter((subject) => {
+      const now = new Date();
+      const endDate = new Date(subject.endDate);
+      const isCompleted = endDate < now;
+      
+      if (activeTab === 'in-progress' && isCompleted) return false;
+      if (activeTab === 'completed' && !isCompleted) return false;
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          subject.name.toLowerCase().includes(query) ||
+          subject.teacherName.toLowerCase().includes(query) ||
+          subject.className.toLowerCase().includes(query)
+        );
+      }
+      
+      return true;
+    });
+  }, [subjects, activeTab, searchQuery]);
 
   // Aplatir tous les questionnaires pour l'affichage
-  const allQuestionnairesBase = filteredSubjects.flatMap((subject) =>
-    subject.questionnaires.map((q) => ({
-      ...q,
-      subject,
-    }))
-  );
+  const allQuestionnairesBase = useMemo(() => {
+    return filteredSubjects.flatMap((subject) =>
+      subject.questionnaires.map((q) => ({
+        ...q,
+        subject,
+      }))
+    );
+  }, [filteredSubjects]);
 
-  // Filtrer par alertes si nécessaire
-  const allQuestionnaires = showAlertsOnly
-    ? allQuestionnairesBase.filter((q) => {
-        return q.averageRating < 3.5 || q.visibleResponses < 5;
-      })
-    : allQuestionnairesBase;
-
-  // Trier les questionnaires
-  const displayedQuestionnaires = (() => {
-    const sorted = [...allQuestionnaires];
+  // Trier les questionnaires d'abord
+  const sortedQuestionnaires = useMemo(() => {
+    const sorted = [...allQuestionnairesBase];
     if (sortBy === 'date') {
       sorted.sort((a, b) => {
         const dateA = new Date(a.subject.startDate).getTime();
@@ -100,15 +97,38 @@ export default function DashboardPage() {
       });
     } else if (sortBy === 'score') {
       sorted.sort((a, b) => {
-        return b.averageRating - a.averageRating; // Score le plus élevé en premier
+        return (b.averageRating || 0) - (a.averageRating || 0); // Score le plus élevé en premier
       });
     } else if (sortBy === 'responses') {
       sorted.sort((a, b) => {
-        return b.visibleResponses - a.visibleResponses; // Plus de retours en premier
+        return (b.visibleResponses || 0) - (a.visibleResponses || 0); // Plus de retours en premier
       });
     }
     return sorted;
-  })();
+  }, [allQuestionnairesBase, sortBy]);
+
+  // Filtrer par alertes si nécessaire (après le tri)
+  const displayedQuestionnaires = useMemo(() => {
+    if (!showAlertsOnly) {
+      return sortedQuestionnaires;
+    }
+    
+    const filtered = sortedQuestionnaires.filter((q) => {
+      // Vérifier si le questionnaire a des alertes
+      // Un questionnaire a une alerte si :
+      // - Le score moyen est inférieur à 3.5 OU
+      // - Le nombre de retours visibles est inférieur à 5
+      const averageRating = Number(q.averageRating) || 0;
+      const visibleResponses = Number(q.visibleResponses) || 0;
+      
+      const hasLowRating = averageRating < 3.5;
+      const hasLowResponses = visibleResponses < 5;
+      
+      return hasLowRating || hasLowResponses;
+    });
+    
+    return filtered;
+  }, [showAlertsOnly, sortedQuestionnaires]);
 
   // Filtrer par matière si nécessaire (pour l'instant, "all" affiche tout)
   // Cette fonctionnalité peut être étendue plus tard pour filtrer par matière spécifique
@@ -327,10 +347,6 @@ export default function DashboardPage() {
               <option value="all">Toutes les matières</option>
             </select>
             <label 
-              onClick={(e) => {
-                e.preventDefault();
-                setShowAlertsOnly(!showAlertsOnly);
-              }}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -346,7 +362,10 @@ export default function DashboardPage() {
                 <input
                   type="checkbox"
                   checked={showAlertsOnly}
-                  onChange={(e) => setShowAlertsOnly(e.target.checked)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setShowAlertsOnly(e.target.checked);
+                  }}
                   style={{
                     opacity: 0,
                     width: 0,
@@ -356,6 +375,7 @@ export default function DashboardPage() {
                 />
                 <span
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     setShowAlertsOnly(!showAlertsOnly);
                   }}
@@ -388,7 +408,10 @@ export default function DashboardPage() {
                   />
                 </span>
               </div>
-              <span>Afficher les alertes uniquement</span>
+              <span onClick={(e) => {
+                e.preventDefault();
+                setShowAlertsOnly(!showAlertsOnly);
+              }}>Afficher les alertes uniquement</span>
             </label>
             </div>
           </div>

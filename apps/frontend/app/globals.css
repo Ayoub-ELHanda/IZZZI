@@ -48,6 +48,22 @@
   border-color: #E5E5E5;
 }
 
+.border-border {
+  border-color: #E5E5E5;
+}
+
+.border-border-light {
+  border-color: #E5E5E5;
+}
+
+.rounded-8px {
+  border-radius: 8px;
+}
+
+.bg-banner {
+  background-color: transparent;
+}
+
 .font-title {
   font-family: var(--font-mochiy), sans-serif;
 }
