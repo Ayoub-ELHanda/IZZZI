@@ -13,9 +13,17 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
-  const classCount = parseInt(searchParams.get('classes') || '7');
-  const isAnnual = searchParams.get('period') === 'annual';
+  // Récupérer et valider les paramètres de l'URL
+  const classesParam = searchParams.get('classes');
+  const periodParam = searchParams.get('period');
   
+  // Valider le nombre de classes (entre 1 et 20)
+  const classCount = Math.max(1, Math.min(20, parseInt(classesParam || '7') || 7));
+  
+  // Valider la période (annual ou monthly)
+  const isAnnual = periodParam === 'annual';
+  
+  // Calculer le prix selon les paliers
   let monthlyPricePerClass: number;
   if (classCount >= 1 && classCount <= 5) {
     monthlyPricePerClass = 19;
@@ -29,15 +37,16 @@ export default function CheckoutPage() {
     monthlyPricePerClass = 13; 
   }
   
- 
+  // Appliquer la réduction de 30% pour l'abonnement annuel
   const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
   const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
   
   const [isProcessing, setIsProcessing] = useState(false);
 
- 
+  // Rediriger vers la page de connexion si non authentifié
   if (!isAuthenticated) {
-    router.push('/auth/login?redirect=/checkout');
+    const currentUrl = window.location.pathname + window.location.search;
+    router.push(`/auth/login?redirect=${encodeURIComponent(currentUrl)}`);
     return null;
   }
 
@@ -54,7 +63,8 @@ export default function CheckoutPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:4000/api/payment/create-checkout-session', {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
+      const response = await fetch(`${apiBaseUrl}/payment/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,20 +77,56 @@ export default function CheckoutPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erreur lors de la création de la session de paiement');
+        let errorMessage = 'Erreur lors de la création de la session de paiement';
+        
+        // Gérer spécifiquement les erreurs 401 (non autorisé)
+        if (response.status === 401) {
+          errorMessage = 'Votre session a expiré. Veuillez vous reconnecter.';
+          // Rediriger vers la page de connexion
+          router.push('/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search));
+          setIsProcessing(false);
+          return;
+        }
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (e) {
+          // Si la réponse n'est pas du JSON, essayer de lire le texte
+          try {
+            const text = await response.text();
+            if (text) {
+              errorMessage = text;
+            } else {
+              errorMessage = `Erreur ${response.status}: ${response.statusText}`;
+            }
+          } catch (textError) {
+            errorMessage = `Erreur ${response.status}: ${response.statusText}`;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
-      const { url } = await response.json();
+      const data = await response.json();
     
-      if (url) {
-        window.location.href = url;
+      if (data.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('URL de paiement non reçue');
       }
     } catch (error: any) {
       console.error('Erreur de paiement:', error);
-      alert(error.message || 'Une erreur est survenue lors du paiement. Veuillez réessayer.');
+      
+      // Gérer les erreurs réseau différemment
+      let errorMessage = 'Une erreur est survenue lors du paiement. Veuillez réessayer.';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Erreur de connexion au serveur. Vérifiez que le backend est démarré.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsProcessing(false);
     }
@@ -110,8 +156,8 @@ export default function CheckoutPage() {
           </p>
         </div>
 
-        {/* Layout à 2 colonnes */}
-        <div className="grid grid-cols-[1fr_400px] gap-12 items-start">
+        {/* Layout à 2 colonnes - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-start">
           {/* Colonne gauche : Formulaire */}
           <div className="bg-white rounded-lg p-10 shadow-sm">
             {isProcessing ? (

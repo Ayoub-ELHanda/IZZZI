@@ -13,8 +13,18 @@ export class PaymentService {
     private prisma: PrismaService,
   ) {
     const stripeSecretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
+    const isDevelopment = this.configService.get<string>('NODE_ENV') !== 'production';
     
+    // En développement, on permet l'absence de STRIPE_SECRET_KEY
     if (!stripeSecretKey) {
+      if (isDevelopment) {
+        this.logger.warn('STRIPE_SECRET_KEY is not defined. Payment features will be disabled.');
+        // Créer une instance Stripe avec une clé factice pour éviter les erreurs
+        this.stripe = new Stripe('sk_test_placeholder', {
+          apiVersion: '2025-12-15.clover',
+        });
+        return;
+      }
       throw new Error('STRIPE_SECRET_KEY is not defined');
     }
 
@@ -31,6 +41,19 @@ export class PaymentService {
     classCount: number,
     isAnnual: boolean,
   ) {
+    // Vérifier que Stripe est configuré
+    const stripeSecretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
+    if (!stripeSecretKey || stripeSecretKey === 'sk_test_placeholder' || stripeSecretKey.trim() === '') {
+      this.logger.error('STRIPE_SECRET_KEY is not configured');
+      throw new Error('Stripe n\'est pas configuré. Veuillez définir STRIPE_SECRET_KEY dans votre fichier .env');
+    }
+
+    // Vérifier que l'instance Stripe est valide
+    if (!this.stripe || !stripeSecretKey.startsWith('sk_test_') && !stripeSecretKey.startsWith('sk_live_')) {
+      this.logger.error('Invalid Stripe configuration');
+      throw new Error('Configuration Stripe invalide. Veuillez vérifier votre clé API.');
+    }
+
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -125,9 +148,10 @@ export class PaymentService {
    */
   async handleWebhook(signature: string, payload: Buffer) {
     const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    const stripeSecretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
 
-    if (!webhookSecret) {
-      throw new Error('STRIPE_WEBHOOK_SECRET is not defined');
+    if (!webhookSecret || !stripeSecretKey) {
+      throw new Error('Stripe webhook is not configured. Please set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET environment variables.');
     }
 
     let event: Stripe.Event;
