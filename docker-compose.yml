@@ -25,9 +25,10 @@ services:
       - "1025:1025"  # SMTP server
 
   backend:
-    image: node:20-alpine
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.dev
     container_name: izzzi-backend
-    working_dir: /app/apps/backend
     command: sh -c "npm install && npx prisma migrate deploy && npx prisma generate && npm run dev"
     env_file:
       - env/.env
@@ -43,6 +44,7 @@ services:
       - "4000:4000"
     volumes:
       - ./apps/backend:/app/apps/backend
+      - ./packages:/app/packages
       - backend_node_modules:/app/apps/backend/node_modules
     depends_on:
       - postgres
