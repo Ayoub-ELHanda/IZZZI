@@ -1,7 +1,7 @@
 // Custom authentication hook
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/types/entities';
@@ -123,14 +123,16 @@ export const useAuthStore = create<AuthState>()(
 export function useAuth() {
   const store = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
+  const hasCheckedRef = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // Load user if authenticated but not loaded yet
-    if (authService.isAuthenticated() && !store.isAuthenticated) {
+    // Only check once on mount
+    if (!hasCheckedRef.current && authService.isAuthenticated() && !store.isAuthenticated) {
+      hasCheckedRef.current = true;
       store.loadUser();
     }
-  }, []);
+  }, []); // Empty dependency array - only run once
 
   // During SSR and initial render, check localStorage for auth state
   // Zustand persist should hydrate automatically, but we check localStorage as fallback

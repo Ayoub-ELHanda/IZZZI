@@ -6,7 +6,7 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { classesService } from '@/services/api/classes.service';
 import { subjectsService, Subject } from '@/services/api/subjects.service';
 import { toast } from 'sonner';
@@ -22,7 +22,9 @@ export default function ClassDetailPage() {
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    loadData();
+    if (classId) {
+      loadData();
+    }
   }, [classId]);
 
   const loadData = async () => {
@@ -82,7 +84,7 @@ export default function ClassDetailPage() {
     return `${day}/${month}/${year}`;
   };
 
-  const transformedSubjects = subjects.map((subject) => {
+  const transformedSubjects = useMemo(() => subjects.map((subject) => {
     const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
     const totalResponses = hasQuestionnaires
       ? subject.questionnaires.reduce((acc, q) => acc + (q._count?.responses || 0), 0)
@@ -112,7 +114,7 @@ export default function ClassDetailPage() {
       duringCourseId: duringCourseQuestionnaire?.id,
       afterCourseId: afterCourseQuestionnaire?.id,
     };
-  });
+  }), [subjects, classData]);
 
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
@@ -129,7 +131,7 @@ export default function ClassDetailPage() {
           linkHref="/pricing"
         />
 
-        <Link href="/classes/my-classes" style={{ textDecoration: 'none' }}>
+        <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
           <button
             style={{
               display: 'flex',

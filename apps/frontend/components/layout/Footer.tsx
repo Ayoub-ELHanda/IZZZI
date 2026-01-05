@@ -21,7 +21,7 @@ export function Footer() {
         </div>
 
         <div 
-          className="absolute bg-white border-2 border-gray-200 px-6 py-3 rounded-full text-gray-800 shadow-md"
+          className="absolute bg-white px-6 py-3 rounded-full text-gray-800 shadow-md"
           style={{ 
             top: '100px', 
             left: '18%',
@@ -56,7 +56,7 @@ export function Footer() {
         </div>
 
         <div 
-          className="absolute bg-white border-2 border-gray-200 px-6 py-3 rounded-full text-gray-800 shadow-md"
+          className="absolute bg-white px-6 py-3 rounded-full text-gray-800 shadow-md"
           style={{ 
             top: '100px', 
             left: '62%',
@@ -117,17 +117,17 @@ export function Footer() {
                   <h4 className="font-semibold text-white mb-4 text-base">Plan du site</h4>
                   <ul className="space-y-3">
                     <li>
-                      <Link href="/pricing" className="text-white hover:text-white/80 text-sm transition-colors">
+                      <Link href="/pricing" prefetch={true} className="text-white hover:text-white/80 text-sm transition-colors">
                         Nos tarifs
                       </Link>
                     </li>
                     <li>
-                      <Link href="/auth/register" className="text-white hover:text-white/80 text-sm transition-colors">
+                      <Link href="/auth/register" prefetch={true} className="text-white hover:text-white/80 text-sm transition-colors">
                         S'inscrire
                       </Link>
                     </li>
                     <li>
-                      <Link href="/auth/login" className="text-white hover:text-white/80 text-sm transition-colors">
+                      <Link href="/auth/login" prefetch={true} className="text-white hover:text-white/80 text-sm transition-colors">
                         Se connecter
                       </Link>
                     </li>
@@ -149,10 +149,10 @@ export function Footer() {
 
             {/* Legal Links - Bottom Right */}
             <div className="absolute bottom-0 right-0 flex gap-8">
-              <Link href="/legal/mentions" className="text-white hover:text-white/80 text-sm transition-colors">
+              <Link href="/legal/mentions" prefetch={true} className="text-white hover:text-white/80 text-sm transition-colors">
                 Mentions légales
               </Link>
-              <Link href="/legal/faq" className="text-white hover:text-white/80 text-sm transition-colors">
+              <Link href="/legal/faq" prefetch={true} className="text-white hover:text-white/80 text-sm transition-colors">
                 FAQ
               </Link>
             </div>

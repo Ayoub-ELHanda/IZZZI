@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { questionnairesService, QuestionnaireDetails } from '@/services/api/questionnaires.service';
 import { toast } from 'sonner';
@@ -20,7 +20,9 @@ export default function QuestionnaireDetailsPage() {
   const [isPaidPlan] = useState(false); // TODO: Vérifier le plan depuis Stripe
 
   useEffect(() => {
-    loadData();
+    if (questionnaireId) {
+      loadData();
+    }
   }, [questionnaireId]);
 
   const loadData = async () => {
@@ -38,6 +40,27 @@ export default function QuestionnaireDetailsPage() {
       setIsLoading(false);
     }
   };
+
+  // Memoize temporal data to avoid recalculating on every render
+  const temporalData = useMemo(() => {
+    if (!data?.responses) return [];
+    return generateTemporalData(data.responses);
+  }, [data?.responses]);
+
+  // Memoize filtered responses for points forts/faibles
+  const weakPoints = useMemo(() => {
+    if (!data?.responses) return [];
+    return data.responses
+      .filter((r) => r.rating <= 2 && r.comment)
+      .slice(0, 5);
+  }, [data?.responses]);
+
+  const strongPoints = useMemo(() => {
+    if (!data?.responses) return [];
+    return data.responses
+      .filter((r) => r.rating >= 4 && r.comment)
+      .slice(0, 5);
+  }, [data?.responses]);
 
   if (isLoading) {
     return (
@@ -86,6 +109,7 @@ export default function QuestionnaireDetailsPage() {
         <div style={{ marginBottom: '32px' }}>
           <Link
             href={routes.dashboard}
+            prefetch={true}
             style={{
               color: '#4A90E2',
               textDecoration: 'none',
@@ -127,7 +151,7 @@ export default function QuestionnaireDetailsPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                 <ChartCard title="Globalement vous avez trouvé ce cours">
                   <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={generateTemporalData(data.responses)}>
+                    <LineChart data={temporalData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
                       <YAxis domain={[0, 5]} />
@@ -138,7 +162,7 @@ export default function QuestionnaireDetailsPage() {
                 </ChartCard>
                 <ChartCard title="Évolution de la satisfaction moyenne">
                   <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={generateTemporalData(data.responses)}>
+                    <LineChart data={temporalData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
                       <YAxis domain={[0, 100]} />
@@ -235,14 +259,11 @@ export default function QuestionnaireDetailsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '24px' }}>
               <Section title="Points faibles">
                 <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {data.responses
-                    .filter((r) => r.rating <= 2 && r.comment)
-                    .slice(0, 5)
-                    .map((response, index) => (
-                      <li key={index} style={{ marginBottom: '8px', fontSize: '14px', color: '#6B6B6B' }}>
-                        • {response.comment}
-                      </li>
-                    ))}
+                  {weakPoints.map((response, index) => (
+                    <li key={index} style={{ marginBottom: '8px', fontSize: '14px', color: '#6B6B6B' }}>
+                      • {response.comment}
+                    </li>
+                  ))}
                   {!isPaidPlan && data.hiddenResponses > 0 && (
                     <li style={{ marginTop: '16px', padding: '12px', background: '#FFF3CD', borderRadius: '4px', fontSize: '12px', color: '#856404' }}>
                       {data.hiddenResponses} retours manquants. Passez à Super IZZZI pour les afficher.
@@ -252,14 +273,11 @@ export default function QuestionnaireDetailsPage() {
               </Section>
               <Section title="Points forts">
                 <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {data.responses
-                    .filter((r) => r.rating >= 4 && r.comment)
-                    .slice(0, 5)
-                    .map((response, index) => (
-                      <li key={index} style={{ marginBottom: '8px', fontSize: '14px', color: '#6B6B6B' }}>
-                        • {response.comment}
-                      </li>
-                    ))}
+                  {strongPoints.map((response, index) => (
+                    <li key={index} style={{ marginBottom: '8px', fontSize: '14px', color: '#6B6B6B' }}>
+                      • {response.comment}
+                    </li>
+                  ))}
                   {!isPaidPlan && data.hiddenResponses > 0 && (
                     <li style={{ marginTop: '16px', padding: '12px', background: '#FFF3CD', borderRadius: '4px', fontSize: '12px', color: '#856404' }}>
                       {data.hiddenResponses} retours manquants. Passez à Super IZZZI pour les afficher.

@@ -32,7 +32,7 @@ export function Header() {
     >
       {/* Logo - Left */}
       <div style={{ flex: '1' }}>
-        <Link href={routes.home} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', width: 'fit-content' }}>
+        <Link href={routes.home} prefetch={true} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', width: 'fit-content' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div 
               style={{
@@ -75,7 +75,7 @@ export function Header() {
             zIndex: 1,
           }}
         >
-          <Link href="/classes/my-classes">
+          <Link href="/classes/my-classes" prefetch={true}>
             <button
               style={{
                 padding: '10px 24px',
@@ -99,7 +99,7 @@ export function Header() {
               Mes classes
             </button>
           </Link>
-          <Link href="/dashboard">
+          <Link href="/dashboard" prefetch={true}>
             <button
               style={{
                 padding: '10px 24px',
@@ -155,7 +155,8 @@ export function Header() {
 
           {/* User profile */}
           <Link 
-            href={routes.account.profile} 
+            href={routes.account.profile}
+            prefetch={true}
             style={{ 
               display: 'flex', 
               alignItems: 'center', 

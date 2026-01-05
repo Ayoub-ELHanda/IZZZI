@@ -199,7 +199,7 @@ export default function MyClassesPage() {
         </div>
 
        
-        <Link href="/classes/archived" style={{ textDecoration: 'none' }}>
+        <Link href="/classes/archived" prefetch={true} style={{ textDecoration: 'none' }}>
           <span
             style={{
               fontFamily: 'Poppins, sans-serif',

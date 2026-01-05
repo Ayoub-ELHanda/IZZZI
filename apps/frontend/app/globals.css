@@ -15,6 +15,64 @@
   --font-poppins: var(--font-poppins);
 }
 
+/* Custom utility classes for landing page */
+.bg-secondary-dark {
+  background-color: #FFD93D;
+}
+
+.bg-secondary-light {
+  background-color: #FFE566;
+}
+
+.bg-primary-dark {
+  background-color: #FF6B35;
+}
+
+.bg-primary-light {
+  background-color: #FF9500;
+}
+
+.text-content {
+  color: #2F2E2C;
+}
+
+.bg-background {
+  background-color: #FFFFFF;
+}
+
+.bg-background-muted {
+  background-color: #F5F5F5;
+}
+
+.border-input-normal {
+  border-color: #E5E5E5;
+}
+
+.font-title {
+  font-family: var(--font-mochiy), sans-serif;
+}
+
+.font-content {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.text-title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.1;
+}
+
+.text-subtitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.text-headline {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+.leading-title {
+  line-height: 1.1;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -26,4 +84,82 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Marquee animation */
+.marquee {
+  overflow: hidden;
+  width: 100%;
+}
+
+.marquee__inner {
+  display: flex;
+  width: fit-content;
+  animation: marquee 30s linear infinite;
+}
+
+.marquee__inner span {
+  padding-right: 2rem;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Orange ribbon text */
+.orange-ribbon {
+  font-family: "Mochiy Pop One", sans-serif;
+}
+
+/* Dashboard responsive grid - 2 columns by default */
+.dashboard-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Questionnaire card header responsive */
+@media (max-width: 968px) {
+  .questionnaire-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  .questionnaire-card-header > div {
+    width: 100%;
+  }
+  
+  .questionnaire-card-badges {
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+  }
+  
+  /* Sur mobile, colonne droite passe en dessous */
+  .questionnaire-card-content {
+    flex-direction: column !important;
+  }
+  
+  .questionnaire-card-actions {
+    width: 100% !important;
+  }
 }
