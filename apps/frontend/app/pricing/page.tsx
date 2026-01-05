@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
@@ -5,13 +7,11 @@ import { CardIzzy } from '@/components/ui/CardIzzy';
 import { CardSuperIzzy } from '@/components/ui/CardSuperIzzy';
 import { PlanTableau } from '@/components/ui/PlanTableau';
 import { routes } from '@/config/routes';
-
-export const metadata = {
-  title: 'Tarifs - IZZZI',
-  description: 'Découvrez nos offres et tarifs',
-};
+import { useAuth } from '@/hooks/useAuth';
 
 export default function PricingPage() {
+  const { isAuthenticated } = useAuth();
+  
   return (
     <div className="bg-white min-h-screen">
      
@@ -145,12 +145,14 @@ export default function PricingPage() {
           }}
         >
           <CardIzzy />
-          <CardSuperIzzy />
+          <CardSuperIzzy isAnnual={true} />
         </div>
       </div>
       
-     
-      <div className="bg-white py-16">
+      {/* Section tableau de comparaison et FAQ - uniquement pour visiteurs */}
+      {!isAuthenticated && (
+        <>
+          <div className="bg-white py-16">
         <div 
           style={{
             width: '1067.29px',
@@ -173,11 +175,10 @@ export default function PricingPage() {
           </h2>
         </div>
 
-        <PlanTableau />
+        <PlanTableau isAnnual={true} />
       </div>
 
-    
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="mt-16 max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
             Questions fréquentes
@@ -212,7 +213,9 @@ export default function PricingPage() {
             </div>
           </div>
         </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
