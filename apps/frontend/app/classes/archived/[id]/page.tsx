@@ -48,7 +48,7 @@ export default function ArchivedClassDetailPage() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto" style={{ maxWidth: '1700px' }}>
   
-        <Link href="/classes/archived" style={{ textDecoration: 'none' }}>
+        <Link href="/classes/archived" prefetch={true} style={{ textDecoration: 'none' }}>
           <button
             style={{
               display: 'flex',

@@ -588,6 +588,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           {subject.duringCourseId ? (
             <Link
               href={routes.retours.detail(subject.duringCourseId)}
+              prefetch={false}
               style={{
                 textDecoration: 'none',
                 display: 'flex',
@@ -762,6 +763,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           {subject.afterCourseId ? (
             <Link
               href={routes.retours.detail(subject.afterCourseId)}
+              prefetch={false}
               style={{
                 textDecoration: 'none',
                 display: 'flex',

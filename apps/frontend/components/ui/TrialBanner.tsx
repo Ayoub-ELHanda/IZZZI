@@ -39,7 +39,7 @@ export function TrialBanner({ message1, message2, linkText, linkHref, position =
         </div>
       </div>
       
-      <Link href={linkHref} style={{ textDecoration: 'none' }}>
+      <Link href={linkHref} prefetch={true} style={{ textDecoration: 'none' }}>
         <span
           style={{
             width: '247px',

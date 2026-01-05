@@ -1,19 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth/auth.service';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { loadUser, isAuthenticated, user } = useAuth();
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    // Always try to load user if token exists, even if isAuthenticated is false initially
-    // This handles the case where Zustand hasn't hydrated yet
-    if (authService.isAuthenticated() && (!isAuthenticated || !user)) {
+    // Only load user once on mount if needed
+    if (!hasLoadedRef.current && authService.isAuthenticated() && (!isAuthenticated || !user)) {
+      hasLoadedRef.current = true;
       loadUser();
     }
-  }, [isAuthenticated, user, loadUser]);
+  }, []); // Empty dependency array - only run once on mount
 
   return <>{children}</>;
 }

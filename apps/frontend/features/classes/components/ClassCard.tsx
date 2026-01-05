@@ -83,7 +83,7 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
 
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`}>
+          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true}>
             <span
               style={{
                 fontFamily: 'Poppins, sans-serif',
@@ -96,7 +96,7 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
             </span>
           </Link>
 
-          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`}>
+          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true}>
             <div
               style={{
                 width: '43px',
@@ -131,7 +131,7 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
 
       {isArchived ? (
         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <Link href={`/classes/archived/${id}`} style={{ textDecoration: 'none' }}>
+          <Link href={`/classes/archived/${id}`} prefetch={true} style={{ textDecoration: 'none' }}>
             <button
               style={{
                 fontFamily: 'Poppins, sans-serif',
