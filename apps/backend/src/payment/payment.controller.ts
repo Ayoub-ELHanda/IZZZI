@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -23,12 +24,38 @@ export class PaymentController {
     @Req() req: any,
     @Body() body: { classCount: number; isAnnual: boolean },
   ) {
-    const userId = req.user.id;
-    return this.paymentService.createCheckoutSession(
-      userId,
-      body.classCount,
-      body.isAnnual,
-    );
+    try {
+      const userId = req.user.id;
+      return await this.paymentService.createCheckoutSession(
+        userId,
+        body.classCount,
+        body.isAnnual,
+      );
+    } catch (error: any) {
+      // Gérer les erreurs de configuration Stripe
+      if (error.message && error.message.includes('Stripe n\'est pas configuré')) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Stripe n\'est pas configuré. Veuillez définir STRIPE_SECRET_KEY dans votre fichier .env',
+            error: 'Stripe Configuration Error',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      // Gérer les autres erreurs
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Erreur lors de la création de la session de paiement',
+          error: 'Payment Error',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('webhook')

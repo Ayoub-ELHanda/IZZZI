@@ -37,8 +37,63 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
     siret: '',
   });
 
+  // Fonction pour formater le numéro de carte (ajoute des espaces tous les 4 chiffres)
+  const formatCardNumber = (value: string): string => {
+    // Retirer tous les espaces et caractères non numériques
+    const numbers = value.replace(/\D/g, '');
+    // Limiter à 16 chiffres
+    const limitedNumbers = numbers.slice(0, 16);
+    
+    // Formater avec des espaces tous les 4 chiffres
+    // Utiliser une approche qui évite l'espace final
+    const formatted = limitedNumbers
+      .match(/.{1,4}/g) // Diviser en groupes de 4
+      ?.join(' ') || limitedNumbers; // Joindre avec des espaces
+    
+    return formatted;
+  };
+
+  // Fonction pour formater la date d'expiration (MM/AA)
+  const formatExpiryDate = (value: string): string => {
+    // Retirer tous les caractères non numériques
+    const numbers = value.replace(/\D/g, '');
+    // Limiter à 4 chiffres
+    let limitedNumbers = numbers.slice(0, 4);
+    
+    // Valider le mois (ne peut pas dépasser 12)
+    if (limitedNumbers.length >= 2) {
+      const month = parseInt(limitedNumbers.slice(0, 2));
+      if (month > 12) {
+        // Si le mois dépasse 12, le limiter à 12
+        limitedNumbers = '12' + limitedNumbers.slice(2);
+      } else if (month === 0) {
+        // Si le mois est 00, le remplacer par 01
+        limitedNumbers = '01' + limitedNumbers.slice(2);
+      }
+    }
+    
+    // Si on a au moins 2 chiffres, ajouter le "/"
+    if (limitedNumbers.length >= 2) {
+      return `${limitedNumbers.slice(0, 2)}/${limitedNumbers.slice(2)}`;
+    }
+    
+    return limitedNumbers;
+  };
+
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    let formattedValue = value;
+    
+    // Appliquer le formatage selon le champ
+    if (field === 'cardNumber') {
+      formattedValue = formatCardNumber(value);
+    } else if (field === 'expiryDate') {
+      formattedValue = formatExpiryDate(value);
+    } else if (field === 'cvc') {
+      // Pour le CVC, ne garder que les chiffres et limiter à 4
+      formattedValue = value.replace(/\D/g, '').slice(0, 4);
+    }
+    
+    setFormData(prev => ({ ...prev, [field]: formattedValue }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -188,6 +243,7 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
               onChange={(e) => handleChange('cardNumber', e.target.value)}
               required
               maxLength={19}
+              inputMode="numeric"
               style={{ width: '100%' }}
             />
           </div>
@@ -212,6 +268,7 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
                 onChange={(e) => handleChange('expiryDate', e.target.value)}
                 required
                 maxLength={5}
+                inputMode="numeric"
                 style={{ width: '100%' }}
               />
             </div>
@@ -234,6 +291,7 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
                 onChange={(e) => handleChange('cvc', e.target.value)}
                 required
                 maxLength={4}
+                inputMode="numeric"
                 style={{ width: '100%' }}
               />
             </div>
