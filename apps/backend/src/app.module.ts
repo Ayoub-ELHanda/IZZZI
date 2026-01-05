@@ -9,6 +9,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { QuestionnairesModule } from './questionnaires/questionnaires.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { QuestionnairesModule } from './questionnaires/questionnaires.module';
     ClassesModule,
     SubjectsModule,
     QuestionnairesModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

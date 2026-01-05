@@ -3,6 +3,10 @@
 import { Button } from './Button';
 import { ArrowUpRight } from 'lucide-react';
 
+interface PlanTableauProps {
+  isAnnual?: boolean;
+}
+
 interface FeatureRow {
   name: string;
   izzzi: string;
@@ -97,7 +101,16 @@ const features: FeatureRow[] = [
   },
 ];
 
-export function PlanTableau() {
+export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
+  // Prix de base mensuel par classe
+  const monthlyPricePerClass = 19;
+  
+  // Prix annuel avec -30% de réduction
+  const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
+  
+  // Prix utilisé selon le mode
+  const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
+  
   return (
     <div
       style={{
@@ -197,7 +210,7 @@ export function PlanTableau() {
             }}
           >
             à partir de<br />
-            <span style={{ fontSize: '24px', fontWeight: 600, color: '#2F2E2C' }}>19€</span> par mois / classe
+            <span style={{ fontSize: '24px', fontWeight: 600, color: '#2F2E2C' }}>{pricePerClass}€</span> par mois / classe
           </div>
           <Button
             variant="register"
