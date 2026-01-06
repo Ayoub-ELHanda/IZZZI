@@ -8,7 +8,7 @@ export class SubjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateSubjectDto) {
-    // Get user to check role
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true, establishmentId: true },
@@ -18,12 +18,9 @@ export class SubjectsService {
       throw new ForbiddenException('User not found');
     }
 
-    // Verify that the class belongs to the user's establishment
-    // Admins can create subjects in any class of their establishment
+   
     const whereClause: any = { id: dto.classId };
-    if (user.role !== 'ADMIN') {
-      whereClause.createdBy = userId;
-    } else if (user.establishmentId) {
+    if (user.establishmentId) {
       whereClause.establishmentId = user.establishmentId;
     }
 
@@ -51,7 +48,7 @@ export class SubjectsService {
   }
 
   async findAllByClass(userId: string, classId: string) {
-    // Get user to check role
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true, establishmentId: true },
@@ -61,11 +58,8 @@ export class SubjectsService {
       throw new ForbiddenException('User not found');
     }
 
-    // Verify access to class - admins can see all classes in their establishment
     const whereClause: any = { id: classId };
-    if (user.role !== 'ADMIN') {
-      whereClause.createdBy = userId;
-    } else if (user.establishmentId) {
+    if (user.establishmentId) {
       whereClause.establishmentId = user.establishmentId;
     }
 
@@ -99,7 +93,7 @@ export class SubjectsService {
   }
 
   async findOne(id: string, userId: string) {
-    // Get user to check role
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true, establishmentId: true },
@@ -129,12 +123,8 @@ export class SubjectsService {
       throw new NotFoundException('Subject not found');
     }
 
-    // Admins can see all subjects in their establishment
-    if (user.role !== 'ADMIN') {
-      if (subject.createdBy !== userId) {
-        throw new NotFoundException('Subject not found');
-      }
-    } else if (user.establishmentId && subject.class.establishmentId !== user.establishmentId) {
+
+    if (user.establishmentId && subject.class.establishmentId !== user.establishmentId) {
       throw new NotFoundException('Subject not found');
     }
 
@@ -161,7 +151,7 @@ export class SubjectsService {
   async remove(id: string, userId: string) {
     const subject = await this.findOne(id, userId);
 
-    // Check if there are responses before deleting
+
     const responseCount = await this.prisma.response.count({
       where: {
         questionnaire: {

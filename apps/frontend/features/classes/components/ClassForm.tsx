@@ -44,7 +44,7 @@ export function ClassForm({
     <div className={isModal ? '' : 'min-h-screen bg-white'}>
       <div className="relative flex items-center justify-center" style={isModal ? { padding: '40px 20px 20px 20px' } : { minHeight: 'calc(100vh - 80px)', paddingTop: '140px', paddingBottom: '40px' }}>
         <div className="text-center relative">
-          {/* Step indicator - only in create mode */}
+         
           {mode === 'create' && (
             <div
               className="flex items-center justify-center mx-auto"
@@ -65,7 +65,7 @@ export function ClassForm({
             </div>
           )}
 
-          {/* Title */}
+ 
           <h2
             className="font-mochiy mx-auto"
             style={{
@@ -82,7 +82,7 @@ export function ClassForm({
             {mode === 'edit' ? 'Modifier la classe' : 'Informations de la classe'}
           </h2>
 
-          {/* Decorative text - only in create mode */}
+    
           {mode === 'create' && (
             <div
               className="absolute"
@@ -99,7 +99,6 @@ export function ClassForm({
             </div>
           )}
 
-          {/* Form container */}
           <div
             style={{
               width: '438px',

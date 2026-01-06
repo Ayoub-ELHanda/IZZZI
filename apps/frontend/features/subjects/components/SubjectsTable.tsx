@@ -18,13 +18,14 @@ interface SubjectRowData {
   startDate: string;
   endDate: string;
   status: 'pending' | 'finished';
-  feedbackCount: number;
   totalStudents: number;
   hasQuestionnaire?: boolean;
   duringCourseToken?: string;
   afterCourseToken?: string;
   duringCourseId?: string;
   afterCourseId?: string;
+  duringCourseResponses: number;
+  afterCourseResponses: number;
 }
 
 interface SubjectsTableProps {
@@ -617,7 +618,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
                   marginBottom: '2px',
                 }}
               >
-                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+                Voir les retours ({subject.duringCourseResponses}/{subject.totalStudents})
               </div>
               <div
                 style={{
@@ -649,7 +650,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
                   marginBottom: '2px',
                 }}
               >
-                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+                Voir les retours ({subject.duringCourseResponses}/{subject.totalStudents})
               </div>
               <div
                 style={{
@@ -794,7 +795,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
                   marginBottom: '2px',
                 }}
               >
-                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+                Voir les retours ({subject.afterCourseResponses}/{subject.totalStudents})
               </div>
               <div
                 style={{
@@ -826,7 +827,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
                   marginBottom: '2px',
                 }}
               >
-                Voir les retours ({subject.feedbackCount}/{subject.totalStudents})
+                Voir les retours ({subject.afterCourseResponses}/{subject.totalStudents})
               </div>
               <div
                 style={{

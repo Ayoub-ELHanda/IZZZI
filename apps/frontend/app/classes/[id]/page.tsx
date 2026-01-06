@@ -86,9 +86,6 @@ export default function ClassDetailPage() {
 
   const transformedSubjects = useMemo(() => subjects.map((subject) => {
     const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
-    const totalResponses = hasQuestionnaires
-      ? subject.questionnaires.reduce((acc, q) => acc + (q._count?.responses || 0), 0)
-      : 0;
 
     const duringCourseQuestionnaire = subject.questionnaires?.find(
       (q) => q.type === 'DURING_COURSE'
@@ -96,6 +93,9 @@ export default function ClassDetailPage() {
     const afterCourseQuestionnaire = subject.questionnaires?.find(
       (q) => q.type === 'AFTER_COURSE'
     );
+
+    const duringCourseResponses = duringCourseQuestionnaire?._count?.responses || 0;
+    const afterCourseResponses = afterCourseQuestionnaire?._count?.responses || 0;
 
     const status: 'pending' | 'finished' = new Date(subject.endDate) > new Date() ? 'pending' : 'finished';
 
@@ -106,13 +106,14 @@ export default function ClassDetailPage() {
       startDate: formatDate(subject.startDate),
       endDate: formatDate(subject.endDate),
       status,
-      feedbackCount: totalResponses,
       totalStudents: classData?.studentCount || 0,
       hasQuestionnaire: hasQuestionnaires,
       duringCourseToken: duringCourseQuestionnaire?.token,
       afterCourseToken: afterCourseQuestionnaire?.token,
       duringCourseId: duringCourseQuestionnaire?.id,
       afterCourseId: afterCourseQuestionnaire?.id,
+      duringCourseResponses,
+      afterCourseResponses,
     };
   }), [subjects, classData]);
 

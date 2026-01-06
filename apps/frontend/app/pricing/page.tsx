@@ -123,11 +123,11 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Pricing Cards - positionnées pour chevaucher le fond gris */}
+   
       <div 
         className="bg-white"
         style={{
-          marginTop: '-270px', // Ajusté pour remonter les cartes
+          marginTop: '-270px', 
           paddingBottom: '80px'
         }}
       >
@@ -148,8 +148,7 @@ export default function PricingPage() {
           <CardSuperIzzy isAnnual={true} isAuthenticated={isAuthenticated} />
         </div>
       </div>
-      
-      {/* Section tableau de comparaison et FAQ - uniquement pour visiteurs */}
+     
       {!isAuthenticated && (
         <>
           <div className="bg-white py-16">
@@ -177,43 +176,6 @@ export default function PricingPage() {
 
         <PlanTableau isAnnual={true} />
       </div>
-
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="mt-16 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
-            Questions fréquentes
-          </h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Comment est calculé le prix ?
-              </h3>
-              <p className="text-gray-600">
-                Le prix est calculé en fonction du nombre de classes actives dans votre espace.
-                Une classe est considérée comme active dès qu'elle contient au moins une matière.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Puis-je changer de formule ?
-              </h3>
-              <p className="text-gray-600">
-                Oui, vous pouvez passer du plan mensuel au plan annuel à tout moment.
-                La différence sera calculée au prorata.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Y a-t-il une période d'essai ?
-              </h3>
-              <p className="text-gray-600">
-                Oui, vous bénéficiez de 14 jours d'essai gratuit pour tester la plateforme
-                sans engagement ni carte bancaire requise.
-              </p>
-            </div>
-          </div>
-        </div>
-          </div>
         </>
       )}
     </div>

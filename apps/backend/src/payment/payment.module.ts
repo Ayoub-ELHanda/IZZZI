@@ -3,9 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { MailerModule } from '../mailer/mailer.module';
 
 @Module({
-  imports: [ConfigModule, PrismaModule],
+  imports: [ConfigModule, PrismaModule, MailerModule],
   controllers: [PaymentController],
   providers: [PaymentService],
   exports: [PaymentService],

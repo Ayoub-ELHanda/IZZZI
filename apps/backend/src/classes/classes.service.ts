@@ -23,7 +23,7 @@ export class ClassesService {
       throw new ForbiddenException('Vous avez atteint la limite de 5 classes actives');
     }
 
-    return this.prisma.class.create({
+    const newClass = await this.prisma.class.create({
       data: {
         name: dto.name,
         description: dto.description,
@@ -33,6 +33,33 @@ export class ClassesService {
         establishmentId,
       },
     });
+
+    // Envoyer un email à chaque étudiant ajouté
+    if (dto.studentEmails && dto.studentEmails.length > 0) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (user) {
+        const teacherName = `${user.firstName} ${user.lastName}`;
+        
+        // Envoi des emails en parallèle (non-bloquant)
+        dto.studentEmails.forEach(async (email) => {
+          try {
+            await this.mailer.sendStudentAddedToClassEmail(email, {
+              className: dto.name,
+              teacherName,
+              studentCount: dto.studentCount,
+            });
+          } catch (error) {
+            console.error(`Failed to send email to ${email}:`, error);
+            // Ne pas faire échouer la création de classe si l'email ne peut pas être envoyé
+          }
+        });
+      }
+    }
+
+    return newClass;
   }
 
   async findAll(userId: string, establishmentId: string, archived?: boolean) {
@@ -77,7 +104,7 @@ export class ClassesService {
       throw new BadRequestException('Impossible de modifier une classe archivée');
     }
 
-    return this.prisma.class.update({
+    const updatedClass = await this.prisma.class.update({
       where: { id },
       data: {
         name: dto.name,
@@ -86,6 +113,38 @@ export class ClassesService {
         studentEmails: dto.studentEmails,
       },
     });
+
+ 
+    if (dto.studentEmails && dto.studentEmails.length > 0) {
+      const oldEmails = classItem.studentEmails || [];
+      const newEmails = dto.studentEmails.filter(email => !oldEmails.includes(email));
+
+      if (newEmails.length > 0) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        if (user) {
+          const teacherName = `${user.firstName} ${user.lastName}`;
+          
+        
+          newEmails.forEach(async (email) => {
+            try {
+              await this.mailer.sendStudentAddedToClassEmail(email, {
+                className: dto.name || classItem.name,
+                teacherName,
+                studentCount: dto.studentCount || classItem.studentCount,
+              });
+            } catch (error) {
+              console.error(`Failed to send email to ${email}:`, error);
+              // Ne pas faire échouer la mise à jour si l'email ne peut pas être envoyé
+            }
+          });
+        }
+      }
+    }
+
+    return updatedClass;
   }
 
   async archive(id: string, userId: string, establishmentId: string) {
