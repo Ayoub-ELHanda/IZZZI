@@ -14,7 +14,7 @@ export default function FAQPage() {
     {
       id: 'q1',
       question: 'À quoi sert Izzzi ?',
-      answer: ''
+      answer: `Izzzi est une plateforme pensée pour les enseignants et responsables pédagogiques. Elle permet de recueillir facilement des retours anonymes d'étudiants, pendant et après les cours. Son objectif : améliorer en continu la qualité pédagogique grâce à des retours structurés et exploitables.`
     },
     {
       id: 'q2',
@@ -61,16 +61,16 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
   return (
     <div className="bg-white min-h-screen">
       {/* Hero Section with Search */}
-      <section className="bg-[#F4F4F4] pt-24 pb-16">
+      <section className="bg-[#F4F4F4] pt-32 pb-16">
         <div className="max-w-3xl mx-auto px-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
             Comment peut-on vous aider ?
           </h1>
           <div className="relative">
             <input
               type="text"
-              placeholder="Tapez votre recherche ici"
-              className="w-full px-6 py-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="Tapez votre recherche ici!"
+              className="w-full px-6 py-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
             />
             <button className="absolute right-4 top-1/2 transform -translate-y-1/2">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,7 +82,7 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
       </section>
 
       {/* Questions fréquentes */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Questions fréquentes</h2>
           
@@ -94,7 +94,7 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
               >
                 <button
                   onClick={() => toggleQuestion(item.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-200 transition-colors"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-100 transition-colors"
                 >
                   <span className="font-semibold text-gray-900 pr-4">{item.question}</span>
                   <svg
@@ -109,7 +109,7 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
                   </svg>
                 </button>
                 {openQuestion === item.id && item.answer && (
-                  <div className="px-6 pb-5">
+                  <div className="px-6 pb-5 pt-0">
                     <div className="text-gray-700 whitespace-pre-line leading-relaxed">
                       {item.answer}
                     </div>
@@ -155,7 +155,7 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
               >
                 <button
                   onClick={() => toggleQuestion(item.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-200 transition-colors"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-100 transition-colors"
                 >
                   <span className="font-semibold text-gray-900 pr-4">{item.question}</span>
                   <svg
@@ -170,7 +170,7 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
                   </svg>
                 </button>
                 {openQuestion === item.id && item.answer && (
-                  <div className="px-6 pb-5">
+                  <div className="px-6 pb-5 pt-0">
                     <div className="text-gray-700 whitespace-pre-line leading-relaxed">
                       {item.answer}
                     </div>
