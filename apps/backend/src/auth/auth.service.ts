@@ -41,6 +41,9 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    // Calculer la date de fin d'essai (4 mois à partir de maintenant)
+    const trialEndDate = new Date();
+    trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
     const result = await this.prisma.$transaction(async (prisma) => {
      
@@ -61,6 +64,7 @@ export class AuthService {
           role: 'ADMIN',
           establishmentId: establishment.id,
           authProvider: 'LOCAL',
+          trialEndDate: trialEndDate,
         },
       });
 
@@ -199,6 +203,8 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
+    const trialEndDate = new Date();
+    trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
     const user = await this.prisma.user.create({
       data: {
@@ -210,6 +216,7 @@ export class AuthService {
         establishmentId: invitation.establishmentId,
         invitedBy: invitation.invitedBy,
         authProvider: 'LOCAL',
+        trialEndDate: trialEndDate,
       },
       include: { establishment: true },
     });
