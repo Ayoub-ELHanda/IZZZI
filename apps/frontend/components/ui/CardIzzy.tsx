@@ -10,38 +10,17 @@ interface CardIzzyProps {
 export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
   return (
     <div 
+      className="w-full md:w-[555px] min-h-[722px] md:min-h-[906px] bg-[#FBFBFB] border border-[#E0E0E0] rounded-lg p-6 md:p-[40px_60px] flex flex-col relative"
       style={{
-        width: '555px',
         minHeight: isAuthenticated ? '722px' : '906px',
-        backgroundColor: '#FBFBFB',
-        border: '1px solid #E0E0E0',
-        borderRadius: '8px',
-        padding: '40px 60px',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative'
       }}
     >
 
-      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="mb-6 flex justify-between items-center">
         <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '135px',
-            height: '50px',
-            borderRadius: '30px',
-            border: '1px solid #E0E0E0',
-            background: '#FFF'
-          }}
+          className="flex items-center justify-center w-[135px] h-[50px] rounded-[30px] border border-[#E0E0E0] bg-white"
         >
-          <span style={{
-            fontFamily: 'Mochiy Pop One',
-            fontSize: '14px',
-            fontWeight: 400,
-            color: '#2F2E2C'
-          }}>
+          <span className="font-mochiy text-sm font-normal text-[#2F2E2C]">
             Izzzi
           </span>
         </div>
@@ -77,52 +56,23 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
       </div>
 
     
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-          <span style={{
-            fontFamily: 'Mochiy Pop One',
-            fontSize: '58px',
-            fontWeight: 400,
-            color: '#2F2E2C',
-            lineHeight: '125%'
-          }}>
+      <div className="mb-6">
+        <div className="flex items-baseline gap-2">
+          <span className="font-mochiy text-4xl md:text-[58px] font-normal text-[#2F2E2C] leading-[125%]">
             0€
           </span>
-          <span style={{
-            fontFamily: 'Poppins',
-            fontSize: '12px',
-            fontWeight: 700,
-            color: '#2F2E2C',
-            lineHeight: '100%'
-          }}>
+          <span className="font-poppins text-xs font-bold text-[#2F2E2C] leading-none">
             /mois
           </span>
         </div>
       </div>
 
       {!isAuthenticated && (
-        <div style={{ marginBottom: '24px' }}>
-          <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block' }}>
+        <div className="mb-6">
+          <Link href={routes.auth.register} className="text-decoration-none block">
             <Button 
               variant="yellow"
-              style={{
-                width: '337.29px',
-                height: '56px',
-                backgroundColor: '#FFE552',
-                color: '#2F2E2C',
-                fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '16px 26px',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                boxSizing: 'border-box'
-              }}
+              className="w-full md:w-[337px] h-14 bg-[#FFE552] text-[#2F2E2C] font-poppins font-normal text-sm md:text-base flex justify-between items-center px-6 py-4 border-none rounded-lg cursor-pointer"
             >
               <span>Démarrer mes 4 mois gratuits</span>
               <Image 
@@ -136,8 +86,8 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
         </div>
       )}
 
-      <div style={{ marginBottom: '24px', flex: '1' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="mb-6 flex-1">
+        <div className="flex flex-col gap-3">
           {[
             { text: "4 mois d'essai illimités", subtext: "(matières, classes, retours)" },
             { text: "Puis 5 retours visibles par matière", subtext: "(les autres sont enregistrés mais masqués)" },
@@ -148,27 +98,16 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
             { text: "IA avancée", subtext: "(alertes négatives & alertes positives)" },
             { text: "Page de suivi des alertes", subtext: "(notifications, commentaires possibles)" }
           ].map((item, index) => (
-            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+            <div key={index} className="flex gap-3 items-start">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 mt-0.5">
                 <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '16px',
-                  color: '#2F2E2C',
-                  lineHeight: '150%'
-                }}>
+              <div className="flex flex-col">
+                <span className="font-poppins text-sm md:text-base text-[#2F2E2C] leading-[150%]">
                   {item.text}
                 </span>
                 {item.subtext && (
-                  <span style={{
-                    fontFamily: 'Poppins',
-                    fontSize: '12px',
-                    color: '#999999',
-                    lineHeight: '150%',
-                    marginTop: '2px'
-                  }}>
+                  <span className="font-poppins text-xs text-[#999999] leading-[150%] mt-0.5">
                     {item.subtext}
                   </span>
                 )}
@@ -179,32 +118,21 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
       </div>
 
   
-      <div style={{ marginBottom: '24px' }}>
-        <h3 style={{
-          fontFamily: 'Poppins',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: '#2F2E2C',
-          margin: '0 0 12px 0'
-        }}>
+      <div className="mb-6">
+        <h3 className="font-poppins text-xs font-semibold text-[#2F2E2C] mb-3">
           Au-delà des 4 mois :
         </h3>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="flex flex-col gap-3">
           {[
             "Vos classes restent actives",
             "Les retours visibles sont limités à 5 par matière"
           ].map((item, index) => (
-            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+            <div key={index} className="flex gap-3 items-start">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 mt-0.5">
                 <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span style={{
-                fontFamily: 'Poppins',
-                fontSize: '16px',
-                color: '#2F2E2C',
-                lineHeight: '150%'
-              }}>
+              <span className="font-poppins text-sm md:text-base text-[#2F2E2C] leading-[150%]">
                 {item}
               </span>
             </div>
@@ -213,27 +141,10 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
       </div>
 
       {!isAuthenticated && (
-        <div style={{ marginTop: 'auto' }}>
+        <div className="mt-auto">
           <Button 
             variant="outline"
-            style={{
-              width: '278.29px',
-              height: '56px',
-              backgroundColor: 'transparent',
-              color: '#2F2E2C',
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '24px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0 24px',
-              border: '1px solid #E0E0E0',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              boxSizing: 'border-box'
-            }}
+            className="w-full md:w-[278px] h-14 bg-transparent text-[#2F2E2C] font-poppins font-normal text-sm md:text-base flex justify-between items-center px-6 border border-[#E0E0E0] rounded-lg cursor-pointer"
           >
             Voir les détails du plan
             <Image 
