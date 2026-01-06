@@ -153,8 +153,8 @@ export default function PricingMensuelPage() {
             gap: '32px'
           }}
         >
-          <CardIzzy />
-          <CardSuperIzzy isAnnual={false} />
+          <CardIzzy isAuthenticated={isAuthenticated} />
+          <CardSuperIzzy isAnnual={false} isAuthenticated={isAuthenticated} />
         </div>
       </div>
       

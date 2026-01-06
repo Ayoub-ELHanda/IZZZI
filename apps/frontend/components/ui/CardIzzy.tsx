@@ -3,12 +3,16 @@ import Link from 'next/link';
 import { routes } from '@/config/routes';
 import Image from 'next/image';
 
-export function CardIzzy() {
+interface CardIzzyProps {
+  isAuthenticated?: boolean;
+}
+
+export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
   return (
     <div 
       style={{
         width: '555px',
-        minHeight: '906px',
+        minHeight: isAuthenticated ? '722px' : '906px',
         backgroundColor: '#FBFBFB',
         border: '1px solid #E0E0E0',
         borderRadius: '8px',
@@ -19,28 +23,57 @@ export function CardIzzy() {
       }}
     >
 
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div 
           style={{
-            display: 'inline-flex',
-            padding: '12px 30px',
+            display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            justifyContent: 'center',
+            width: '135px',
+            height: '50px',
             borderRadius: '30px',
             border: '1px solid #E0E0E0',
-            background: '#FFF',
-            width: 'fit-content'
+            background: '#FFF'
           }}
         >
           <span style={{
-            fontFamily: 'Poppins',
-            fontSize: '16px',
-            fontWeight: 600,
+            fontFamily: 'Mochiy Pop One',
+            fontSize: '14px',
+            fontWeight: 400,
             color: '#2F2E2C'
           }}>
             Izzzi
           </span>
         </div>
+        
+        {isAuthenticated && (
+          <div 
+            style={{
+              display: 'inline-flex',
+              padding: '8px 16px',
+              alignItems: 'center',
+              gap: '8px',
+              borderRadius: '6px',
+              background: 'white',
+              border: '2px solid #F69D04',
+              width: 'fit-content'
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="#F69D04" strokeWidth="2"/>
+              <path d="M12 8V12" stroke="#F69D04" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="12" cy="16" r="1" fill="#F69D04"/>
+            </svg>
+            <span style={{
+              fontFamily: 'Poppins',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#F69D04'
+            }}>
+              Plan actuel
+            </span>
+          </div>
+        )}
       </div>
 
     
@@ -67,40 +100,41 @@ export function CardIzzy() {
         </div>
       </div>
 
-
-      <div style={{ marginBottom: '24px' }}>
-        <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block' }}>
-          <Button 
-            variant="yellow"
-            style={{
-              width: '337.29px',
-              height: '56px',
-              backgroundColor: '#FFE552',
-              color: '#2F2E2C',
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '24px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '16px 26px',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              boxSizing: 'border-box'
-            }}
-          >
-            <span>Démarrer mes 4 mois gratuits</span>
-            <Image 
-              src="/ArrowV.svg" 
-              alt="Flèche" 
-              width={16} 
-              height={16}
-            />
-          </Button>
-        </Link>
-      </div>
+      {!isAuthenticated && (
+        <div style={{ marginBottom: '24px' }}>
+          <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block' }}>
+            <Button 
+              variant="yellow"
+              style={{
+                width: '337.29px',
+                height: '56px',
+                backgroundColor: '#FFE552',
+                color: '#2F2E2C',
+                fontFamily: 'Poppins',
+                fontWeight: 400,
+                fontSize: '16px',
+                lineHeight: '24px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '16px 26px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <span>Démarrer mes 4 mois gratuits</span>
+              <Image 
+                src="/ArrowV.svg" 
+                alt="Flèche" 
+                width={16} 
+                height={16}
+              />
+            </Button>
+          </Link>
+        </div>
+      )}
 
       <div style={{ marginBottom: '24px', flex: '1' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -178,38 +212,39 @@ export function CardIzzy() {
         </div>
       </div>
 
-
-      <div style={{ marginTop: 'auto' }}>
-        <Button 
-          variant="outline"
-          style={{
-            width: '278.29px',
-            height: '56px',
-            backgroundColor: 'transparent',
-            color: '#2F2E2C',
-            fontFamily: 'Poppins',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 24px',
-            border: '1px solid #E0E0E0',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            boxSizing: 'border-box'
-          }}
-        >
-          Voir les détails du plan
-          <Image 
-            src="/ArrowV.svg" 
-            alt="Flèche" 
-            width={16} 
-            height={16}
-          />
-        </Button>
-      </div>
+      {!isAuthenticated && (
+        <div style={{ marginTop: 'auto' }}>
+          <Button 
+            variant="outline"
+            style={{
+              width: '278.29px',
+              height: '56px',
+              backgroundColor: 'transparent',
+              color: '#2F2E2C',
+              fontFamily: 'Poppins',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 24px',
+              border: '1px solid #E0E0E0',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
+          >
+            Voir les détails du plan
+            <Image 
+              src="/ArrowV.svg" 
+              alt="Flèche" 
+              width={16} 
+              height={16}
+            />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
