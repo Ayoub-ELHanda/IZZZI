@@ -21,7 +21,7 @@ const HashTag = ({
 
 const HashtagSection = ({ backgroundClassName = "bg-white" }: { backgroundClassName?: string }) => {
   return (
-    <div className={cn("w-full py-4", backgroundClassName)}>
+    <div className={cn("w-full py-4 border-0", backgroundClassName)} style={{ borderTop: 'none', borderBottom: 'none', backgroundColor: '#FFFFFF' }}>
       <div className="w-full flex flex-wrap justify-center items-center gap-4 px-4">
         <HashTag 
           text="#Love" 

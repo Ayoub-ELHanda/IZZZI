@@ -63,12 +63,7 @@ export function RegisterAdminForm() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="bg-[#2F2E2C] rounded-full p-4 flex items-center gap-2">
-            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-              <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[8px] border-l-[#2F2E2C] border-b-[6px] border-b-transparent ml-0.5"></div>
-            </div>
-            <span className="text-white font-bold text-xl">izzzi</span>
-          </div>
+          <Logo className="h-[41px] w-auto" />
         </div>
 
         {/* Card */}

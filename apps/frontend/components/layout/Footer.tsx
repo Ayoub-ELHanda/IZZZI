@@ -15,43 +15,28 @@ export function Footer() {
   }
 
   return ( 
-    <footer className="relative w-full">
+    <footer className="relative w-full border-0" style={{ borderTop: 'none', borderBottom: 'none', backgroundColor: 'transparent' }}>
       {/* Hashtag Section */}
       <HashtagSection backgroundClassName="bg-white" />
       
       {/* Footer Content */}
-      <div className="bg-primary-dark w-full text-white">
+      <div className="bg-primary-dark w-full text-white" style={{ borderTop: 'none' }}>
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
             {/* Logo - Left */}
             <div className="lg:col-span-3 flex justify-center lg:justify-start">
-              <div className="flex items-center gap-2">
-                <div 
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#F26103">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <span 
-                  style={{
-                    fontFamily: 'Poppins, sans-serif',
-                    fontSize: '24px',
-                    fontWeight: 600,
-                    color: '#FFFFFF',
-                  }}
-                >
-                  izzzi
-                </span>
-              </div>
+              <Image 
+                src="/logo-footer.svg"
+                alt="izzzi logo"
+                width={133}
+                height={62}
+                style={{
+                  height: 'auto',
+                  width: 'auto',
+                  maxHeight: '62px',
+                }}
+                className="h-[50px] md:h-[62px] w-auto"
+              />
             </div>
             
             {/* Spacer */}
@@ -108,11 +93,11 @@ export function Footer() {
         {/* Bottom Links */}
         <div>
           <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex justify-between items-center" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '12px', color: '#FFFFFF' }}>
-              <Link href="/legal-notice" className="text-white hover:text-white/80 transition-colors">
+            <div className="flex justify-end items-center gap-4" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '12px', color: '#FFFFFF' }}>
+              <Link href="/legal/mentions" className="text-white hover:text-white/80 transition-colors">
                 Mentions légales
               </Link>
-              <Link href="/faq" className="text-white hover:text-white/80 transition-colors">
+              <Link href="/legal/faq" className="text-white hover:text-white/80 transition-colors">
                 FAQ
               </Link>
             </div>

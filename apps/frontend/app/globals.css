@@ -25,7 +25,7 @@
 }
 
 .bg-primary-dark {
-  background-color: #FF6B35;
+  background-color: #F26103;
 }
 
 .bg-primary-light {
@@ -100,6 +100,26 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
+  border: none !important;
+}
+
+main {
+  border: none !important;
+}
+
+/* Remove any black horizontal lines between orange ribbon and footer */
+footer > div:first-child,
+footer::before,
+footer::after {
+  border-top: none !important;
+  border-bottom: none !important;
+  background-color: transparent !important;
+}
+
+/* Force white background for hashtag section */
+footer > div:first-child,
+footer > div:first-child > div {
+  background-color: #FFFFFF !important;
 }
 
 /* Marquee animation */

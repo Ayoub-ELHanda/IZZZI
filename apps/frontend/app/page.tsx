@@ -212,7 +212,7 @@ export default function Page() {
       <main>
         <div className="relative overflow-hidden">
           <div className="bg-[#FFFBF0]">
-            <div className="mx-auto max-w-7xl px-4 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="mx-auto max-w-7xl px-4 pt-24 pb-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-6 relative z-10">
                 <h1 className="text-title font-title leading-title text-content">
                   <span className="relative inline-block">
@@ -393,7 +393,7 @@ export default function Page() {
         </div>
 
         <div className="relative z-50 -mt-12 pointer-events-none">
-          <div className="rotate-[3deg] bg-[#F26103] shadow-lg">
+          <div className="rotate-[3deg] bg-[#F26103] shadow-lg border-0" style={{ border: 'none', outline: 'none' }}>
             <div className="px-4 py-3 md:py-4 overflow-x-hidden">
               <div className="marquee">
                 <div className="marquee__inner">
@@ -414,7 +414,7 @@ export default function Page() {
           </div>
         </div>
 
-        <section className="w-full mt-16">
+        <section className="w-full mt-16" style={{ borderTop: 'none' }}>
           <div className="mx-auto max-w-7xl px-4 py-4">
             <div className="block sm:hidden">
               <Carousel className="w-full">

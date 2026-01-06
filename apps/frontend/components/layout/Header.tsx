@@ -52,25 +52,7 @@ export function Header() {
     return (
       <header style={{ position: 'relative', width: '100%' }}>
         <nav 
-          style={{
-            position: 'fixed',
-            top: '8px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '8px',
-            backdropFilter: 'blur(12px)',
-            zIndex: 50,
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            border: '1px solid #E5E5E5',
-            maxWidth: '1200px',
-            width: 'calc(100% - 16px)',
-            padding: '8px 12px',
-          }}
-          className="sm:top-4 sm:w-[calc(100%-32px)] sm:p-3"
+          className="fixed top-2 left-4 right-4 flex items-center justify-between bg-white rounded-lg backdrop-blur-[12px] z-50 shadow-sm border border-[#E5E5E5] px-4 py-2 sm:top-4 sm:left-8 sm:right-8 sm:px-8 sm:py-3"
         >
           {/* Logo - Left */}
           <Link 
@@ -78,44 +60,27 @@ export function Header() {
             prefetch={true} 
             style={{ 
               display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '8px',
+              alignItems: 'center',
               textDecoration: 'none',
               flexShrink: 0,
             }}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <div 
+            <Image 
+              src="/logo-izzzi.svg"
+              alt="izzzi logo"
+              width={86}
+              height={41}
               style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#2F2E2C',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
+                height: 'auto',
+                width: 'auto',
+                maxHeight: '41px',
               }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <span 
-              className="hidden sm:inline"
-              style={{
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '24px',
-                fontWeight: 600,
-                color: '#2F2E2C',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              izzzi
-            </span>
+              className="h-[32px] md:h-[41px] w-auto"
+            />
           </Link>
 
-          {/* Navigation buttons - Centered */}
+          {/* Navigation buttons - Centered - Desktop only */}
           <div 
             style={{
               position: 'absolute',
@@ -185,14 +150,14 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Right side - Profile and Actions (Visible on all screens) */}
+          {/* Right side - Profile and Actions - Desktop only */}
           <div 
             style={{ 
               gap: '8px',
               flex: 1,
               marginLeft: 'auto',
             }}
-            className="flex items-center justify-end gap-2 md:gap-4"
+            className="hidden md:flex items-center justify-end gap-4"
           >
             {/* Bell icon */}
             <button
@@ -278,7 +243,7 @@ export function Header() {
                   {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
                 </div>
               )}
-              <div className="hidden md:flex flex-col">
+              <div className="flex flex-col">
                 <span 
                   style={{
                     fontFamily: 'Poppins, sans-serif',
@@ -306,10 +271,9 @@ export function Header() {
               </div>
             </Link>
 
-            {/* Logout button - Desktop only */}
+            {/* Logout button */}
             <button
               onClick={handleLogout}
-              className="hidden md:block"
               style={{
                 padding: '10px 20px',
                 backgroundColor: 'transparent',
@@ -335,26 +299,43 @@ export function Header() {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Menu Button - Yellow button with MENU text - Mobile only */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex md:hidden items-center justify-center"
+            className="flex md:hidden items-center justify-center gap-2"
             style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E5E5E5',
+              padding: '10px 16px',
+              backgroundColor: '#FFE552',
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'background-color 0.2s',
               flexShrink: 0,
               marginLeft: 'auto',
+              border: 'none',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFE566';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFE552';
             }}
           >
+            <span
+              style={{
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#2F2E2C',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
+              MENU
+            </span>
             {mobileMenuOpen ? (
-              <X size={20} color="#2F2E2C" strokeWidth={1.5} />
+              <X size={18} color="#2F2E2C" strokeWidth={2} />
             ) : (
-              <Menu size={20} color="#2F2E2C" strokeWidth={1.5} />
+              <Menu size={18} color="#2F2E2C" strokeWidth={2} />
             )}
           </button>
         </nav>
@@ -434,6 +415,124 @@ export function Header() {
             {/* Divider */}
             <div style={{ height: '1px', backgroundColor: '#E5E5E5', margin: '8px 0' }} />
 
+            {/* Notifications */}
+            <button
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E5E5',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Bell size={20} color="#2F2E2C" strokeWidth={1.5} />
+              Notifications
+            </button>
+
+            {/* User Profile */}
+            <Link 
+              href={routes.account.profile}
+              prefetch={false}
+              style={{ 
+                textDecoration: 'none',
+                width: '100%',
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <div
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E5E5E5',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                {user?.profilePicture ? (
+                  <div 
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      overflow: 'hidden',
+                      backgroundColor: '#E5E5E5',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={user.profilePicture}
+                      alt={`${user.firstName} ${user.lastName}`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      backgroundColor: '#E5E5E5',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'Poppins, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#2F2E2C',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
+                  </div>
+                )}
+                <div className="flex flex-col">
+                  <span 
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: '#2F2E2C',
+                      lineHeight: '1.2',
+                    }}
+                  >
+                    {user?.firstName} {user?.lastName}
+                  </span>
+                  <span 
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 400,
+                      color: '#6B6B6B',
+                      lineHeight: '1.2',
+                    }}
+                  >
+                    Plan gratuit
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Divider */}
+            <div style={{ height: '1px', backgroundColor: '#E5E5E5', margin: '8px 0' }} />
+
             {/* Logout Button */}
             <button
               onClick={() => {
@@ -466,101 +565,34 @@ export function Header() {
   return (
     <header style={{ position: 'relative', width: '100%' }}>
       <nav 
-        style={{
-          position: 'fixed',
-          top: '8px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#FFFFFF',
-          borderRadius: '8px',
-          backdropFilter: 'blur(12px)',
-          zIndex: 50,
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          border: '1px solid #E5E5E5',
-          maxWidth: '1200px',
-          width: 'calc(100% - 16px)',
-          padding: '8px 12px',
-        }}
-        className="sm:top-4 sm:w-[calc(100%-32px)] sm:p-3"
+        className="fixed top-2 left-4 right-4 flex items-center justify-between bg-white rounded-lg backdrop-blur-[12px] z-50 shadow-sm border border-[#E5E5E5] px-4 py-2 sm:top-4 sm:left-8 sm:right-8 sm:px-8 sm:py-3"
       >
         {/* Logo */}
         <Link 
           href={routes.home} 
+          className="inline-flex items-center flex-shrink-0"
           style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '8px',
             textDecoration: 'none',
-            flexShrink: 0,
           }}
           onClick={() => setMobileMenuOpen(false)}
         >
-          <div 
+          <Image 
+            src="/logo-izzzi.svg"
+            alt="izzzi logo"
+            width={86}
+            height={41}
             style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#2F2E2C',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
+              height: 'auto',
+              width: 'auto',
+              maxHeight: '41px',
             }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </div>
-          <span 
-            className="hidden sm:inline"
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '24px',
-              fontWeight: 600,
-              color: '#2F2E2C',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            izzzi
-          </span>
+            className="h-[32px] md:h-[41px] w-auto"
+          />
         </Link>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex md:hidden items-center justify-center"
-          style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E5E5E5',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            transition: 'background-color 0.2s',
-            flexShrink: 0,
-            marginLeft: 'auto',
-          }}
-        >
-          {mobileMenuOpen ? (
-            <X size={20} color="#2F2E2C" strokeWidth={1.5} />
-          ) : (
-            <Menu size={20} color="#2F2E2C" strokeWidth={1.5} />
-          )}
-        </button>
-
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Visible on desktop */}
         <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            flex: 1,
-            justifyContent: 'flex-end',
-          }}
-          className="hidden md:flex"
+          className="hidden md:flex items-center gap-4 flex-1 justify-end"
         >
           <Link
             href={routes.pricing}
@@ -576,19 +608,17 @@ export function Header() {
             }}
           >
             Nos tarifs
-            {isSubscriptionPage && (
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '0',
-                  left: '0',
-                  width: '100%',
-                  height: '2px',
-                  backgroundColor: '#FF6B35',
-                  borderRadius: '1px',
-                }}
-              />
-            )}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '0',
+                left: '0',
+                width: '100%',
+                height: '2px',
+                backgroundColor: '#F26103',
+                borderRadius: '1px',
+              }}
+            />
           </Link>
 
           <Link href={routes.auth.register} style={{ textDecoration: 'none' }}>
@@ -651,6 +681,44 @@ export function Header() {
             </button>
           </Link>
         </div>
+
+        {/* Menu Button - Yellow button with MENU text - Mobile only */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="flex md:hidden items-center justify-center gap-2 flex-shrink-0"
+          style={{
+            padding: '10px 16px',
+            backgroundColor: '#FFE552',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            border: 'none',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#FFE566';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#FFE552';
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#2F2E2C',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}
+          >
+            MENU
+          </span>
+          {mobileMenuOpen ? (
+            <X size={18} color="#2F2E2C" strokeWidth={2} />
+          ) : (
+            <Menu size={18} color="#2F2E2C" strokeWidth={2} />
+          )}
+        </button>
 
       </nav>
 
