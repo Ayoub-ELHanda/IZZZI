@@ -30,6 +30,12 @@ export class AuthController {
     return this.authService.registerInvited(dto);
   }
 
+  @Get('invite/:token')
+  async getInvitationInfo(@Req() req) {
+    const token = req.params.token;
+    return this.authService.getInvitationInfo(token);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('invite')
   async inviteUser(@Req() req, @Body() dto: InviteUserDto) {
@@ -69,11 +75,11 @@ export class AuthController {
     return this.authService.changePassword(req.user.userId, dto);
   }
 
-  // Google OAuth Routes
+
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   async googleAuth() {
-    // Guard redirects to Google
+ 
   }
 
   @Get('google/callback')
@@ -82,8 +88,7 @@ export class AuthController {
     try {
       const result = await this.authService.googleLogin(req.user);
       const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-      
-      // Redirect to frontend with token
+    
       res.redirect(`${frontendUrl}/auth/google/callback?token=${result.token}`);
     } catch (error) {
       const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
@@ -91,4 +96,3 @@ export class AuthController {
     }
   }
 }
-

@@ -34,11 +34,21 @@ export interface AuthResponse {
   token: string;
 }
 
+function setToken(token: string) {
+  localStorage.setItem('auth_token', token);
+  document.cookie = `auth_token=${token}; path=/; max-age=2592000; SameSite=Lax`;
+}
+
+function removeToken() {
+  localStorage.removeItem('auth_token');
+  document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+}
+
 export const authService = {
   async registerAdmin(data: RegisterAdminData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/register/admin', data);
     if (response.token) {
-      localStorage.setItem('auth_token', response.token);
+      setToken(response.token);
     }
     return response;
   },
@@ -46,7 +56,7 @@ export const authService = {
   async registerInvited(data: RegisterInvitedData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/register/invited', data);
     if (response.token) {
-      localStorage.setItem('auth_token', response.token);
+      setToken(response.token);
     }
     return response;
   },
@@ -59,7 +69,7 @@ export const authService = {
   async login(data: LoginData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/login', data);
     if (response.token) {
-      localStorage.setItem('auth_token', response.token);
+      setToken(response.token);
     }
     return response;
   },
@@ -103,7 +113,7 @@ export const authService = {
   },
 
   logout() {
-    localStorage.removeItem('auth_token');
+    removeToken();
   },
 
   getToken(): string | null {

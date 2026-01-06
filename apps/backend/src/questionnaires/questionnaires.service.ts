@@ -14,11 +14,9 @@ export class QuestionnairesService {
     private readonly mailerService: MailerService
   ) {}
 
-  /**
-   * Crée deux questionnaires pour une matière (pendant et fin de cours)
-   */
+ 
   async createQuestionnaires(userId: string, dto: CreateQuestionnairesDto) {
-    // Vérifier que la matière existe et appartient à l'utilisateur
+  
     const subject = await this.prisma.subject.findFirst({
       where: {
         id: dto.subjectId,
@@ -30,7 +28,7 @@ export class QuestionnairesService {
       throw new ForbiddenException('Subject not found or access denied');
     }
 
-    // Vérifier qu'il n'existe pas déjà de questionnaires pour cette matière
+    
     const existingQuestionnaires = await this.prisma.questionnaire.findMany({
       where: { subjectId: dto.subjectId },
     });
@@ -39,7 +37,7 @@ export class QuestionnairesService {
       throw new ForbiddenException('Questionnaires already exist for this subject');
     }
 
-    // Créer les deux questionnaires (pendant le cours et fin de cours)
+  
     const duringCourseToken = randomUUID();
     const afterCourseToken = randomUUID();
 
@@ -82,12 +80,9 @@ export class QuestionnairesService {
     };
   }
 
-  /**
-   * Met à jour le type de formulaire pour tous les questionnaires d'une matière
-   * Seulement si aucune réponse n'a été enregistrée
-   */
+
   async updateQuestionnaires(userId: string, subjectId: string, dto: UpdateQuestionnairesDto) {
-    // Vérifier que la matière existe et appartient à l'utilisateur
+   
     const subject = await this.prisma.subject.findFirst({
       where: {
         id: subjectId,
@@ -114,7 +109,7 @@ export class QuestionnairesService {
       throw new NotFoundException('No questionnaires found for this subject');
     }
 
-    // Vérifier qu'aucun questionnaire n'a de réponses
+
     const hasResponses = subject.questionnaires.some(
       (q) => q._count.responses > 0
     );
@@ -125,7 +120,6 @@ export class QuestionnairesService {
       );
     }
 
-    // Mettre à jour tous les questionnaires de cette matière
     await this.prisma.questionnaire.updateMany({
       where: {
         subjectId: subjectId,
@@ -135,7 +129,7 @@ export class QuestionnairesService {
       },
     });
 
-    // Récupérer les questionnaires mis à jour
+
     return this.prisma.questionnaire.findMany({
       where: {
         subjectId: subjectId,
@@ -150,9 +144,8 @@ export class QuestionnairesService {
     });
   }
 
-  /**
-   * Vérifie si les questionnaires peuvent être modifiés
-   */
+
+   
   async canModifyQuestionnaires(userId: string, subjectId: string) {
     const subject = await this.prisma.subject.findFirst({
       where: {
@@ -190,9 +183,7 @@ export class QuestionnairesService {
     };
   }
 
-  /**
-   * Génère un QR code pour un questionnaire
-   */
+
   async generateQRCode(token: string): Promise<Buffer> {
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { token },
@@ -202,10 +193,9 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire not found');
     }
 
-    // Générer l'URL du questionnaire
+    
     const url = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/questionnaire/${token}`;
 
-    // Générer le QR code en tant que buffer PNG
     const qrCodeBuffer = await QRCode.toBuffer(url, {
       type: 'png',
       width: 500,
@@ -215,16 +205,22 @@ export class QuestionnairesService {
     return qrCodeBuffer;
   }
 
-  /**
-   * Récupère un questionnaire par son token (pour les étudiants)
-   */
+
   async getByToken(token: string) {
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { token },
       include: {
         subject: {
           include: {
-            class: true,
+            class: {
+              include: {
+                establishment: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -234,15 +230,87 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire not found or inactive');
     }
 
-    return questionnaire;
+    return {
+      ...questionnaire,
+      subject: {
+        ...questionnaire.subject,
+        class: {
+          ...questionnaire.subject.class,
+          school: questionnaire.subject.class.establishment?.name || 'École non renseignée',
+        },
+      },
+    };
   }
 
-  /**
-   * Récupère tous les questionnaires avec leurs retours pour un utilisateur
-   * Utilisé pour le dashboard "Mes retours"
-   */
+  async submitResponse(token: string, email: string, rating: number, comment?: string, isAnonymous: boolean = true) {
+  
+    const questionnaire = await this.prisma.questionnaire.findUnique({
+      where: { token },
+      include: {
+        subject: {
+          include: {
+            class: {
+              select: {
+                id: true,
+                name: true,
+                studentEmails: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!questionnaire || !questionnaire.isActive) {
+      throw new NotFoundException('Questionnaire introuvable ou inactif');
+    }
+
+
+    const studentEmails = questionnaire.subject.class.studentEmails || [];
+    const isAnonymousEmail = email.endsWith('@questionnaire.com');
+    
+    if (!isAnonymousEmail && !studentEmails.includes(email)) {
+      throw new ForbiddenException(
+        'Accès refusé : Cet email ne fait pas partie de cette classe'
+      );
+    }
+
+    const existingResponse = await this.prisma.response.findFirst({
+      where: {
+        questionnaireId: questionnaire.id,
+        studentEmail: email,
+      },
+    });
+
+    if (existingResponse) {
+      throw new BadRequestException('Vous avez déjà répondu à ce questionnaire');
+    }
+
+
+    const response = await this.prisma.response.create({
+      data: {
+        questionnaireId: questionnaire.id,
+        rating,
+        comment: comment || null,
+        isAnonymous,
+        studentEmail: email, 
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Merci pour votre retour !',
+      response: {
+        id: response.id,
+        rating: response.rating,
+        createdAt: response.createdAt,
+      },
+    };
+  }
+
+  
   async getAllQuestionnairesWithResponses(userId: string, isPaidPlan: boolean = false) {
-    // Get user to check role
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true, establishmentId: true },
@@ -252,7 +320,7 @@ export class QuestionnairesService {
       throw new NotFoundException('User not found');
     }
 
-    // Build where clause - admins can see all subjects in their establishment
+
     const whereClause: any = {};
     if (user.role !== 'ADMIN') {
       whereClause.createdBy = userId;
@@ -260,7 +328,6 @@ export class QuestionnairesService {
       whereClause.class = { establishmentId: user.establishmentId };
     }
 
-    // Récupérer tous les sujets de l'utilisateur avec leurs questionnaires
     const subjects = await this.prisma.subject.findMany({
       where: whereClause,
       include: {
@@ -276,7 +343,7 @@ export class QuestionnairesService {
               orderBy: {
                 createdAt: 'desc',
               },
-              // Limiter à 5 retours pour plan gratuit
+         
               ...(isPaidPlan ? {} : { take: 5 }),
             },
             _count: {
@@ -292,7 +359,6 @@ export class QuestionnairesService {
       },
     });
 
-    // Transformer les données pour le frontend
     return subjects.map((subject) => ({
       id: subject.id,
       name: subject.name,
@@ -308,7 +374,6 @@ export class QuestionnairesService {
           : Math.min(questionnaire.responses.length, 5);
         const hiddenResponses = isPaidPlan ? 0 : Math.max(0, totalResponses - 5);
 
-        // Calculer le score moyen
         const averageRating = questionnaire.responses.length > 0
           ? questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) / questionnaire.responses.length
           : 0;
@@ -320,7 +385,7 @@ export class QuestionnairesService {
           totalResponses,
           visibleResponses,
           hiddenResponses,
-          averageRating: Math.round(averageRating * 10) / 10, // Arrondir à 1 décimale
+          averageRating: Math.round(averageRating * 10) / 10, 
           responses: questionnaire.responses.map((response) => ({
             id: response.id,
             rating: response.rating,
@@ -333,11 +398,8 @@ export class QuestionnairesService {
     }));
   }
 
-  /**
-   * Récupère les détails d'un questionnaire avec toutes ses statistiques
-   */
   async getQuestionnaireDetails(userId: string, questionnaireId: string, isPaidPlan: boolean = false) {
-    // Get user to check role
+   
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true, establishmentId: true },
@@ -347,7 +409,7 @@ export class QuestionnairesService {
       throw new NotFoundException('User not found');
     }
 
-    // Build where clause - admins can see all questionnaires in their establishment
+    
     const whereClause: any = { id: questionnaireId };
     if (user.role !== 'ADMIN') {
       whereClause.subject = { createdBy: userId };
@@ -373,7 +435,7 @@ export class QuestionnairesService {
           orderBy: {
             createdAt: 'desc',
           },
-          // Limiter à 5 retours pour plan gratuit
+          
           ...(isPaidPlan ? {} : { take: 5 }),
         },
         _count: {
@@ -394,23 +456,21 @@ export class QuestionnairesService {
       : Math.min(questionnaire.responses.length, 5);
     const hiddenResponses = isPaidPlan ? 0 : Math.max(0, totalResponses - 5);
 
-    // Calculer les statistiques
     const ratings = questionnaire.responses.map((r) => r.rating);
     const averageRating = ratings.length > 0
       ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
       : 0;
 
-    // Distribution des notes (1-5)
+ 
     const ratingDistribution = [1, 2, 3, 4, 5].map((rating) => ({
       rating,
       count: ratings.filter((r) => r === rating).length,
     }));
 
-    // Retours avec commentaires
+ 
     const responsesWithComments = questionnaire.responses.filter((r) => r.comment);
 
-    // Points forts et faibles (basés sur les commentaires - simplifié pour l'instant)
-    // TODO: Utiliser l'IA pour analyser les commentaires
+   
     const positiveComments = responsesWithComments.filter((r) => r.rating >= 4);
     const negativeComments = responsesWithComments.filter((r) => r.rating <= 2);
 
@@ -443,11 +503,9 @@ export class QuestionnairesService {
     };
   }
 
-  /**
-   * Envoie des emails de relance aux étudiants pour un questionnaire
-   */
+   
   async sendRemindersToStudents(userId: string, questionnaireId: string) {
-    // Récupérer le questionnaire avec la matière et la classe
+ 
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { id: questionnaireId },
       include: {
@@ -463,25 +521,25 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire non trouvé');
     }
 
-    // Vérifier que l'utilisateur est le créateur de la matière
+ 
     if (questionnaire.subject.createdBy !== userId) {
       throw new ForbiddenException(
         "Vous n'avez pas la permission d'envoyer des relances pour ce questionnaire"
       );
     }
 
-    // Récupérer les emails des étudiants depuis la classe
+    
     const studentEmails = questionnaire.subject.class.studentEmails;
 
     if (!studentEmails || studentEmails.length === 0) {
       throw new BadRequestException('Aucun email étudiant trouvé pour cette classe');
     }
 
-    // Générer l'URL du questionnaire
+   
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const questionnaireUrl = `${frontendUrl}/questionnaire/${questionnaire.token}`;
 
-    // Envoyer les emails à tous les étudiants
+
     const emailPromises = studentEmails.map((email) =>
       this.mailerService.sendQuestionnaireReminderEmail(email, {
         subjectName: questionnaire.subject.name,

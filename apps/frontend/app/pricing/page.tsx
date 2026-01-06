@@ -73,7 +73,7 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Pricing Cards - positionnées pour chevaucher le fond gris */}
+   
       <div 
         className="bg-white -mt-16 md:-mt-[270px] pb-8 md:pb-20"
       >
@@ -84,8 +84,7 @@ export default function PricingPage() {
           <CardSuperIzzy isAnnual={true} isAuthenticated={isAuthenticated} />
         </div>
       </div>
-      
-      {/* Section tableau de comparaison et FAQ - uniquement pour visiteurs */}
+     
       {!isAuthenticated && (
         <>
           <div className="bg-white py-8 md:py-16 px-4 md:px-0">
@@ -103,6 +102,7 @@ export default function PricingPage() {
           <PlanTableau isAnnual={true} />
         </div>
       </div>
+<<<<<<< HEAD
 
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-10 md:pb-20">
         <div className="mt-8 md:mt-16 max-w-3xl mx-auto">
