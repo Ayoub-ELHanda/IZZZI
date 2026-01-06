@@ -1,31 +1,53 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { SubscriptionDetailsCard } from '@/features/checkout/components/SubscriptionDetailsCard';
 import { ActionsCard } from '@/features/checkout/components/ActionsCard';
 
 export default function ConfirmPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { loadUser } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(true);
   
   const success = searchParams.get('success') === 'true';
   const classCount = parseInt(searchParams.get('classes') || '0');
   const period = searchParams.get('period') || 'monthly';
   const paymentMethod = searchParams.get('paymentMethod') || '**** **** **** 1234 (Visa)';
   
-  // Si pas de paramètre success, rediriger vers pricing
   useEffect(() => {
     if (!success) {
       router.push('/pricing');
+      return;
     }
-  }, [success, router]);
+
+    let attempts = 0;
+    const maxAttempts = 10;
+    const interval = setInterval(async () => {
+      attempts++;
+      await loadUser();
+      
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setIsRefreshing(false);
+      }
+    }, 2000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      setIsRefreshing(false);
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [success, router, loadUser]);
 
   if (!success) {
     return null;
   }
 
-  // Système de pricing par paliers
+  
   const isAnnual = period === 'annual';
   let monthlyPricePerClass: number;
   if (classCount >= 1 && classCount <= 5) {
@@ -43,7 +65,7 @@ export default function ConfirmPage() {
   const pricePerClass = isAnnual ? Math.round(monthlyPricePerClass * 0.7) : monthlyPricePerClass;
   const totalAmount = classCount * pricePerClass;
   
-  // Date du prochain paiement
+  
   const nextPaymentDate = new Date();
   if (isAnnual) {
     nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
@@ -57,13 +79,13 @@ export default function ConfirmPage() {
     year: 'numeric'
   });
 
-  // Construire le nom du plan
+
   const planName = `Super Izzzi – Paiement ${isAnnual ? 'annuel' : 'mensuel'}`;
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] py-15 px-6">
       <div className="max-w-[1200px] w-full mx-auto">
-        {/* Titre et sous-titre */}
+    
         <div className="text-center mb-12">
           <h1 className="font-mochiy text-[32px] font-normal text-[#2F2E2C] mb-3">
             Paiement confirmé !

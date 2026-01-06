@@ -261,12 +261,12 @@ export function Header() {
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: '12px',
                     fontWeight: 400,
-                    color: '#6B6B6B',
+                    color: user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? '#10B981' : '#6B6B6B',
                     lineHeight: '1.2',
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  Plan gratuit
+                  {user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? 'Super Izzi' : 'Plan Gratuit'}
                 </span>
               </div>
             </Link>

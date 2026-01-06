@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class PaymentService {
@@ -11,6 +12,7 @@ export class PaymentService {
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
+    private mailerService: MailerService,
   ) {
     const stripeSecretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     const isDevelopment = this.configService.get<string>('NODE_ENV') !== 'production';
@@ -250,6 +252,7 @@ export class PaymentService {
 
     const subscription = await this.prisma.subscription.findUnique({
       where: { stripeSubscriptionId: invoiceSubscription as string },
+      include: { user: true },
     });
 
     if (!subscription) {
@@ -272,6 +275,31 @@ export class PaymentService {
     });
 
     this.logger.log(`Payment succeeded for subscription ${subscription.id}`);
+
+    // Envoyer l'email de facturation
+    try {
+      const paymentDate = new Date(invoice.created * 1000).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      });
+
+      await this.mailerService.sendPaymentInvoiceEmail(subscription.user.email, {
+        userName: `${subscription.user.firstName} ${subscription.user.lastName}`,
+        classCount: subscription.classCount,
+        pricePerClass: subscription.pricePerClass,
+        totalAmount: subscription.totalAmount,
+        billingPeriod: subscription.billingPeriod,
+        invoiceUrl: invoice.invoice_pdf || undefined,
+        invoiceNumber: invoice.number || undefined,
+        paymentDate,
+      });
+
+      this.logger.log(`Payment invoice email sent to ${subscription.user.email}`);
+    } catch (error) {
+      this.logger.error(`Error sending payment invoice email: ${error.message}`);
+      // Ne pas faire échouer le webhook si l'email ne peut pas être envoyé
+    }
   }
 
   private async handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
