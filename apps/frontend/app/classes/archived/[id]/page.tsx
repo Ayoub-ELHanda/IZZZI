@@ -4,48 +4,89 @@ import { SubjectsTable } from '@/features/subjects';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react';
+import { classesService } from '@/services/api/classes.service';
+import { subjectsService, Subject } from '@/services/api/subjects.service';
+import { toast } from 'sonner';
 import { Download } from 'lucide-react';
 
 export default function ArchivedClassDetailPage() {
   const params = useParams();
-  const classId = params.id;
+  const classId = params.id as string;
+  const [classData, setClassData] = useState<any>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    if (classId) {
+      loadData();
+    }
+  }, [classId]);
 
-  const mockSubjects = [
-    {
-      id: '1',
-      subjectName: 'UI design',
-      teacherName: 'Kathleen Alcini',
-      startDate: '21/01/2024',
-      endDate: '21/01/2024',
-      status: 'pending' as const,
-      feedbackCount: 12,
-      totalStudents: 24,
-    },
-    {
-      id: '2',
-      subjectName: 'Développement Web',
-      teacherName: 'Jean Dupont',
-      startDate: '22/01/2024',
-      endDate: '22/01/2024',
-      status: 'finished' as const,
-      feedbackCount: 18,
-      totalStudents: 24,
-    },
-    {
-      id: '3',
-      subjectName: 'Marketing Digital',
-      teacherName: 'Marie Martin',
-      startDate: '23/01/2024',
-      endDate: '23/01/2024',
-      status: 'finished' as const,
-      feedbackCount: 24,
-      totalStudents: 24,
-    },
-  ];
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      const [classInfo, subjectsData] = await Promise.all([
+        classesService.getById(classId),
+        subjectsService.getByClassId(classId),
+      ]);
+      setClassData(classInfo);
+      setSubjects(subjectsData);
+    } catch (error) {
+      console.error('Error loading archived class data:', error);
+      toast.error('Erreur lors du chargement des données');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fonction pour formater une date en dd/MM/yyyy
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const transformedSubjects = useMemo(() => subjects.map((subject) => {
+    const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
+    const totalResponses = hasQuestionnaires
+      ? subject.questionnaires.reduce((acc, q) => acc + (q._count?.responses || 0), 0)
+      : 0;
+
+    const duringCourseQuestionnaire = subject.questionnaires?.find(
+      (q) => q.type === 'DURING_COURSE'
+    );
+    const afterCourseQuestionnaire = subject.questionnaires?.find(
+      (q) => q.type === 'AFTER_COURSE'
+    );
+
+    const status: 'pending' | 'finished' = new Date(subject.endDate) > new Date() ? 'pending' : 'finished';
+
+    return {
+      id: subject.id,
+      subjectName: subject.name,
+      teacherName: subject.teacherName,
+      startDate: formatDate(subject.startDate),
+      endDate: formatDate(subject.endDate),
+      status,
+      feedbackCount: totalResponses,
+      totalStudents: classData?.studentCount || 0,
+      hasQuestionnaire: hasQuestionnaires,
+      duringCourseToken: duringCourseQuestionnaire?.token,
+      afterCourseToken: afterCourseQuestionnaire?.token,
+      duringCourseId: duringCourseQuestionnaire?.id,
+      afterCourseId: afterCourseQuestionnaire?.id,
+    };
+  }), [subjects, classData]);
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
       <div className="mx-auto" style={{ maxWidth: '1700px' }}>
   
         <Link href="/classes/archived" prefetch={true} style={{ textDecoration: 'none' }}>
@@ -103,7 +144,7 @@ export default function ArchivedClassDetailPage() {
                 marginBottom: '16px',
               }}
             >
-              B3UI
+              {classData?.name || 'Classe'}
             </h1>
             <p
               style={{
@@ -112,7 +153,7 @@ export default function ArchivedClassDetailPage() {
                 color: '#6B6B6B',
               }}
             >
-              24 étudiants
+              {classData?.studentCount || 0} étudiants
             </p>
           </div>
 
@@ -124,7 +165,7 @@ export default function ArchivedClassDetailPage() {
         </div>
 
 
-        <SubjectsTable subjects={mockSubjects} />
+        <SubjectsTable subjects={transformedSubjects} isArchived={true} />
       </div>
     </div>
   );

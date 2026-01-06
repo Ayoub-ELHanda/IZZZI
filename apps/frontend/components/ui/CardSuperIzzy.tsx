@@ -7,17 +7,38 @@ import Link from 'next/link';
 import { routes } from '@/config/routes';
 import { useState } from 'react';
 
-export function CardSuperIzzy() {
+interface CardSuperIzzyProps {
+  isAnnual?: boolean;
+  isAuthenticated?: boolean;
+}
+
+export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
   
-
-  const pricePerClass = 19;
+  let monthlyPricePerClass: number;
+  if (classCount >= 1 && classCount <= 5) {
+    monthlyPricePerClass = 19;
+  } else if (classCount >= 6 && classCount <= 10) {
+    monthlyPricePerClass = 17;
+  } else if (classCount >= 11 && classCount <= 15) {
+    monthlyPricePerClass = 15;
+  } else if (classCount >= 16 && classCount <= 20) {
+    monthlyPricePerClass = 13;
+  } else {
+    monthlyPricePerClass = 13;
+  }
+  
+  // Prix annuel avec -30% de réduction
+  const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
+  
+  // Prix utilisé selon le mode
+  const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
   const totalPrice = classCount * pricePerClass;
   return (
     <div 
       style={{
         width: '521px',
-        minHeight: '972px',
+        minHeight: isAuthenticated ? '876px' : '972px',
         backgroundColor: '#F69D04',
         border: '1px solid rgba(244, 244, 244, 0.05)',
         borderRadius: '8px',
@@ -32,7 +53,26 @@ export function CardSuperIzzy() {
     >
 
       <div style={{ marginBottom: '32px' }}>
-        <Badge variant="yellow">Super Izzzi</Badge>
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '186px',
+            height: '50px',
+            borderRadius: '30px',
+            background: '#FFE552'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Mochiy Pop One',
+            fontSize: '14px',
+            fontWeight: 400,
+            color: '#2F2E2C'
+          }}>
+            Super Izzzi
+          </span>
+        </div>
       </div>
       
    
@@ -56,7 +96,7 @@ export function CardSuperIzzy() {
               <Slider
                 defaultValue={[7]}
                 min={1}
-                max={20}
+                max={25}
                 step={1}
                 onValueChange={(value) => setClassCount(value[0])}
                 className="w-full"
@@ -80,59 +120,107 @@ export function CardSuperIzzy() {
           
          
           <div style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <span style={{
-                fontFamily: 'Mochiy Pop One',
-                fontSize: '58px',
-                fontWeight: 400,
-                color: '#2F2E2C',
-                lineHeight: '125%'
-              }}>
-                {totalPrice}€
-              </span>
-              <span style={{
+            {classCount <= 20 ? (
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <span style={{
+                  fontFamily: 'Mochiy Pop One',
+                  fontSize: '58px',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  lineHeight: '125%'
+                }}>
+                  {pricePerClass}€
+                </span>
+                <span style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#2F2E2C',
+                  lineHeight: '100%',
+                  marginLeft: '8px'
+                }}>
+                  par mois / par classe
+                </span>
+              </div>
+            ) : (
+              <p style={{
                 fontFamily: 'Poppins',
-                fontSize: '12px',
-                fontWeight: 700,
+                fontSize: '18px',
                 color: '#2F2E2C',
-                lineHeight: '100%',
-                marginLeft: '8px'
+                textAlign: 'center'
               }}>
-                par mois / par classe
-              </span>
-            </div>
+                Pour plus de 20 classes, contactez-nous pour une offre personnalisée
+              </p>
+            )}
           </div>
         </div>
         
         <div style={{ marginBottom: '16px' }}>
-          <Link href={routes.auth.register} style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}>
-            <Button 
-              variant="yellow"
-              style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: '#FFE552',
-                color: '#2F2E2C',
-                fontFamily: 'Poppins',
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0 24px',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                boxSizing: 'border-box'
-              }}
+          {classCount <= 20 ? (
+            <Link 
+              href={`/checkout?classes=${classCount}&period=${isAnnual ? 'annual' : 'monthly'}`}
+              style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}
             >
-              Je choisis ce plan
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </Button>
-          </Link>
+              <Button 
+                variant="yellow"
+                style={{
+                  width: '100%',
+                  height: '56px',
+                  backgroundColor: '#FFE552',
+                  color: '#2F2E2C',
+                  fontFamily: 'Poppins',
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '24px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '0 24px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  boxSizing: 'border-box'
+                }}
+              >
+                Je choisis ce plan
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Button>
+            </Link>
+          ) : (
+            <Link 
+              href="/contact"
+              style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}
+            >
+              <Button 
+                variant="yellow"
+                style={{
+                  width: '100%',
+                  height: '56px',
+                  backgroundColor: '#FFE552',
+                  color: '#2F2E2C',
+                  fontFamily: 'Poppins',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '24px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '0 24px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  boxSizing: 'border-box'
+                }}
+              >
+                Demander une offre sur mesure
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: '8px' }}>
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
       
@@ -208,35 +296,36 @@ export function CardSuperIzzy() {
         </div>
       </div>
       
-  
-      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
-        <Button 
-          variant="outline"
-          style={{
-            width: '278.29px',
-            height: '56px',
-            backgroundColor: 'transparent',
-            color: '#2F2E2C',
-            fontFamily: 'Poppins',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 24px',
-            border: '1px solid #2F2E2C',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            boxSizing: 'border-box'
-          }}
-        >
-          Voir les détails du plan
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </Button>
-      </div>
+      {!isAuthenticated && (
+        <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+          <Button 
+            variant="outline"
+            style={{
+              width: '278.29px',
+              height: '56px',
+              backgroundColor: 'transparent',
+              color: '#2F2E2C',
+              fontFamily: 'Poppins',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 24px',
+              border: '1px solid #2F2E2C',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
+          >
+            Voir les détails du plan
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

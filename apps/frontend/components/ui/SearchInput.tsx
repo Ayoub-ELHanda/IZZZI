@@ -9,15 +9,15 @@ export interface SearchInputProps {
 
 export function SearchInput({ placeholder = "Rechercher", value, onChange }: SearchInputProps) {
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div style={{ position: 'relative', width: '362px' }}>
       <input
         type="text"
         placeholder={placeholder}
         value={value}
         onChange={onChange}
         style={{
-          width: '100%',
-          height: '40px',
+          width: '362px',
+          height: '45px',
           padding: '10px 42px 10px 16px',
           fontFamily: 'Poppins, sans-serif',
           fontSize: '14px',
