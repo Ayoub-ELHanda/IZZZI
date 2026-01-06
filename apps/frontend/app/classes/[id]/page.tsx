@@ -121,50 +121,52 @@ export default function ClassDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
       <div className="mx-auto" style={{ maxWidth: '1700px' }}>
 
-        <TrialBanner
-          message1="Période d'essai en cours :"
-          message2="Tout est illimité jusqu'au 18 septembre 2025."
-          linkText="Je passe au plan Super Izzzi →"
-          linkHref="/pricing"
-        />
-
-        <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
-          <button
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: 'none',
-              border: 'none',
-              color: '#2F2E2C',
-              fontSize: '14px',
-              fontFamily: 'Poppins, sans-serif',
-              cursor: 'pointer',
-              marginBottom: '16px',
-              padding: '8px 0',
-            }}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
+            <button
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: 'none',
+                border: 'none',
+                color: '#2F2E2C',
+                fontSize: '14px',
+                fontFamily: 'Poppins, sans-serif',
+                cursor: 'pointer',
+                padding: '8px 0',
+              }}
             >
-              <path
-                d="M12 16L6 10L12 4"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span>Retour à mes classes</span>
-          </button>
-        </Link>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 16L6 10L12 4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Retour à mes classes</span>
+            </button>
+          </Link>
+
+          <TrialBanner
+            message1="Période d'essai en cours :"
+            message2="Tout est illimité jusqu'au 18 septembre 2025."
+            linkText="Je passe au plan Super Izzzi →"
+            linkHref="/pricing"
+            position="right"
+          />
+        </div>
 
 
         <div

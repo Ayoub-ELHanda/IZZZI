@@ -42,7 +42,7 @@ export function ClassForm({
 
   return (
     <div className={isModal ? '' : 'min-h-screen bg-white'}>
-      <div className="relative flex items-center justify-center" style={isModal ? { padding: '40px 20px 20px 20px' } : { minHeight: 'calc(100vh - 80px)' }}>
+      <div className="relative flex items-center justify-center" style={isModal ? { padding: '40px 20px 20px 20px' } : { minHeight: 'calc(100vh - 80px)', paddingTop: '140px', paddingBottom: '40px' }}>
         <div className="text-center relative">
           {/* Step indicator - only in create mode */}
           {mode === 'create' && (
