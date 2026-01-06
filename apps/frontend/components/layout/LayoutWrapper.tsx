@@ -11,6 +11,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   
   const isAuthPage = pathname?.startsWith("/auth") ?? false;
+  const isQuestionnairePage = pathname?.startsWith("/questionnaire") ?? false;
   const isClassesPage = (pathname?.startsWith("/classes") || pathname?.startsWith("/create-class")) ?? false;
   const isSubjectPage = pathname?.startsWith("/create-subject") ?? false;
   const isAccountPage = pathname?.startsWith("/account") ?? false;
@@ -19,10 +20,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isPricingPage = pathname?.startsWith("/pricing") ?? false;
   const isCheckoutPage = pathname?.startsWith("/checkout") ?? false;
   
-  // Pages où le footer doit être masqué
+
   const shouldHideFooter = isAuthPage || isClassesPage || isSubjectPage || isAccountPage || isDashboardPage || isRetoursPage || (isPricingPage && isAuthenticated) || isCheckoutPage;
 
-  if (isAuthPage) {
+
+  if (isAuthPage || isQuestionnairePage) {
     return <>{children}</>;
   }
 

@@ -23,9 +23,6 @@ import { UserRole } from '@prisma/client';
 export class QuestionnairesController {
   constructor(private readonly questionnairesService: QuestionnairesService) {}
 
-  /**
-   * Crée deux questionnaires pour une matière (pendant et fin de cours)
-   */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -36,10 +33,7 @@ export class QuestionnairesController {
     );
   }
 
-  /**
-   * Vérifie si les questionnaires peuvent être modifiés
-   * IMPORTANT: Doit venir avant les routes avec :subjectId
-   */
+
   @Get('subject/:subjectId/can-modify')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -50,9 +44,7 @@ export class QuestionnairesController {
     );
   }
 
-  /**
-   * Met à jour le type de formulaire pour tous les questionnaires d'une matière
-   */
+  
   @Patch('subject/:subjectId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -68,19 +60,28 @@ export class QuestionnairesController {
     );
   }
 
-  /**
-   * Récupère un questionnaire par son token (accès public)
-   * IMPORTANT: Doit venir avant :token/qrcode pour éviter les conflits
-   */
+
   @Get('public/:token')
   getByToken(@Param('token') token: string) {
     return this.questionnairesService.getByToken(token);
   }
 
-  /**
-   * Génère et télécharge un QR code pour un questionnaire (endpoint public)
-   * IMPORTANT: Doit venir en dernier pour éviter les conflits de routes
-   */
+ 
+  @Post('public/:token/submit')
+  submitResponse(
+    @Param('token') token: string,
+    @Body() dto: any
+  ) {
+    return this.questionnairesService.submitResponse(
+      token,
+      dto.email,
+      dto.rating,
+      dto.comment,
+      dto.isAnonymous ?? true
+    );
+  }
+
+
   @Get(':token/qrcode')
   async downloadQRCode(
     @Param('token') token: string,
@@ -96,9 +97,7 @@ export class QuestionnairesController {
     return new StreamableFile(qrCodeBuffer);
   }
 
-  /**
-   * Récupère tous les questionnaires avec leurs retours pour le dashboard
-   */
+
   @Get('my-responses')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -111,9 +110,7 @@ export class QuestionnairesController {
     );
   }
 
-  /**
-   * Récupère les détails d'un questionnaire avec toutes ses statistiques
-   */
+ 
   @Get(':questionnaireId/details')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -130,9 +127,6 @@ export class QuestionnairesController {
     );
   }
 
-  /**
-   * Envoie des emails de relance aux étudiants pour un questionnaire
-   */
   @Post(':questionnaireId/send-reminders')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)

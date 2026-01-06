@@ -34,20 +34,20 @@ export default function QuestionnaireDetailsPage() {
       console.error('Error loading questionnaire details:', error);
       const errorMessage = error?.message || 'Erreur lors du chargement des détails';
       toast.error(errorMessage);
-      // Ne pas rediriger automatiquement, laisser l'utilisateur voir l'erreur
+  
       setData(null);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Memoize temporal data to avoid recalculating on every render
+
   const temporalData = useMemo(() => {
     if (!data?.responses) return [];
     return generateTemporalData(data.responses);
   }, [data?.responses]);
 
-  // Memoize filtered responses for points forts/faibles
+  
   const weakPoints = useMemo(() => {
     if (!data?.responses) return [];
     return data.responses

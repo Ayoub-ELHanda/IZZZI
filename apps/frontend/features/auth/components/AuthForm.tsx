@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { routes } from '@/config/routes';
@@ -16,8 +16,9 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoadingInvitation, setIsLoadingInvitation] = useState(!!inviteToken);
   
-  // Login form data
+
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
@@ -32,7 +33,38 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     password: '',
   });
 
-  // Handle login
+  useEffect(() => {
+    if (inviteToken) {
+      const loadInvitation = async () => {
+        try {
+          const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
+          const response = await fetch(`${apiUrl}/auth/invite/${inviteToken}`);
+          
+          if (!response.ok) {
+            throw new Error('Invitation invalide ou expirée');
+          }
+          
+          const invitationData = await response.json();
+          
+      
+          setRegisterData(prev => ({
+            ...prev,
+            email: invitationData.email || '',
+            firstName: invitationData.firstName || '',
+            lastName: invitationData.lastName || '',
+          }));
+        } catch (error: any) {
+          console.error('Error loading invitation:', error);
+          alert(error.message || 'Erreur lors du chargement de l\'invitation');
+        } finally {
+          setIsLoadingInvitation(false);
+        }
+      };
+      
+      loadInvitation();
+    }
+  }, [inviteToken]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,7 +81,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     }
   };
 
-  // Handle register
+  
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -59,7 +91,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
       
       let response;
       if (inviteToken) {
-        // Invited user registration (Responsable Pédagogique)
+       
         response = await authService.registerInvited({
           email: registerData.email,
           lastName: registerData.lastName,
