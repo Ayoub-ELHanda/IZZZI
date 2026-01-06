@@ -144,8 +144,8 @@ export default function PricingPage() {
             gap: '32px'
           }}
         >
-          <CardIzzy />
-          <CardSuperIzzy isAnnual={true} />
+          <CardIzzy isAuthenticated={isAuthenticated} />
+          <CardSuperIzzy isAnnual={true} isAuthenticated={isAuthenticated} />
         </div>
       </div>
       

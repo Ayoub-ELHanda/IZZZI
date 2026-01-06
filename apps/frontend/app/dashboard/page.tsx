@@ -150,7 +150,7 @@ export default function DashboardPage() {
   const trialEndDateStr = trialEndDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-[#F5F5F5]" style={{ paddingTop: '120px' }}>
       <div className="mx-auto p-4 md:p-8" style={{ maxWidth: '1650px', width: '100%', boxSizing: 'border-box' }}>
         {/* En-tête avec onglets */}
         <div style={{ marginBottom: '24px' }}>

@@ -34,7 +34,7 @@ export default function ArchivedClassesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
       <div className="mx-auto" style={{ maxWidth: '1650px' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '56px' }}>
