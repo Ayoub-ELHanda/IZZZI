@@ -21,7 +21,7 @@ export function Header() {
     router.push(routes.home);
   };
 
-  // If authenticated, show header with same style as home page but with authenticated content
+  
   if (isAuthenticated) {
     const isDashboardPage = pathname === "/dashboard";
     const isClassesPage = pathname?.startsWith("/classes") || pathname?.startsWith("/create-class");
@@ -275,12 +275,12 @@ export function Header() {
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: '12px',
                     fontWeight: 400,
-                    color: '#6B6B6B',
+                    color: user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? '#10B981' : '#6B6B6B',
                     lineHeight: '1.2',
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  Plan gratuit
+                  {user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? 'Super Izzi' : 'Plan Gratuit'}
                 </span>
               </div>
             </Link>

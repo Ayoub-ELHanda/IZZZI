@@ -5,15 +5,26 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
-// Common types
+export enum SubscriptionStatus {
+  FREE = 'FREE',
+  ACTIVE = 'ACTIVE',
+  PAST_DUE = 'PAST_DUE',
+  CANCELED = 'CANCELED',
+  INCOMPLETE = 'INCOMPLETE',
+  TRIALING = 'TRIALING',
+}
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   role: UserRole;
-  espaceId: string;
+  establishmentId?: string;  
   profilePicture?: string;
+  subscriptionStatus: SubscriptionStatus;
+  trialEndDate?: Date;
+  stripeCustomerId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -89,7 +100,7 @@ export interface RegisterDto {
   lastName: string;
 }
 
-// API Response types
+
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
