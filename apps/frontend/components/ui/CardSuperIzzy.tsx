@@ -9,12 +9,12 @@ import { useState } from 'react';
 
 interface CardSuperIzzyProps {
   isAnnual?: boolean;
+  isAuthenticated?: boolean;
 }
 
-export function CardSuperIzzy({ isAnnual = true }: CardSuperIzzyProps) {
+export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
   
-  // Système de pricing par paliers dégressifs
   let monthlyPricePerClass: number;
   if (classCount >= 1 && classCount <= 5) {
     monthlyPricePerClass = 19;
@@ -38,7 +38,7 @@ export function CardSuperIzzy({ isAnnual = true }: CardSuperIzzyProps) {
     <div 
       style={{
         width: '521px',
-        minHeight: '972px',
+        minHeight: isAuthenticated ? '876px' : '972px',
         backgroundColor: '#F69D04',
         border: '1px solid rgba(244, 244, 244, 0.05)',
         borderRadius: '8px',
@@ -53,7 +53,26 @@ export function CardSuperIzzy({ isAnnual = true }: CardSuperIzzyProps) {
     >
 
       <div style={{ marginBottom: '32px' }}>
-        <Badge variant="yellow">Super Izzzi</Badge>
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '186px',
+            height: '50px',
+            borderRadius: '30px',
+            background: '#FFE552'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Mochiy Pop One',
+            fontSize: '14px',
+            fontWeight: 400,
+            color: '#2F2E2C'
+          }}>
+            Super Izzzi
+          </span>
+        </div>
       </div>
       
    
@@ -277,35 +296,36 @@ export function CardSuperIzzy({ isAnnual = true }: CardSuperIzzyProps) {
         </div>
       </div>
       
-  
-      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
-        <Button 
-          variant="outline"
-          style={{
-            width: '278.29px',
-            height: '56px',
-            backgroundColor: 'transparent',
-            color: '#2F2E2C',
-            fontFamily: 'Poppins',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 24px',
-            border: '1px solid #2F2E2C',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            boxSizing: 'border-box'
-          }}
-        >
-          Voir les détails du plan
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </Button>
-      </div>
+      {!isAuthenticated && (
+        <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+          <Button 
+            variant="outline"
+            style={{
+              width: '278.29px',
+              height: '56px',
+              backgroundColor: 'transparent',
+              color: '#2F2E2C',
+              fontFamily: 'Poppins',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 24px',
+              border: '1px solid #2F2E2C',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
+          >
+            Voir les détails du plan
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
