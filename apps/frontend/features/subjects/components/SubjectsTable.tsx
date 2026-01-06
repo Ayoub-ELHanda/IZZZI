@@ -30,9 +30,10 @@ interface SubjectRowData {
 interface SubjectsTableProps {
   subjects: SubjectRowData[];
   onRefresh?: () => void;
+  isArchived?: boolean;
 }
 
-export function SubjectsTable({ subjects, onRefresh }: SubjectsTableProps) {
+export function SubjectsTable({ subjects, onRefresh, isArchived = false }: SubjectsTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedType, setCopiedType] = useState<'during' | 'after' | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -229,6 +230,7 @@ const handleSendReminders = async () => {
             copiedId={copiedId}
             copiedType={copiedType}
             onOpenFormModal={handleOpenFormModal}
+            isArchived={isArchived}
           />
         ))}
       </div>
@@ -266,9 +268,10 @@ interface SubjectRowProps {
   copiedId: string | null;
   copiedType: 'during' | 'after' | null;
   onOpenFormModal: (id: string) => void;
+  isArchived?: boolean;
 }
 
-function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copiedId, copiedType, onOpenFormModal }: SubjectRowProps) {
+function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copiedId, copiedType, onOpenFormModal, isArchived = false }: SubjectRowProps) {
   const statusText = subject.status === 'pending' ? 'Pendant le cours' : 'Fin du cours';
   const statusColor = '#2F2E2C';
   
@@ -342,64 +345,68 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
         </div>
 
   
-        <div style={{ position: 'absolute', left: '320px' }}>
-          <button
-            onClick={() => onOpenFormModal(subject.id)}
-            style={{
-              width: '323.29px',
-              height: '56px',
-              backgroundColor: '#F69D04',
-              border: 'none',
-              borderRadius: '8px',
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '16px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-            }}
-          >
-            Choisir le type de formulaire
-            <ArrowUpRight size={16} strokeWidth={1.5} />
-          </button>
-        </div>
+        {!isArchived && (
+          <div style={{ position: 'absolute', left: '320px' }}>
+            <button
+              onClick={() => onOpenFormModal(subject.id)}
+              style={{
+                width: '323.29px',
+                height: '56px',
+                backgroundColor: '#F69D04',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '16px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              Choisir le type de formulaire
+              <ArrowUpRight size={16} strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
 
-        <div
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-          }}
-        >
-          <button
-            onClick={() => console.log('Edit', subject.id)}
+        {!isArchived && (
+          <div
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px',
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
             }}
           >
-            <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
-          </button>
-          <button
-            onClick={() => console.log('Delete', subject.id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px',
-            }}
-          >
-            <Trash2 size={16} color="#2F2E2C" strokeWidth={1.5} />
-          </button>
-        </div>
+            <button
+              onClick={() => console.log('Edit', subject.id)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px',
+              }}
+            >
+              <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={() => console.log('Delete', subject.id)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px',
+              }}
+            >
+              <Trash2 size={16} color="#2F2E2C" strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -467,28 +474,30 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           {subject.startDate} - {subject.endDate}
         </div>
 
-        <div style={{ marginTop: '16px' }}>
-          <Button 
-            variant="modify-questionnaire"
-            onClick={() => onOpenFormModal(subject.id)}
-          >
-            Modifier le formulaire
-            <ArrowUpRight size={16} strokeWidth={1.5} />
-          </Button>
-          <div
-            style={{
-              width: '252px',
-              marginTop: '8px',
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '10px',
-              fontWeight: 400,
-              color: '#2F2E2C',
-              lineHeight: '1.1',
-            }}
-          >
-            Le formulaire sélectionné s'applique à tous les moments d'évaluation de cette matière
+        {!isArchived && (
+          <div style={{ marginTop: '16px' }}>
+            <Button 
+              variant="modify-questionnaire"
+              onClick={() => onOpenFormModal(subject.id)}
+            >
+              Modifier le formulaire
+              <ArrowUpRight size={16} strokeWidth={1.5} />
+            </Button>
+            <div
+              style={{
+                width: '252px',
+                marginTop: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '10px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                lineHeight: '1.1',
+              }}
+            >
+              Le formulaire sélectionné s'applique à tous les moments d'évaluation de cette matière
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       
@@ -557,33 +566,35 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             <Download size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
-          <button
-            onClick={() => subject.duringCourseId && onOpenEmailModal(subject.duringCourseId, subject)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0',
-            }}
-          >
-            <span
+          {!isArchived && (
+            <button
+              onClick={() => subject.duringCourseId && onOpenEmailModal(subject.duringCourseId, subject)}
               style={{
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '16px',
-                fontWeight: 400,
-                lineHeight: '100%',
-                textDecoration: 'underline',
-                textDecorationStyle: 'solid',
-                color: '#2F2E2C',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0',
               }}
             >
-              Relancer les étudiants
-            </span>
-            <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
-          </button>
+              <span
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  lineHeight: '100%',
+                  textDecoration: 'underline',
+                  textDecorationStyle: 'solid',
+                  color: '#2F2E2C',
+                }}
+              >
+                Relancer les étudiants
+              </span>
+              <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
+            </button>
+          )}
 
           {subject.duringCourseId ? (
             <Link
@@ -732,33 +743,35 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             <Download size={12} color="#2F2E2C" strokeWidth={1.5} />
           </button>
 
-          <button
-            onClick={() => subject.afterCourseId && onOpenEmailModal(subject.afterCourseId, subject)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0',
-            }}
-          >
-            <span
+          {!isArchived && (
+            <button
+              onClick={() => subject.afterCourseId && onOpenEmailModal(subject.afterCourseId, subject)}
               style={{
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '16px',
-                fontWeight: 400,
-                lineHeight: '100%',
-                textDecoration: 'underline',
-                textDecorationStyle: 'solid',
-                color: '#2F2E2C',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0',
               }}
             >
-              Relancer les étudiants
-            </span>
-            <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
-          </button>
+              <span
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  lineHeight: '100%',
+                  textDecoration: 'underline',
+                  textDecorationStyle: 'solid',
+                  color: '#2F2E2C',
+                }}
+              >
+                Relancer les étudiants
+              </span>
+              <RefreshCw size={12} color="#2F2E2C" strokeWidth={1.5} />
+            </button>
+          )}
 
           {subject.afterCourseId ? (
             <Link
@@ -831,39 +844,41 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
         </BorderedContainer>
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: '75px',
-          right: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-        }}
-      >
-        <button
-          onClick={() => console.log('Edit', subject.id)}
+      {!isArchived && (
+        <div
           style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
+            position: 'absolute',
+            top: '75px',
+            right: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
           }}
         >
-          <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
-        </button>
-        <button
-          onClick={() => console.log('Delete', subject.id)}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-          }}
-        >
-          <Trash2 size={16} color="#2F2E2C" strokeWidth={1.5} />
-        </button>
-      </div>
+          <button
+            onClick={() => console.log('Edit', subject.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={() => console.log('Delete', subject.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+            }}
+          >
+            <Trash2 size={16} color="#2F2E2C" strokeWidth={1.5} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

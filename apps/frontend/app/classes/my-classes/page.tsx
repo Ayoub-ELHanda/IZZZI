@@ -108,7 +108,7 @@ export default function MyClassesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
       <div className="mx-auto" style={{ maxWidth: '1650px' }}>
       
         <TrialBanner
@@ -116,14 +116,15 @@ export default function MyClassesPage() {
           message2="Tout est illimité jusqu'au 18 septembre 2025."
           linkText="Je passe au plan Super Izzzi →"
           linkHref="/pricing"
+          position="left"
         />
         
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '56px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '56px', marginTop: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ 
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
+              gap: '8px',
             }}>
               <h1
                 className="font-mochiy"
@@ -131,7 +132,8 @@ export default function MyClassesPage() {
                   fontSize: '18px',
                   fontWeight: 400,
                   color: '#2F2E2C',
-                  lineHeight: '100%',
+                  lineHeight: '1.2',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {classes.length} classes disponibles
@@ -141,6 +143,7 @@ export default function MyClassesPage() {
                   fontFamily: 'Poppins, sans-serif',
                   fontSize: '14px',
                   color: '#6B6B6B',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 Vous pouvez ajouter jusqu'à 5 classes.

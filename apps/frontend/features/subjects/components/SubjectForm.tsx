@@ -45,7 +45,7 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center',
-      padding: isModal ? ' 20px 50px 40px' : '80px 0',
+      padding: isModal ? ' 20px 50px 40px' : '180px 0 80px',
       position: 'relative',
     }}>
 
@@ -380,17 +380,43 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
           </p>
         </div>
 
-        <Button 
-          variant="create" 
+        <button 
           onClick={handleSubmit}
           disabled={isLoading}
           style={{
+            width: '228.29px',
+            height: '56px',
+            backgroundColor: '#FFE552',
+            color: '#2F2E2C',
+            fontFamily: 'Poppins, sans-serif',
+            fontWeight: 400,
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
             opacity: isLoading ? 0.5 : 1,
+            paddingLeft: '26px',
+            paddingRight: '26px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
           }}
         >
-          {isLoading ? 'Création...' : 'Créer la matière'}
-          {!isLoading && <ArrowUpRight size={16} strokeWidth={1.5} />}
-        </Button>
+          <span>{isLoading ? 'Création...' : 'Créer la matière'}</span>
+          {!isLoading && (
+            <svg 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M7 17l9.2-9.2M17 17V7H7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </button>
       </div>
     </div>
   );
