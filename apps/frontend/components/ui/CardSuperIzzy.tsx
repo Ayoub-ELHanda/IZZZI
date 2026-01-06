@@ -36,63 +36,33 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
   const totalPrice = classCount * pricePerClass;
   return (
     <div 
+      className="w-full md:w-[521px] bg-[#F69D04] border border-[rgba(244,244,244,0.05)] rounded-lg p-6 md:p-[60px_73px] flex flex-col gap-4 relative box-border text-white"
       style={{
-        width: '521px',
         minHeight: isAuthenticated ? '876px' : '972px',
-        backgroundColor: '#F69D04',
-        border: '1px solid rgba(244, 244, 244, 0.05)',
-        borderRadius: '8px',
-        padding: '60px 73px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        position: 'relative',
-        boxSizing: 'border-box',
-        color: 'white'
       }}
     >
 
-      <div style={{ marginBottom: '32px' }}>
+      <div className="mb-8">
         <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '186px',
-            height: '50px',
-            borderRadius: '30px',
-            background: '#FFE552'
-          }}
+          className="flex items-center justify-center w-[186px] h-[50px] rounded-[30px] bg-[#FFE552]"
         >
-          <span style={{
-            fontFamily: 'Mochiy Pop One',
-            fontSize: '14px',
-            fontWeight: 400,
-            color: '#2F2E2C'
-          }}>
+          <span className="font-mochiy text-sm font-normal text-[#2F2E2C]">
             Super Izzzi
           </span>
         </div>
       </div>
       
    
-      <div style={{ marginBottom: '32px' }}>
-        <h3 style={{ 
-          fontFamily: 'Poppins',
-          fontWeight: 700,
-          fontSize: '16px',
-          lineHeight: '100%',
-          color: '#2F2E2C',
-          marginBottom: '16px'
-        }}>
+      <div className="mb-8">
+        <h3 className="font-poppins font-bold text-sm md:text-base leading-none text-[#2F2E2C] mb-4">
           Estimez le prix de votre abonnement
         </h3>
         
  
-        <div style={{ marginBottom: '32px' }}>
+        <div className="mb-8">
      
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{ position: 'relative' }}>
+          <div className="mb-4">
+            <div className="relative">
               <Slider
                 defaultValue={[7]}
                 min={1}
@@ -101,14 +71,7 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
                 onValueChange={(value) => setClassCount(value[0])}
                 className="w-full"
               />
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '12px',
-                marginTop: '8px',
-                opacity: 0.75,
-                color: '#2F2E2C'
-              }}>
+              <div className="flex justify-between text-xs mt-2 opacity-75 text-[#2F2E2C]">
                 <span>1</span>
                 <span>5</span>
                 <span>10</span>
@@ -119,68 +82,33 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
           </div>
           
          
-          <div style={{ marginBottom: '24px' }}>
+          <div className="mb-6">
             {classCount <= 20 ? (
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{
-                  fontFamily: 'Mochiy Pop One',
-                  fontSize: '58px',
-                  fontWeight: 400,
-                  color: '#2F2E2C',
-                  lineHeight: '125%'
-                }}>
+              <div className="flex items-baseline gap-2">
+                <span className="font-mochiy text-4xl md:text-[58px] font-normal text-[#2F2E2C] leading-[125%]">
                   {pricePerClass}€
                 </span>
-                <span style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#2F2E2C',
-                  lineHeight: '100%',
-                  marginLeft: '8px'
-                }}>
+                <span className="font-poppins text-xs font-bold text-[#2F2E2C] leading-none ml-2">
                   par mois / par classe
                 </span>
               </div>
             ) : (
-              <p style={{
-                fontFamily: 'Poppins',
-                fontSize: '18px',
-                color: '#2F2E2C',
-                textAlign: 'center'
-              }}>
+              <p className="font-poppins text-base md:text-lg text-[#2F2E2C] text-center">
                 Pour plus de 20 classes, contactez-nous pour une offre personnalisée
               </p>
             )}
           </div>
         </div>
         
-        <div style={{ marginBottom: '16px' }}>
+        <div className="mb-4">
           {classCount <= 20 ? (
             <Link 
               href={`/checkout?classes=${classCount}&period=${isAnnual ? 'annual' : 'monthly'}`}
-              style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}
+              className="text-decoration-none block w-full md:w-[239px]"
             >
               <Button 
                 variant="yellow"
-                style={{
-                  width: '100%',
-                  height: '56px',
-                  backgroundColor: '#FFE552',
-                  color: '#2F2E2C',
-                  fontFamily: 'Poppins',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '24px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0 24px',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  boxSizing: 'border-box'
-                }}
+                className="w-full h-14 bg-[#FFE552] text-[#2F2E2C] font-poppins font-normal text-sm md:text-base flex justify-between items-center px-6 border-none rounded-lg cursor-pointer"
               >
                 Je choisis ce plan
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -191,31 +119,14 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
           ) : (
             <Link 
               href="/contact"
-              style={{ textDecoration: 'none', display: 'block', width: '239.29px' }}
+              className="text-decoration-none block w-full md:w-[239px]"
             >
               <Button 
                 variant="yellow"
-                style={{
-                  width: '100%',
-                  height: '56px',
-                  backgroundColor: '#FFE552',
-                  color: '#2F2E2C',
-                  fontFamily: 'Poppins',
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '24px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '0 24px',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  boxSizing: 'border-box'
-                }}
+                className="w-full h-14 bg-[#FFE552] text-[#2F2E2C] font-poppins font-normal text-xs md:text-sm flex justify-center items-center px-6 border-none rounded-lg cursor-pointer"
               >
                 Demander une offre sur mesure
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginLeft: '8px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-2">
                   <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </Button>
@@ -225,20 +136,13 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
       </div>
       
  
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <h3 style={{
-          fontFamily: 'Poppins',
-          fontSize: '16px',
-          fontWeight: 700,
-          color: '#2F2E2C',
-          lineHeight: '100%',
-          marginBottom: '16px'
-        }}>
-          Tout ce qu'il y a dans le plan gratuit,<br/>
+      <div className="flex flex-col gap-3">
+        <h3 className="font-poppins text-sm md:text-base font-bold text-[#2F2E2C] leading-none mb-4">
+          Tout ce qu&apos;il y a dans le plan gratuit,<br className="hidden md:block"/>
           et en plus :
         </h3>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex flex-col gap-4">
           {[
             { text: "Nombre de retours illimité" },
             { 
@@ -266,27 +170,16 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
               subtext: "(Bientôt disponible)"
             }
           ].map((item, index) => (
-            <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: '2px' }}>
+            <div key={index} className="flex gap-3 items-start">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 mt-0.5">
                 <path d="M20 6L9 17L4 12" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '16px',
-                  color: '#2F2E2C',
-                  lineHeight: '150%',
-                }}>
+              <div className="flex flex-col">
+                <span className="font-poppins text-sm md:text-base text-[#2F2E2C] leading-[150%]">
                   {item.text}
                 </span>
                 {item.subtext && (
-                  <span style={{
-                    fontFamily: 'Poppins',
-                    fontSize: '12px',
-                    color: '#2F2E2C',
-                    lineHeight: '150%',
-                    marginTop: '2px'
-                  }}>
+                  <span className="font-poppins text-xs text-[#2F2E2C] leading-[150%] mt-0.5">
                     {item.subtext}
                   </span>
                 )}
@@ -297,27 +190,10 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
       </div>
       
       {!isAuthenticated && (
-        <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+        <div className="mt-auto pt-2.5">
           <Button 
             variant="outline"
-            style={{
-              width: '278.29px',
-              height: '56px',
-              backgroundColor: 'transparent',
-              color: '#2F2E2C',
-              fontFamily: 'Poppins',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '24px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0 24px',
-              border: '1px solid #2F2E2C',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              boxSizing: 'border-box'
-            }}
+            className="w-full md:w-[278px] h-14 bg-transparent text-[#2F2E2C] font-poppins font-normal text-sm md:text-base flex justify-between items-center px-6 border border-[#2F2E2C] rounded-lg cursor-pointer"
           >
             Voir les détails du plan
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

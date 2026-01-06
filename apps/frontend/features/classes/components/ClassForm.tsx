@@ -154,7 +154,7 @@ export function ClassForm({
                     display: 'block',
                   }}
                 >
-                  Nombre d'étudiants
+                  Nombre d&apos;étudiants
                 </label>
                 <Input
                   type="number"
@@ -199,6 +199,7 @@ export function ClassForm({
                     borderRadius: '8px',
                     resize: 'none',
                     outline: 'none',
+                    color: '#2F2E2C',
                   }}
                 />
               </div>

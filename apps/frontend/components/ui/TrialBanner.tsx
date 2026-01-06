@@ -12,51 +12,33 @@ export interface TrialBannerProps {
 export function TrialBanner({ message1, message2, linkText, linkHref, position = 'right' }: TrialBannerProps) {
   return (
     <div
+      className="w-full md:w-auto md:max-w-[680px] min-h-[58px] p-4 mb-2 flex flex-col md:flex-row md:items-center gap-3 md:gap-14"
       style={{
-        width: '680px',
-        height: '58px',
         backgroundColor: '#FFF4E0',
         border: '1px solid #FFE552',
         borderRadius: '8px',
-        padding: '16px',
-        marginBottom: '8px',
         marginLeft: position === 'right' ? 'auto' : '0',
         marginRight: position === 'left' ? 'auto' : '0',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '56px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <AlertCircle size={20} color="#FF9500" />
-        <div>
-          <p style={{ width: '311px', height: '26px', fontFamily: 'Poppins, sans-serif', fontSize: '12px', fontWeight: 600, color: '#FF9500' }}>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <AlertCircle size={20} color="#FF9500" className="flex-shrink-0" />
+        <div className="flex flex-col">
+          <p className="text-xs md:text-xs font-poppins font-semibold text-[#FF9500]">
             {message1}
           </p>
-          <p style={{ width: '311px', height: '26px', fontFamily: 'Poppins, sans-serif', fontSize: '12px', fontWeight: 600, color: '#FF9500' }}>
+          <p className="text-xs md:text-xs font-poppins font-semibold text-[#FF9500]">
             {message2}
           </p>
         </div>
       </div>
       
-      <Link href={linkHref} prefetch={true} style={{ textDecoration: 'none' }}>
+      <Link href={linkHref} prefetch={true} className="text-decoration-none flex-shrink-0">
         <span
-          style={{
-            width: '247px',
-            height: '16px',
-            fontFamily: 'Poppins, sans-serif',
-            fontSize: '14px',
-            color: '#FF9500',
-            textDecoration: 'underline',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-          }}
+          className="text-sm md:text-sm font-poppins text-[#FF9500] underline cursor-pointer inline-flex items-center gap-1"
         >
           {linkText.replace('→', '').trim()}
-          <ArrowUpRight size={16} color="#FF9500" style={{ marginLeft: '4px' }} />
+          <ArrowUpRight size={16} color="#FF9500" />
         </span>
       </Link>
     </div>

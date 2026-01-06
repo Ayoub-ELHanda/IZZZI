@@ -8,18 +8,41 @@ import { useAuth } from "@/hooks/useAuth";
 import { routes } from "@/config/routes";
 import images from "@/constants/images";
 import { Button } from "@/components/ui/Button";
-import { ArrowUpRight, Bell } from "lucide-react";
+import { ArrowUpRight, Bell, Menu, X } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const isSubscriptionPage = pathname === "/pricing";
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleLogout = async () => {
     await logout();
     router.push(routes.home);
   };
+
+  // Close mobile menu when pathname changes
+  React.useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Close mobile menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (mobileMenuOpen && !target.closest('nav') && !target.closest('[style*="position: fixed"]')) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [mobileMenuOpen]);
 
   // If authenticated, show header with same style as home page but with authenticated content
   if (isAuthenticated) {
@@ -31,7 +54,7 @@ export function Header() {
         <nav 
           style={{
             position: 'fixed',
-            top: '16px',
+            top: '8px',
             left: '50%',
             transform: 'translateX(-50%)',
             display: 'flex',
@@ -44,9 +67,10 @@ export function Header() {
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
             border: '1px solid #E5E5E5',
             maxWidth: '1200px',
-            width: 'calc(100% - 32px)',
-            padding: '12px 16px',
+            width: 'calc(100% - 16px)',
+            padding: '8px 12px',
           }}
+          className="sm:top-4 sm:w-[calc(100%-32px)] sm:p-3"
         >
           {/* Logo - Left */}
           <Link 
@@ -59,6 +83,7 @@ export function Header() {
               textDecoration: 'none',
               flexShrink: 0,
             }}
+            onClick={() => setMobileMenuOpen(false)}
           >
             <div 
               style={{
@@ -77,6 +102,7 @@ export function Header() {
               </svg>
             </div>
             <span 
+              className="hidden sm:inline"
               style={{
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: '24px',
@@ -95,11 +121,9 @@ export function Header() {
               position: 'absolute',
               left: '50%',
               transform: 'translateX(-50%)',
-              display: 'flex',
               gap: '12px',
-              alignItems: 'center',
             }}
-            className="hidden md:flex"
+            className="hidden md:flex md:items-center"
           >
             <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
               <button
@@ -161,17 +185,14 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Right side - Profile and Actions */}
+          {/* Right side - Profile and Actions (Visible on all screens) */}
           <div 
             style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'flex-end', 
-              gap: '16px',
+              gap: '8px',
               flex: 1,
               marginLeft: 'auto',
             }}
-            className="hidden md:flex"
+            className="flex items-center justify-end gap-2 md:gap-4"
           >
             {/* Bell icon */}
             <button
@@ -257,7 +278,7 @@ export function Header() {
                   {user?.firstName?.charAt(0).toUpperCase() || ''}{user?.lastName?.charAt(0).toUpperCase() || ''}
                 </div>
               )}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div className="hidden md:flex flex-col">
                 <span 
                   style={{
                     fontFamily: 'Poppins, sans-serif',
@@ -285,9 +306,10 @@ export function Header() {
               </div>
             </Link>
 
-            {/* Logout button */}
+            {/* Logout button - Desktop only */}
             <button
               onClick={handleLogout}
+              className="hidden md:block"
               style={{
                 padding: '10px 20px',
                 backgroundColor: 'transparent',
@@ -312,7 +334,130 @@ export function Header() {
               Déconnexion
             </button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex md:hidden items-center justify-center"
+            style={{
+              width: '40px',
+              height: '40px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E5E5E5',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+              flexShrink: 0,
+              marginLeft: 'auto',
+            }}
+          >
+            {mobileMenuOpen ? (
+              <X size={20} color="#2F2E2C" strokeWidth={1.5} />
+            ) : (
+              <Menu size={20} color="#2F2E2C" strokeWidth={1.5} />
+            )}
+          </button>
         </nav>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: '72px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 'calc(100% - 16px)',
+              maxWidth: '1200px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              border: '1px solid #E5E5E5',
+              zIndex: 49,
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+            className="sm:top-24 sm:w-[calc(100%-32px)]"
+          >
+            {/* Navigation Links */}
+            <Link 
+              href="/classes/my-classes" 
+              prefetch={true} 
+              style={{ textDecoration: 'none' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <button
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  backgroundColor: isClassesPage ? '#2F2E2C' : '#FFFFFF',
+                  border: '1px solid #E5E5E5',
+                  borderRadius: '8px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: isClassesPage ? '#FFFFFF' : '#2F2E2C',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                Mes classes
+              </button>
+            </Link>
+            <Link 
+              href="/dashboard" 
+              prefetch={true} 
+              style={{ textDecoration: 'none' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <button
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  backgroundColor: isDashboardPage ? '#2F2E2C' : '#FFFFFF',
+                  border: '1px solid #E5E5E5',
+                  borderRadius: '8px',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: isDashboardPage ? '#FFFFFF' : '#2F2E2C',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                Dashboard
+              </button>
+            </Link>
+
+            {/* Divider */}
+            <div style={{ height: '1px', backgroundColor: '#E5E5E5', margin: '8px 0' }} />
+
+            {/* Logout Button */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleLogout();
+              }}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                backgroundColor: 'transparent',
+                border: '1px solid #E5E5E5',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              Déconnexion
+            </button>
+          </div>
+        )}
       </header>
     );
   }
@@ -323,7 +468,7 @@ export function Header() {
       <nav 
         style={{
           position: 'fixed',
-          top: '16px',
+          top: '8px',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -336,9 +481,10 @@ export function Header() {
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
           border: '1px solid #E5E5E5',
           maxWidth: '1200px',
-          width: 'calc(100% - 32px)',
-          padding: '12px 16px',
+          width: 'calc(100% - 16px)',
+          padding: '8px 12px',
         }}
+        className="sm:top-4 sm:w-[calc(100%-32px)] sm:p-3"
       >
         {/* Logo */}
         <Link 
@@ -350,6 +496,7 @@ export function Header() {
             textDecoration: 'none',
             flexShrink: 0,
           }}
+          onClick={() => setMobileMenuOpen(false)}
         >
           <div 
             style={{
@@ -368,6 +515,7 @@ export function Header() {
             </svg>
           </div>
           <span 
+            className="hidden sm:inline"
             style={{
               fontFamily: 'Poppins, sans-serif',
               fontSize: '24px',
@@ -379,6 +527,29 @@ export function Header() {
             izzzi
           </span>
         </Link>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="flex md:hidden items-center justify-center"
+          style={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E5E5E5',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            flexShrink: 0,
+            marginLeft: 'auto',
+          }}
+        >
+          {mobileMenuOpen ? (
+            <X size={20} color="#2F2E2C" strokeWidth={1.5} />
+          ) : (
+            <Menu size={20} color="#2F2E2C" strokeWidth={1.5} />
+          )}
+        </button>
 
         {/* Desktop Navigation */}
         <div 
@@ -482,6 +653,103 @@ export function Header() {
         </div>
 
       </nav>
+
+      {/* Mobile Menu Overlay - Public */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '72px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'calc(100% - 16px)',
+            maxWidth: '1200px',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            border: '1px solid #E5E5E5',
+            zIndex: 49,
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+          }}
+          className="sm:top-24 sm:w-[calc(100%-32px)]"
+        >
+          <Link
+            href={routes.pricing}
+            style={{
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '14px',
+              fontWeight: 700,
+              color: '#2F2E2C',
+              textDecoration: 'none',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              backgroundColor: isSubscriptionPage ? '#F8F8F8' : 'transparent',
+            }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Nos tarifs
+          </Link>
+
+          <Link 
+            href={routes.auth.register} 
+            style={{ textDecoration: 'none' }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <button
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                backgroundColor: '#FFD93D',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              S&rsquo;inscrire
+              <ArrowUpRight size={16} color="#2F2E2C" strokeWidth={2} />
+            </button>
+          </Link>
+
+          <Link 
+            href={routes.auth.login} 
+            style={{ textDecoration: 'none' }}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <button
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E5E5',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#2F2E2C',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              Se connecter
+              <ArrowUpRight size={16} color="#2F2E2C" strokeWidth={2} />
+            </button>
+          </Link>
+        </div>
+      )}
       </header>
     );
   }

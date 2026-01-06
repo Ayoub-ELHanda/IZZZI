@@ -108,8 +108,8 @@ export default function MyClassesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
-      <div className="mx-auto" style={{ maxWidth: '1650px' }}>
+    <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
+      <div className="mx-auto max-w-[1650px]">
       
         <TrialBanner
           message1="Période d'essai en cours :"
@@ -119,46 +119,42 @@ export default function MyClassesPage() {
           position="left"
         />
         
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '56px', marginTop: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-            }}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 md:mb-14 mt-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-3 w-full md:w-auto">
+            <div className="flex flex-col gap-2 flex-shrink-0"> 
               <h1
-                className="font-mochiy"
+                className="font-mochiy text-base md:text-lg"
                 style={{
-                  fontSize: '18px',
                   fontWeight: 400,
                   color: '#2F2E2C',
                   lineHeight: '1.2',
-                  whiteSpace: 'nowrap',
                 }}
               >
                 {classes.length} classes disponibles
               </h1>
               <p
+                className="text-xs md:text-sm"
                 style={{
                   fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px',
                   color: '#6B6B6B',
-                  whiteSpace: 'nowrap',
                 }}
               >
                 Vous pouvez ajouter jusqu'à 5 classes.
               </p>
             </div>
 
-            <SearchInput
-              placeholder="Rechercher une classe"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <div className="w-full md:w-auto">
+              <SearchInput
+                placeholder="Rechercher une classe"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
           <Button 
             variant="add-class"
+            className="w-full md:w-auto flex-shrink-0"
             onClick={() => {
               if (classes.length >= 5) {
                 if (isAdmin) {
@@ -176,12 +172,7 @@ export default function MyClassesPage() {
           </Button>
         </div>
 
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 531px)',
-          gap: '17px', 
-          marginBottom: '32px',
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4 mb-8">
           {classes.map((classItem) => (
             <ClassCard
               key={classItem.id}
@@ -202,21 +193,8 @@ export default function MyClassesPage() {
         </div>
 
        
-        <Link href="/classes/archived" prefetch={true} style={{ textDecoration: 'none' }}>
-          <span
-            style={{
-              fontFamily: 'Poppins, sans-serif',
-              fontSize: '14px',
-              color: '#2F2E2C',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            Voir les classes archivées →
-          </span>
+        <Link href="/classes/archived" prefetch={true} className="text-sm md:text-sm text-[#2F2E2C] underline cursor-pointer inline-flex items-center gap-2">
+          Voir les classes archivées →
         </Link>
 
         <ClassModal

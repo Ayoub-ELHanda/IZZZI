@@ -248,81 +248,51 @@ export default function ProfilePage() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#F8F8F8',
-          paddingTop: '100px',
+          paddingTop: '80px',
         }}
+        className="sm:pt-[100px]"
       >
-        <div style={{ maxWidth: '1650px', width: '100%', margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '13px', marginBottom: '24px' }}>
+        <div style={{ maxWidth: '1650px', width: '100%', margin: '0 auto', padding: '0 16px' }} className="sm:p-0 sm:px-8">
+          <div className="flex items-center gap-3 md:gap-[13px] mb-6 md:mb-6">
             <button
               onClick={handleBack}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-              }}
+              className="flex items-center gap-2 md:gap-3 bg-none border-none cursor-pointer p-0"
             >
               <div
-                style={{
-                  width: '43px',
-                  height: '43px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid #E5E5E5',
-                  transition: 'background-color 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F5F5F5';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                }}
+                className="w-10 h-10 md:w-[43px] md:h-[43px] bg-white rounded-full flex items-center justify-center border border-[#E5E5E5] transition-colors hover:bg-[#F5F5F5]"
               >
                 <MoveUpLeft size={16} color="#2F2E2C" />
               </div>
               <span
-                style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px',
-                  color: '#2F2E2C',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: '2px',
-                }}
+                className="text-sm md:text-sm font-poppins text-[#2F2E2C] underline underline-offset-2"
               >
                 Retour
               </span>
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', alignItems: 'start' }}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-3" style={{ alignItems: 'start' }}>
             {/* Left Column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="flex flex-col gap-6 md:gap-6">
               {/* Profile Card */}
               <div
+                className="p-6 md:p-12"
                 style={{
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E5E5E5',
                   borderRadius: '8px',
-                  padding: '48px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '38px',
+                  gap: '24px',
                   alignItems: 'center',
                   width: '100%',
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', width: '164px' }}>
+                <div className="w-full md:w-[164px]" style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
                   <div style={{ position: 'relative' }}>
                     <div
+                      className="w-32 h-32 md:w-[164px] md:h-[164px]"
                       style={{
-                        width: '164px',
-                        height: '164px',
                         borderRadius: '50%',
                         backgroundColor: '#F5F5F5',
                         display: 'flex',
@@ -343,9 +313,9 @@ export default function ProfilePage() {
                         />
                       ) : (
                         <span
+                          className="text-2xl md:text-[32px]"
                           style={{
                             fontFamily: 'Mochiy Pop One, sans-serif',
-                            fontSize: '32px',
                             color: '#6B6B6B',
                           }}
                         >
@@ -382,9 +352,9 @@ export default function ProfilePage() {
                   </div>
 
                   <p
+                    className="text-sm md:text-base"
                     style={{
                       fontFamily: 'Mochiy Pop One, sans-serif',
-                      fontSize: '16px',
                       fontWeight: 700,
                       color: '#2F2E2C',
                       textAlign: 'center',
@@ -394,9 +364,9 @@ export default function ProfilePage() {
                     {profileInitialData.firstName} {profileInitialData.lastName}
                   </p>
                   <p
+                    className="text-xs md:text-sm"
                     style={{
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '14px',
                       color: '#2F2E2C',
                       margin: 0,
                     }}
@@ -404,9 +374,9 @@ export default function ProfilePage() {
                     {profileInitialData.email}
                   </p>
                   <p
+                    className="text-[10px] md:text-[10px]"
                     style={{
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '10px',
                       fontWeight: 600,
                       color: '#2F2E2C',
                       textAlign: 'center',
@@ -421,16 +391,14 @@ export default function ProfilePage() {
                   onClick={handleLogout}
                   isLoading={false}
                   disabled={false}
+                  className="text-sm md:text-base py-4 px-6 md:py-4 md:px-[26px] gap-4 md:gap-[29px]"
                   style={{
                     backgroundColor: '#FFD93D',
                     color: '#2F2E2C',
                     fontFamily: 'Poppins, sans-serif',
-                    fontSize: '16px',
-                    padding: '16px 26px',
                     height: 'auto',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '29px',
                     width: '100%',
                     justifyContent: 'center',
                     border: 'none',
@@ -453,22 +421,22 @@ export default function ProfilePage() {
               {/* Billing Management Card */}
               {isAdmin && (
                 <div
+                  className="p-6 md:p-12"
                   style={{
                     backgroundColor: '#FFFFFF',
                     border: '1px solid #E5E5E5',
                     borderRadius: '8px',
-                    padding: '48px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '38px',
+                    gap: '24px',
                     alignItems: 'flex-start',
                     width: '100%',
                   }}
                 >
                   <p
+                    className="text-base md:text-lg"
                     style={{
                       fontFamily: 'Mochiy Pop One, sans-serif',
-                      fontSize: '18px',
                       color: '#2F2E2C',
                       margin: 0,
                     }}
@@ -479,9 +447,9 @@ export default function ProfilePage() {
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                       <Check size={16} color="#22C55E" style={{ flexShrink: 0 }} />
                       <p
+                        className="text-sm md:text-base"
                         style={{
                           fontFamily: 'Poppins, sans-serif',
-                          fontSize: '16px',
                           color: '#2F2E2C',
                           margin: 0,
                         }}
@@ -492,9 +460,9 @@ export default function ProfilePage() {
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                       <Check size={16} color="#22C55E" style={{ flexShrink: 0 }} />
                       <p
+                        className="text-sm md:text-base"
                         style={{
                           fontFamily: 'Poppins, sans-serif',
-                          fontSize: '16px',
                           color: '#2F2E2C',
                           margin: 0,
                         }}
@@ -505,9 +473,9 @@ export default function ProfilePage() {
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                       <Check size={16} color="#22C55E" style={{ flexShrink: 0 }} />
                       <p
+                        className="text-sm md:text-base"
                         style={{
                           fontFamily: 'Poppins, sans-serif',
-                          fontSize: '16px',
                           color: '#2F2E2C',
                           margin: 0,
                         }}
@@ -519,17 +487,15 @@ export default function ProfilePage() {
                   <Button
                     onClick={() => router.push(routes.dashboard)}
                     variant="outline"
+                    className="text-sm md:text-base py-4 px-6 md:py-4 md:px-[26px] gap-4 md:gap-[29px]"
                     style={{
                       backgroundColor: '#FFFFFF',
                       border: '1px solid #E5E5E5',
                       color: '#2F2E2C',
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '16px',
-                      padding: '16px 26px',
                       height: 'auto',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '29px',
                       width: '100%',
                       justifyContent: 'center',
                       borderRadius: '8px',
@@ -552,26 +518,26 @@ export default function ProfilePage() {
             </div>
 
             {/* Middle Column - Profile Form & Invite User */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="flex flex-col gap-6 md:gap-6">
               {/* Profile Form */}
               <div
+                className="p-6 md:p-14"
                 style={{
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E5E5E5',
                   borderRadius: '8px',
-                  padding: '56px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '38px',
+                  gap: '24px',
                   alignItems: 'flex-start',
                   width: '100%',
                   minHeight: 'fit-content',
                 }}
               >
                 <p
+                  className="text-base md:text-lg"
                   style={{
                     fontFamily: 'Mochiy Pop One, sans-serif',
-                    fontSize: '18px',
                     fontWeight: 700,
                     color: '#2F2E2C',
                     margin: 0,
@@ -603,22 +569,22 @@ export default function ProfilePage() {
               {/* Invite User Card - Only for Admin */}
               {isAdmin && (
                 <div
+                  className="p-6 md:p-12"
                   style={{
                     backgroundColor: '#FFFFFF',
                     border: '1px solid #E5E5E5',
                     borderRadius: '8px',
-                    padding: '48px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '38px',
+                    gap: '24px',
                     alignItems: 'flex-start',
                     width: '100%',
                   }}
                 >
                   <p
+                    className="text-base md:text-lg"
                     style={{
                       fontFamily: 'Mochiy Pop One, sans-serif',
-                      fontSize: '18px',
                       color: '#2F2E2C',
                       margin: 0,
                     }}
@@ -626,9 +592,9 @@ export default function ProfilePage() {
                     Inviter un utilisateur
                   </p>
                   <p
+                    className="text-xs md:text-sm"
                     style={{
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '14px',
                       color: '#6B6B6B',
                       margin: 0,
                     }}
@@ -637,16 +603,14 @@ export default function ProfilePage() {
                   </p>
                   <Button
                     onClick={() => inviteUserModal.onOpen()}
+                    className="text-sm md:text-base py-4 px-6 md:py-4 md:px-[26px] gap-2 md:gap-2"
                     style={{
                       backgroundColor: '#FFD93D',
                       color: '#2F2E2C',
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '16px',
-                      padding: '16px 26px',
                       height: 'auto',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
                       width: '100%',
                       justifyContent: 'center',
                       border: 'none',
@@ -669,24 +633,24 @@ export default function ProfilePage() {
             </div>
 
             {/* Right Column - Password Form & Delete Account */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="flex flex-col gap-6 md:gap-6">
               {/* Password Form */}
               <div
+                className="p-6 md:p-14"
                 style={{
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E5E5E5',
                   borderRadius: '8px',
-                  padding: '56px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '38px',
+                  gap: '24px',
                   alignItems: 'flex-start',
                 }}
               >
                 <p
+                  className="text-base md:text-lg"
                   style={{
                     fontFamily: 'Mochiy Pop One, sans-serif',
-                    fontSize: '18px',
                     color: '#2F2E2C',
                     margin: 0,
                   }}
@@ -715,22 +679,22 @@ export default function ProfilePage() {
 
               {/* Delete Account Card */}
               <div
+                className="p-6 md:p-12"
                 style={{
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E5E5E5',
                   borderRadius: '8px',
-                  padding: '48px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '38px',
+                  gap: '24px',
                   alignItems: 'flex-start',
                   width: '100%',
                 }}
               >
                 <p
+                  className="text-base md:text-lg"
                   style={{
                     fontFamily: 'Mochiy Pop One, sans-serif',
-                    fontSize: '18px',
                     color: '#2F2E2C',
                     margin: 0,
                   }}
@@ -741,17 +705,15 @@ export default function ProfilePage() {
                   type="button"
                   onClick={handleDeleteAccount}
                   variant="outline"
+                  className="text-sm md:text-base py-4 px-6 md:py-4 md:px-6 gap-4 md:gap-6"
                   style={{
                     backgroundColor: '#FFFFFF',
                     border: '1px solid #E5E5E5',
                     color: '#2F2E2C',
                     fontFamily: 'Poppins, sans-serif',
-                    fontSize: '16px',
-                    padding: '16px 24px',
                     height: 'auto',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '24px',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     transition: 'background-color 0.2s',

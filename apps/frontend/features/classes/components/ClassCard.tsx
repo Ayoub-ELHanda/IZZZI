@@ -17,25 +17,22 @@ interface ClassCardProps {
 export function ClassCard({ id, name, description, studentCount, archivedDate, isArchived = false, onModify, onArchive }: ClassCardProps) {
   return (
     <div
+      className="w-full min-h-[161px] p-4 md:p-6"
       style={{
-        width: '531px',
-        height: '161px',
         backgroundColor: 'white',
         borderRadius: '10px',
         border: '1px solid #E0E0E0',
-        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
     >
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
+      <div className="flex justify-between items-start gap-4">
+        <div className="flex-1 min-w-0">
           <h3
-            className="font-mochiy"
+            className="font-mochiy text-sm md:text-sm"
             style={{
-              fontSize: '14px',
               fontWeight: 400,
               color: '#2F2E2C',
               marginBottom: '8px',
@@ -45,21 +42,22 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           </h3>
           
           <p
+            className="text-xs md:text-xs"
             style={{
               fontFamily: 'Poppins, sans-serif',
-              fontSize: '12px',
               fontWeight: 400,
               color: '#6B6B6B',
               marginBottom: '8px',
+              wordBreak: 'break-word',
             }}
           >
             {description}
           </p>
           
           <p
+            className="text-[11px] md:text-[11px]"
             style={{
               fontFamily: 'Poppins, sans-serif',
-              fontSize: '11px',
               fontWeight: 400,
               color: '#6B6B6B',
             }}
@@ -69,9 +67,9 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           
           {isArchived && archivedDate && (
             <p
+              className="text-[11px] md:text-[11px]"
               style={{
                 fontFamily: 'Poppins, sans-serif',
-                fontSize: '11px',
                 fontWeight: 400,
                 color: '#6B6B6B',
               }}
@@ -82,12 +80,12 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
         </div>
 
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true}>
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true} className="hidden sm:inline">
             <span
+              className="text-xs md:text-xs"
               style={{
                 fontFamily: 'Poppins, sans-serif',
-                fontSize: '12px',
                 fontWeight: 400,
                 color: '#2F2E2C',
               }}
@@ -98,9 +96,8 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
 
           <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true}>
             <div
+              className="w-10 h-10 md:w-[43px] md:h-[43px]"
               style={{
-                width: '43px',
-                height: '43px',
                 backgroundColor: '#FFE552',
                 borderRadius: '50%',
                 display: 'flex',
@@ -130,22 +127,13 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
 
 
       {isArchived ? (
-        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <Link href={`/classes/archived/${id}`} prefetch={true} style={{ textDecoration: 'none' }}>
+        <div className="flex justify-start items-center mt-4">
+          <Link href={`/classes/archived/${id}`} prefetch={true} className="text-decoration-none">
             <button
+              className="text-sm md:text-sm text-[#2F2E2C] underline bg-none border-none cursor-pointer p-0 flex items-center gap-2"
               style={{
                 fontFamily: 'Poppins, sans-serif',
-                fontSize: '14px',
                 fontWeight: 400,
-                color: '#2F2E2C',
-                textDecoration: 'underline',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
               }}
             >
               <Eye size={16} />
@@ -154,22 +142,13 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           </Link>
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="flex justify-between items-center mt-4 gap-4 flex-wrap">
           <button
             onClick={onModify}
+            className="text-sm md:text-sm text-[#2F2E2C] underline bg-none border-none cursor-pointer p-0 flex items-center gap-2"
             style={{
               fontFamily: 'Poppins, sans-serif',
-              fontSize: '14px',
               fontWeight: 400,
-              color: '#2F2E2C',
-              textDecoration: 'underline',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
             }}
           >
             <Edit size={16} />
@@ -178,16 +157,10 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
 
           <button
             onClick={onArchive}
+            className="text-sm md:text-sm text-[#2F2E2C] underline bg-none border-none cursor-pointer p-0"
             style={{
               fontFamily: 'Poppins, sans-serif',
-              fontSize: '14px',
               fontWeight: 400,
-              color: '#2F2E2C',
-              textDecoration: 'underline',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
             }}
           >
             Archiver

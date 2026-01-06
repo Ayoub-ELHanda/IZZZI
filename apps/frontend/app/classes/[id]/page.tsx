@@ -121,24 +121,13 @@ export default function ClassDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
-      <div className="mx-auto" style={{ maxWidth: '1700px' }}>
+    <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
+      <div className="mx-auto max-w-[1700px]">
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <Link href="/classes/my-classes" prefetch={true} className="text-decoration-none">
             <button
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                background: 'none',
-                border: 'none',
-                color: '#2F2E2C',
-                fontSize: '14px',
-                fontFamily: 'Poppins, sans-serif',
-                cursor: 'pointer',
-                padding: '8px 0',
-              }}
+              className="flex items-center gap-2 bg-none border-none text-[#2F2E2C] text-sm font-poppins cursor-pointer py-2 px-0"
             >
               <svg
                 width="20"
@@ -155,40 +144,28 @@ export default function ClassDetailPage() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>Retour à mes classes</span>
+              <span className="text-sm md:text-sm">Retour à mes classes</span>
             </button>
           </Link>
 
-          <TrialBanner
-            message1="Période d'essai en cours :"
-            message2="Tout est illimité jusqu'au 18 septembre 2025."
-            linkText="Je passe au plan Super Izzzi →"
-            linkHref="/pricing"
-            position="right"
-          />
+          <div className="w-full md:w-auto">
+            <TrialBanner
+              message1="Période d'essai en cours :"
+              message2="Tout est illimité jusqu'au 18 septembre 2025."
+              linkText="Je passe au plan Super Izzzi →"
+              linkHref="/pricing"
+              position="right"
+            />
+          </div>
         </div>
 
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-              }}
-            >
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full md:w-auto">
+            <div className="flex flex-col gap-4 flex-shrink-0">
               <h1
-                className="font-mochiy"
+                className="font-mochiy text-base md:text-lg"
                 style={{
-                  fontSize: '18px',
                   fontWeight: 400,
                   color: '#2F2E2C',
                   lineHeight: '100%',
@@ -197,9 +174,9 @@ export default function ClassDetailPage() {
                 {classData?.name || 'Classe'}
               </h1>
               <p
+                className="text-xs md:text-sm"
                 style={{
                   fontFamily: 'Poppins, sans-serif',
-                  fontSize: '14px',
                   color: '#6B6B6B',
                 }}
               >
@@ -207,23 +184,28 @@ export default function ClassDetailPage() {
               </p>
             </div>
 
-
-            <SearchInput
-              placeholder="Rechercher par intervenant, cours..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <div className="w-full md:w-auto">
+              <SearchInput
+                placeholder="Rechercher par intervenant, cours..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
- 
-          <Button variant="add-matiere" onClick={() => setIsModalOpen(true)}>
+          <Button 
+            variant="add-matiere" 
+            className="w-full md:w-auto flex-shrink-0"
+            onClick={() => setIsModalOpen(true)}
+          >
             Ajouter une matière
             <span style={{ fontSize: '20px', fontWeight: 300 }}>+</span>
           </Button>
         </div>
 
-
-        <SubjectsTable subjects={transformedSubjects} onRefresh={loadData} />
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <SubjectsTable subjects={transformedSubjects} onRefresh={loadData} />
+        </div>
 
         {/* Modal pour ajouter une matière */}
         <SubjectModal
