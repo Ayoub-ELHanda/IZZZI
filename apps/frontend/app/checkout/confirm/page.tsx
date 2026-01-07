@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/api/client';
 import { SubscriptionDetailsCard } from '@/features/checkout/components/SubscriptionDetailsCard';
 import { ActionsCard } from '@/features/checkout/components/ActionsCard';
 
@@ -13,6 +14,7 @@ export default function ConfirmPage() {
   const [isRefreshing, setIsRefreshing] = useState(true);
   
   const success = searchParams.get('success') === 'true';
+  const sessionId = searchParams.get('session_id');
   const classCount = parseInt(searchParams.get('classes') || '0');
   const period = searchParams.get('period') || 'monthly';
   const paymentMethod = searchParams.get('paymentMethod') || '**** **** **** 1234 (Visa)';
@@ -23,25 +25,40 @@ export default function ConfirmPage() {
       return;
     }
 
-    let attempts = 0;
-    const maxAttempts = 10;
-    const interval = setInterval(async () => {
-      attempts++;
-      await loadUser();
-      
-      if (attempts >= maxAttempts) {
-        clearInterval(interval);
+    const verifyAndUpdateUser = async () => {
+      try {
+   
+        if (sessionId) {
+          await apiClient.post('/payment/verify-session', { sessionId });
+        }
+
+        await loadUser();
         setIsRefreshing(false);
+      } catch (error: any) {
+        console.error('Error verifying session:', error?.message || error);
+        
+ 
+        let attempts = 0;
+        const maxAttempts = 5;
+        const interval = setInterval(async () => {
+          attempts++;
+          await loadUser();
+          
+          if (attempts >= maxAttempts) {
+            clearInterval(interval);
+            setIsRefreshing(false);
+          }
+        }, 2000);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          setIsRefreshing(false);
+        }, 10000);
       }
-    }, 2000);
+    };
 
-    setTimeout(() => {
-      clearInterval(interval);
-      setIsRefreshing(false);
-    }, 20000);
-
-    return () => clearInterval(interval);
-  }, [success, router, loadUser]);
+    verifyAndUpdateUser();
+  }, [success, sessionId, router, loadUser]);
 
   if (!success) {
     return null;
@@ -97,7 +114,7 @@ export default function ConfirmPage() {
           </p>
         </div>
 
-        {/* Deux cartes côte à côte */}
+     
         <div className="grid grid-cols-2 gap-8 mb-12">
           <SubscriptionDetailsCard
             plan={planName}
@@ -109,7 +126,7 @@ export default function ConfirmPage() {
           <ActionsCard />
         </div>
 
-        {/* Message de support en bas */}
+        
         <div 
           className="text-center font-poppins"
           style={{

@@ -7,3 +7,5 @@ export { QuestionnaireReminderTemplate, QuestionnaireReminderData } from './ques
 export { StudentAddedTemplate, StudentAddedData } from './student-added.template';
 export { PaymentInvoiceTemplate, PaymentInvoiceData } from './payment-invoice.template';
 export { CustomMessageTemplate, CustomMessageData } from './custom-message.template';
+export { ProfessionalInvoiceTemplate, ProfessionalInvoiceData } from './professional-invoice.template';
+export { SubscriptionConfirmationTemplate, SubscriptionConfirmationData } from './subscription-confirmation.template';

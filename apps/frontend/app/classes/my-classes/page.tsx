@@ -32,6 +32,9 @@ export default function MyClassesPage() {
   
   const { user } = useAuth();
   
+  // Vérifier si l'utilisateur est en période d'essai
+  const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  
   useEffect(() => {
     setIsAdmin(user?.role === UserRole.ADMIN);
   }, [user]);
@@ -111,13 +114,16 @@ export default function MyClassesPage() {
     <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
       <div className="mx-auto max-w-[1650px]">
       
-        <TrialBanner
-          message1="Période d'essai en cours :"
-          message2="Tout est illimité jusqu'au 18 septembre 2025."
-          linkText="Je passe au plan Super Izzzi →"
-          linkHref="/pricing"
-          position="left"
-        />
+        {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
+        {isTrialing && (
+          <TrialBanner
+            message1="Période d'essai en cours :"
+            message2="Tout est illimité jusqu'au 18 septembre 2025."
+            linkText="Je passe au plan Super Izzzi →"
+            linkHref="/pricing"
+            position="left"
+          />
+        )}
         
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 md:mb-14 mt-4">
           <div className="flex flex-col md:flex-row md:items-center gap-3 w-full md:w-auto">
