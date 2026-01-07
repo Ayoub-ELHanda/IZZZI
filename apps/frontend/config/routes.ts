@@ -15,6 +15,7 @@ export const routes = {
   
   // Protected routes
   dashboard: '/dashboard',
+  superAdmin: '/super-admin',
   
   classes: {
     list: '/classes',

@@ -10,6 +10,8 @@ import { ClassesModule } from './classes/classes.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { QuestionnairesModule } from './questionnaires/questionnaires.module';
 import { PaymentModule } from './payment/payment.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { SuperAdminModule } from './super-admin/super-admin.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { PaymentModule } from './payment/payment.module';
     SubjectsModule,
     QuestionnairesModule,
     PaymentModule,
+    NotificationsModule,
+    SuperAdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

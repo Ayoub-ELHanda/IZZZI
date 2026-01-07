@@ -27,9 +27,11 @@ export function LoginForm() {
     try {
       const { authService } = await import('@/services/auth/auth.service');
       const response = await authService.login(formData);
-      // Redirect admin users to profile page, others to dashboard
+      // Redirect based on user role
       const userRole = response?.user?.role || response?.role;
-      if (userRole === 'ADMIN') {
+      if (userRole === 'SUPER_ADMIN') {
+        router.push(routes.superAdmin);
+      } else if (userRole === 'ADMIN') {
         router.push(routes.account.profile);
       } else {
         router.push(routes.dashboard);

@@ -10,6 +10,7 @@ import {
   QuestionnaireReminderTemplate,
   StudentAddedTemplate,
   PaymentInvoiceTemplate,
+  CustomMessageTemplate,
 } from './templates';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class MailerService {
   private readonly questionnaireReminderTemplate = new QuestionnaireReminderTemplate();
   private readonly studentAddedTemplate = new StudentAddedTemplate();
   private readonly paymentInvoiceTemplate = new PaymentInvoiceTemplate();
+  private readonly customMessageTemplate = new CustomMessageTemplate();
 
   constructor(private configService: ConfigService) {
     const host = this.configService.get('MAIL_HOST') || this.configService.get('SMTP_HOST') || 'localhost';
@@ -311,6 +313,34 @@ export class MailerService {
       return info;
     } catch (error: any) {
       console.error(`❌ Error sending payment invoice email to ${email}:`, error.message || error);
+      throw error;
+    }
+  }
+
+  async sendCustomMessageToStudents(email: string, data: {
+    subjectName: string;
+    teacherName: string;
+    className: string;
+    message: string;
+    senderName?: string;
+  }) {
+    const mailFrom = this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>';
+
+    const mailOptions = {
+      from: mailFrom,
+      to: email,
+      subject: `Message concernant le cours ${data.subjectName}`,
+      html: this.customMessageTemplate.generate(data),
+    };
+
+    try {
+      console.log(`📤 Attempting to send custom message email to ${email}...`);
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log(`✅ Custom message email sent successfully to ${email}`);
+      console.log(`   Message ID: ${info.messageId}`);
+      return info;
+    } catch (error: any) {
+      console.error(`❌ Error sending custom message email to ${email}:`, error.message || error);
       throw error;
     }
   }

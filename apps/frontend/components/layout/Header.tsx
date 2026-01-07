@@ -9,6 +9,8 @@ import { routes } from "@/config/routes";
 import images from "@/constants/images";
 import { Button } from "@/components/ui/Button";
 import { ArrowUpRight, Bell, Menu, X } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
+import { NotificationsModal } from "@/components/modals/NotificationsModal";
 
 export function Header() {
   const pathname = usePathname();
@@ -16,6 +18,14 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const isSubscriptionPage = pathname === "/pricing";
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [isNotificationsModalOpen, setIsNotificationsModalOpen] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+  const { unreadCount } = useNotifications();
+
+  // Éviter les problèmes d'hydratation en ne rendant le badge que côté client
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -159,8 +169,9 @@ export function Header() {
             }}
             className="hidden md:flex items-center justify-end gap-4"
           >
-            {/* Bell icon */}
+            {/* Bell icon with notification badge */}
             <button
+              onClick={() => setIsNotificationsModalOpen(true)}
               style={{
                 width: '40px',
                 height: '40px',
@@ -173,6 +184,7 @@ export function Header() {
                 cursor: 'pointer',
                 transition: 'background-color 0.2s',
                 flexShrink: 0,
+                position: 'relative',
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.backgroundColor = '#F8F8F8';
@@ -182,6 +194,28 @@ export function Header() {
               }}
             >
               <Bell size={20} color="#2F2E2C" strokeWidth={1.5} />
+              {isMounted && unreadCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: '#FF6B35',
+                    color: '#FFFFFF',
+                    borderRadius: '50%',
+                    width: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* User profile */}
@@ -266,7 +300,11 @@ export function Header() {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? 'Super Izzi' : 'Plan Gratuit'}
+                  {user?.role === 'SUPER_ADMIN' 
+                    ? 'Super Admin' 
+                    : user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' 
+                      ? 'Super Izzi' 
+                      : 'Plan Gratuit'}
                 </span>
               </div>
             </Link>
@@ -515,17 +553,19 @@ export function Header() {
                   >
                     {user?.firstName} {user?.lastName}
                   </span>
-                  <span 
-                    style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      fontSize: '12px',
-                      fontWeight: 400,
-                      color: '#6B6B6B',
-                      lineHeight: '1.2',
-                    }}
-                  >
-                    Plan gratuit
-                  </span>
+                  {user?.role !== 'SUPER_ADMIN' && (
+                    <span 
+                      style={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 400,
+                        color: '#6B6B6B',
+                        lineHeight: '1.2',
+                      }}
+                    >
+                      Plan gratuit
+                    </span>
+                  )}
                 </div>
               </div>
             </Link>
@@ -556,6 +596,14 @@ export function Header() {
               Déconnexion
             </button>
           </div>
+        )}
+
+        {/* Notifications Modal */}
+        {isAuthenticated && (
+          <NotificationsModal
+            isOpen={isNotificationsModalOpen}
+            onClose={() => setIsNotificationsModalOpen(false)}
+          />
         )}
       </header>
     );
