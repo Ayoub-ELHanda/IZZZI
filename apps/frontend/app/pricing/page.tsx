@@ -102,7 +102,6 @@ export default function PricingPage() {
           <PlanTableau isAnnual={true} />
         </div>
       </div>
-<<<<<<< HEAD
 
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-10 md:pb-20">
         <div className="mt-8 md:mt-16 max-w-3xl mx-auto">

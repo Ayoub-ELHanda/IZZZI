@@ -80,8 +80,14 @@ export class AuthService {
     
     const token = await this.generateToken(result.user.id, result.user.email, result.user.role);
 
-  
-    this.mailerService.sendWelcomeEmail(result.user.email, result.user.firstName).catch(console.error);
+    // Envoyer l'email de bienvenue
+    try {
+      await this.mailerService.sendWelcomeEmail(result.user.email, result.user.firstName);
+      console.log(`✅ Welcome email sent successfully to ${result.user.email}`);
+    } catch (error) {
+      console.error(`❌ Failed to send welcome email to ${result.user.email}:`, error);
+      // Ne pas bloquer l'inscription si l'email échoue
+    }
 
     return {
       user: this.sanitizeUser(result.user),
@@ -227,8 +233,14 @@ export class AuthService {
 
     const token = await this.generateToken(user.id, user.email, user.role);
 
-  
-    this.mailerService.sendWelcomeEmail(user.email, user.firstName).catch(console.error);
+    // Envoyer l'email de bienvenue
+    try {
+      await this.mailerService.sendWelcomeEmail(user.email, user.firstName);
+      console.log(`✅ Welcome email sent successfully to ${user.email}`);
+    } catch (error) {
+      console.error(`❌ Failed to send welcome email to ${user.email}:`, error);
+      // Ne pas bloquer l'inscription si l'email échoue
+    }
 
     return {
       user: this.sanitizeUser(user),
@@ -479,5 +491,50 @@ export class AuthService {
     });
 
     return { message: 'Mot de passe modifié avec succès' };
+  }
+
+  async deleteAccount(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        establishment: {
+          include: {
+            users: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur introuvable');
+    }
+
+    // Si l'utilisateur est le créateur de l'établissement
+    if (user.establishment && user.establishment.createdBy === userId) {
+      // Vérifier s'il y a d'autres utilisateurs dans l'établissement
+      const otherUsers = user.establishment.users.filter(u => u.id !== userId);
+      
+      if (otherUsers.length > 0) {
+        // S'il y a d'autres utilisateurs, on ne supprime que l'utilisateur
+        // L'établissement reste actif pour les autres utilisateurs
+        await this.prisma.user.delete({
+          where: { id: userId },
+        });
+      } else {
+        // Si c'est le seul utilisateur, on supprime l'établissement aussi
+        // (cela supprimera automatiquement l'utilisateur via cascade)
+        await this.prisma.establishment.delete({
+          where: { id: user.establishment.id },
+        });
+      }
+    } else {
+      // Sinon, on supprime juste l'utilisateur
+      // Les cascades géreront automatiquement les classes, subjects, subscriptions, payments
+      await this.prisma.user.delete({
+        where: { id: userId },
+      });
+    }
+
+    return { message: 'Compte supprimé avec succès' };
   }
 }
