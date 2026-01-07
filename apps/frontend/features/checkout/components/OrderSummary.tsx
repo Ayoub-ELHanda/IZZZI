@@ -6,18 +6,31 @@ import { useState } from 'react';
 interface OrderSummaryProps {
   classCount: number;
   isAnnual: boolean;
-  pricePerClass: number;
+  totalAmount: number;
 }
 
-export function OrderSummary({ classCount, isAnnual, pricePerClass }: OrderSummaryProps) {
+export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummaryProps) {
   const [acceptedCGV, setAcceptedCGV] = useState(false);
   
-
-  const monthlyPricePerClass = pricePerClass;
-  const annualPricePerClass = Math.round(pricePerClass * 0.7);
-  
  
-  const total = isAnnual ? classCount * annualPricePerClass : classCount * monthlyPricePerClass;
+  const total = totalAmount;
+  
+  
+  let monthlyPrice: number;
+  if (classCount >= 1 && classCount <= 5) {
+    monthlyPrice = 19;
+  } else if (classCount >= 6 && classCount <= 10) {
+    monthlyPrice = 17;
+  } else if (classCount >= 11 && classCount <= 15) {
+    monthlyPrice = 15;
+  } else if (classCount >= 16 && classCount <= 20) {
+    monthlyPrice = 13;
+  } else {
+    monthlyPrice = 13;
+  }
+  
+
+  const annualPrice = Math.round(monthlyPrice * 0.7);
 
   return (
     <div style={{
@@ -33,13 +46,13 @@ export function OrderSummary({ classCount, isAnnual, pricePerClass }: OrderSumma
       position: 'sticky',
       top: '138px'
     }}>
-      {/* Options de paiement */}
+     
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         gap: '12px'
       }}>
-        {/* Option mensuel */}
+ 
         <label style={{
           display: 'flex',
           alignItems: 'center',
@@ -81,12 +94,12 @@ export function OrderSummary({ classCount, isAnnual, pricePerClass }: OrderSumma
               color: '#6B6B6B',
               lineHeight: '100%'
             }}>
-              {monthlyPricePerClass}€ par mois/classe
+              {monthlyPrice}€/mois
             </div>
           </div>
         </label>
 
-        {/* Option annuel */}
+
         <label style={{
           display: 'flex',
           alignItems: 'center',
@@ -129,7 +142,7 @@ export function OrderSummary({ classCount, isAnnual, pricePerClass }: OrderSumma
               color: '#6B6B6B',
               lineHeight: '100%'
             }}>
-              {annualPricePerClass}€ par mois/classe
+              {annualPrice}€/mois
             </div>
           </div>
           {/* Badge -30% */}

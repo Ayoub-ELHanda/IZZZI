@@ -6,3 +6,5 @@ export { ClassArchivedTemplate, ClassArchivedData } from './class-archived.templ
 export { QuestionnaireReminderTemplate, QuestionnaireReminderData } from './questionnaire-reminder.template';
 export { StudentAddedTemplate, StudentAddedData } from './student-added.template';
 export { PaymentInvoiceTemplate, PaymentInvoiceData } from './payment-invoice.template';
+export { ProfessionalInvoiceTemplate, ProfessionalInvoiceData } from './professional-invoice.template';
+export { SubscriptionConfirmationTemplate, SubscriptionConfirmationData } from './subscription-confirmation.template';

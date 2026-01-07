@@ -9,11 +9,16 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { classesService } from '@/services/api/classes.service';
 import { subjectsService, Subject } from '@/services/api/subjects.service';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 export default function ClassDetailPage() {
   const params = useParams();
   const classId = params.id as string;
+  const { user } = useAuth();
+  
+
+  const isTrialing = user?.subscriptionStatus === 'TRIALING';
   const [searchQuery, setSearchQuery] = useState('');
   const [classData, setClassData] = useState<any>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -160,13 +165,16 @@ export default function ClassDetailPage() {
             </button>
           </Link>
 
-          <TrialBanner
-            message1="Période d'essai en cours :"
-            message2="Tout est illimité jusqu'au 18 septembre 2025."
-            linkText="Je passe au plan Super Izzzi →"
-            linkHref="/pricing"
-            position="right"
-          />
+          {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
+          {isTrialing && (
+            <TrialBanner
+              message1="Période d'essai en cours :"
+              message2="Tout est illimité jusqu'au 18 septembre 2025."
+              linkText="Je passe au plan Super Izzzi →"
+              linkHref="/pricing"
+              position="right"
+            />
+          )}
         </div>
 
 
