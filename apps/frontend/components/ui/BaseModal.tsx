@@ -8,6 +8,7 @@ export interface ModalButton {
   variant?: 'primary' | 'secondary';
   onClick: () => void;
   href?: string;
+  disabled?: boolean;
 }
 
 interface BaseModalProps {
@@ -19,6 +20,7 @@ interface BaseModalProps {
   buttons: ModalButton[];
   width?: string;
   height?: string;
+  isLoading?: boolean;
 }
 
 export function BaseModal({
@@ -30,6 +32,7 @@ export function BaseModal({
   buttons,
   width = '531px',
   height = 'auto',
+  isLoading = false,
 }: BaseModalProps) {
   if (!isOpen) return null;
 
@@ -120,15 +123,37 @@ export function BaseModal({
           }}
         >
           {buttons.map((button, index) => {
+            const isDisabled = isLoading || button.disabled;
             if (button.variant === 'primary') {
               return (
                 <Button
                   key={index}
                   variant="archive-modal"
                   onClick={button.onClick}
+                  disabled={isDisabled}
+                  isLoading={isLoading && index === buttons.length - 1}
                 >
                   <span>{button.text}</span>
-                  <ArrowUpRight size={16} strokeWidth={1.5} />
+                  {!isLoading && <ArrowUpRight size={16} strokeWidth={1.5} />}
+                </Button>
+              );
+            } else if (button.variant === 'danger') {
+              return (
+                <Button
+                  key={index}
+                  variant="danger"
+                  onClick={button.onClick}
+                  disabled={isDisabled}
+                  isLoading={isLoading && index === buttons.length - 1}
+                  style={{
+                    height: '56px',
+                    padding: '0 24px',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                  }}
+                >
+                  <span>{button.text}</span>
+                  {!isLoading && <ArrowUpRight size={16} strokeWidth={1.5} />}
                 </Button>
               );
             } else {
@@ -136,11 +161,12 @@ export function BaseModal({
                 <button
                   key={index}
                   onClick={button.onClick}
+                  disabled={isDisabled}
                   style={{
                     height: '56px',
                     background: 'none',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
@@ -148,11 +174,12 @@ export function BaseModal({
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: '16px',
                     fontWeight: 400,
-                    color: '#2F2E2C',
+                    color: isDisabled ? '#9CA3AF' : '#2F2E2C',
+                    opacity: isDisabled ? 0.6 : 1,
                   }}
                 >
                   <span>{button.text}</span>
-                  <ArrowUpRight size={16} color="#2F2E2C" strokeWidth={1.5} />
+                  <ArrowUpRight size={16} color={isDisabled ? '#9CA3AF' : '#2F2E2C'} strokeWidth={1.5} />
                 </button>
               );
             }

@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { routes } from '@/config/routes';
+import Image from 'next/image';
 
 function ResetPasswordContent() {
   const router = useRouter();
@@ -64,12 +65,13 @@ function ResetPasswordContent() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="bg-[#2F2E2C] rounded-full p-4 flex items-center gap-2">
-            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-              <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[8px] border-l-[#2F2E2C] border-b-[6px] border-b-transparent ml-0.5"></div>
-            </div>
-            <span className="text-white font-bold text-xl">izzzi</span>
-          </div>
+          <Image
+            src="/logo-izzzi.svg"
+            alt="izzzi logo"
+            width={86}
+            height={41}
+            className="h-auto w-auto"
+          />
         </div>
 
         {/* Card */}
@@ -99,7 +101,7 @@ function ResetPasswordContent() {
                   onChange={handleChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
                 <button
                   type="button"
@@ -129,7 +131,7 @@ function ResetPasswordContent() {
                   onChange={handleChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 pr-12 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
                 <button
                   type="button"

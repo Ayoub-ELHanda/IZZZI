@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [isEditingProfile, setIsEditingProfile] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const profileInitialData = useMemo(
     () => ({
@@ -144,11 +145,15 @@ export default function ProfilePage() {
 
   const handleConfirmDelete = async () => {
     try {
-      // TODO: Implement account deletion API call
-      toast.error('Suppression de compte non implémentée pour le moment');
+      setIsDeletingAccount(true);
+      await authService.deleteAccount();
+      toast.success('Votre compte a été supprimé avec succès');
       deleteAccountModal.onClose();
+      logout();
+      router.push('/');
     } catch (error: any) {
       toast.error(error.message || 'Erreur lors de la suppression du compte');
+      setIsDeletingAccount(false);
     }
   };
 
@@ -737,9 +742,13 @@ export default function ProfilePage() {
       <DeleteAccountModal
         open={deleteAccountModal.open}
         onOpenChange={deleteAccountModal.onOpenChange}
-        isLoading={false}
+        isLoading={isDeletingAccount}
         onConfirm={handleConfirmDelete}
-        onCancel={deleteAccountModal.onClose}
+        onCancel={() => {
+          if (!isDeletingAccount) {
+            deleteAccountModal.onClose();
+          }
+        }}
       />
 
       <AvatarUploadModal

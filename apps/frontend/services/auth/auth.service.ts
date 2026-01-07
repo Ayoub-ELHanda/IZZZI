@@ -112,6 +112,12 @@ export const authService = {
     return response;
   },
 
+  async deleteAccount(): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>('/auth/account');
+    removeToken();
+    return response;
+  },
+
   logout() {
     removeToken();
   },

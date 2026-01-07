@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Req, Res, Delete } from '@nestjs/common';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
@@ -75,6 +75,11 @@ export class AuthController {
     return this.authService.changePassword(req.user.userId, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Delete('account')
+  async deleteAccount(@Req() req) {
+    return this.authService.deleteAccount(req.user.userId);
+  }
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
