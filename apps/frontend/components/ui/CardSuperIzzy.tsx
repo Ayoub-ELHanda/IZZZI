@@ -15,25 +15,25 @@ interface CardSuperIzzyProps {
 export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
   
-  let monthlyPricePerClass: number;
+
+  let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
-    monthlyPricePerClass = 19;
+    monthlyPrice = 19;
   } else if (classCount >= 6 && classCount <= 10) {
-    monthlyPricePerClass = 17;
+    monthlyPrice = 17;
   } else if (classCount >= 11 && classCount <= 15) {
-    monthlyPricePerClass = 15;
+    monthlyPrice = 15;
   } else if (classCount >= 16 && classCount <= 20) {
-    monthlyPricePerClass = 13;
+    monthlyPrice = 13;
   } else {
-    monthlyPricePerClass = 13;
+    monthlyPrice = 13;
   }
   
-  // Prix annuel avec -30% de réduction
-  const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
+
+  const annualPrice = Math.round(monthlyPrice * 0.7);
   
-  // Prix utilisé selon le mode
-  const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
-  const totalPrice = classCount * pricePerClass;
+
+  const displayPrice = isAnnual ? annualPrice : monthlyPrice;
   return (
     <div 
       className="w-full md:w-[521px] bg-[#F69D04] border border-[rgba(244,244,244,0.05)] rounded-lg p-6 md:p-[60px_73px] flex flex-col gap-4 relative box-border text-white"
@@ -84,12 +84,25 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
          
           <div className="mb-6">
             {classCount <= 20 ? (
-              <div className="flex items-baseline gap-2">
-                <span className="font-mochiy text-4xl md:text-[58px] font-normal text-[#2F2E2C] leading-[125%]">
-                  {pricePerClass}€
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <span style={{
+                  fontFamily: 'Mochiy Pop One',
+                  fontSize: '58px',
+                  fontWeight: 400,
+                  color: '#2F2E2C',
+                  lineHeight: '125%'
+                }}>
+                  {displayPrice}€
                 </span>
-                <span className="font-poppins text-xs font-bold text-[#2F2E2C] leading-none ml-2">
-                  par mois / par classe
+                <span style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#2F2E2C',
+                  lineHeight: '100%',
+                  marginLeft: '8px'
+                }}>
+                  par mois
                 </span>
               </div>
             ) : (

@@ -23,7 +23,8 @@ export default function DashboardPage() {
   const [subjects, setSubjects] = useState<SubjectWithResponses[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'in-progress' | 'completed'>('in-progress');
-  const [isPaidPlan] = useState(false); // TODO: Vérifier le plan depuis Stripe
+  const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isPaidPlan = user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING';
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<string>('');
   const [filterBy, setFilterBy] = useState<string>('');
@@ -219,8 +220,8 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Droite : Bannière période d'essai */}
-            {!isPaidPlan && (
+            {/* Droite : Bannière période d'essai - Afficher UNIQUEMENT pour TRIALING */}
+            {isTrialing && (
               <div
                 style={{
                   backgroundColor: '#FFF4E0',
