@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { QuestionnairesService } from './questionnaires.service';
+import { AIService } from '../ai/ai.service';
 import { CreateQuestionnairesDto } from './dto/create-questionnaires.dto';
 import { UpdateQuestionnairesDto } from './dto/update-questionnaires.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -21,7 +22,10 @@ import { UserRole } from '@prisma/client';
 
 @Controller('questionnaires')
 export class QuestionnairesController {
-  constructor(private readonly questionnairesService: QuestionnairesService) {}
+  constructor(
+    private readonly questionnairesService: QuestionnairesService,
+    private readonly aiService: AIService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -138,5 +142,41 @@ export class QuestionnairesController {
       req.user.userId,
       questionnaireId
     );
+  }
+
+  @Get(':questionnaireId/ai-summary')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE, 'SUPER_ADMIN' as any)
+  async getAISummary(
+    @Request() req,
+    @Param('questionnaireId') questionnaireId: string
+  ) {
+    return this.aiService.generateFeedbackSummary(questionnaireId);
+  }
+
+  @Get(':questionnaireId/ai-statistics')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE, 'SUPER_ADMIN' as any)
+  async getAIStatistics(
+    @Request() req,
+    @Param('questionnaireId') questionnaireId: string
+  ) {
+    return this.aiService.generateStatistics(questionnaireId);
+  }
+
+  @Get(':questionnaireId/all-statistics')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE, 'SUPER_ADMIN' as any)
+  async getAllStatistics(
+    @Request() req,
+    @Param('questionnaireId') questionnaireId: string
+  ) {
+    // Récupérer les statistiques depuis la base de données
+    const statistics = await this.questionnairesService.getQuestionnaireStatistics(questionnaireId);
+    if (statistics) {
+      return statistics;
+    }
+    // Si pas de statistiques, les générer
+    return this.aiService.generateAllStatistics(questionnaireId);
   }
 }

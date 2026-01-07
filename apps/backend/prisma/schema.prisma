@@ -14,6 +14,7 @@ enum UserRole {
   VISITEUR                    // Visiteur : accès uniquement à Accueil, Tarifs, Inscription/Connexion
   RESPONSABLE_PEDAGOGIQUE     // Responsable pédagogique : crée classes/matières, consulte avis, envoie emails aux étudiants
   ADMIN                       // Admin : super responsable pédagogique + accès facturation
+  SUPER_ADMIN                 // Super Admin : gestion globale des utilisateurs, abonnements et facturation
 }
 
 enum AuthProvider {
@@ -75,6 +76,8 @@ model User {
   subjects          Subject[]
   subscriptions     Subscription[]
   payments          Payment[]
+  notifications     Notification[]
+  alerts            Alert[]
   
   @@index([email])
   @@index([establishmentId])
@@ -165,6 +168,10 @@ model Questionnaire {
   qrCodeUrl       String?
   
   responses       Response[]
+  notifications   Notification[]
+  alerts          Alert[]
+  feedbackSummary FeedbackSummary?
+  statistics      QuestionnaireStatistics?
   
   isActive        Boolean             @default(true)
   createdAt       DateTime            @default(now())
@@ -247,4 +254,110 @@ model Payment {
   @@index([subscriptionId])
   @@index([stripePaymentIntentId])
   @@index([status])
+}
+
+enum NotificationType {
+  ALERT_POSITIVE    // Alerte positive (score élevé, retours positifs)
+  ALERT_NEGATIVE    // Alerte négative (score faible, retours insuffisants)
+}
+
+enum AlertStatus {
+  UNTREATED         // Non traitée
+  TREATED           // Traitée
+}
+
+model Notification {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type              NotificationType
+  title             String
+  message           String
+  questionnaireId   String?
+  questionnaire     Questionnaire?    @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  isRead            Boolean           @default(false)
+  readAt            DateTime?
+  
+  createdAt         DateTime          @default(now())
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([questionnaireId])
+}
+
+model Alert {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  questionnaireId   String
+  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  type              NotificationType  // POSITIVE ou NEGATIVE
+  message           String
+  status            AlertStatus       @default(UNTREATED)
+  comment           String?           // Commentaire du responsable pédagogique
+  
+  treatedAt         DateTime?
+  treatedBy          String?
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  @@index([userId])
+  @@index([questionnaireId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model FeedbackSummary {
+  id                String            @id @default(uuid())
+  questionnaireId   String            @unique
+  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  summary           String            // Synthèse générée par l'IA
+  sentiment         String            // 'positive', 'neutral', 'negative'
+  strengths         String[]          // Points forts
+  improvements      String[]          // Axes d'amélioration
+  pedagogicalAlerts String[]         // Alertes pédagogiques
+  
+  generatedAt       DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  @@index([questionnaireId])
+  @@index([generatedAt])
+}
+
+model QuestionnaireStatistics {
+  id                String            @id @default(uuid())
+  questionnaireId   String            @unique
+  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  
+  // Récap temporel
+  temporalRatingData Json?            // Données pour "Globalement vous avez trouvé ce cours"
+  temporalSatisfactionData Json?      // Données pour "Évolution de la satisfaction moyenne"
+  
+  // Le cours
+  overallRatingDistribution Json?     // Distribution des notes pour "Globalement vous avez trouvé ce cours"
+  theoryPracticeRatio Json?           // Ratio théorie/pratique
+  courseAtmosphere Json?              // L'ambiance durant le cours
+  courseHours Json?                   // Le nombre d'heures
+  contentRelevance Json?              // La pertinence des infos
+  
+  // L'intervenant
+  clarityDistribution Json?           // La clarté des informations
+  teachingSpeed Json?                 // Niveau vitesse
+  
+  // Points forts et faibles
+  strongPoints Json?                  // Points forts générés par IA
+  weakPoints Json?                   // Points faibles générés par IA
+  
+  generatedAt       DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  @@index([questionnaireId])
+  @@index([generatedAt])
 }

@@ -10,6 +10,11 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { RefreshCw, MoveUpRight } from 'lucide-react';
+import { NotificationsModal } from '@/components/modals/NotificationsModal';
+import { AlertsModal } from '@/components/modals/AlertsModal';
+import { FeedbackSummaryModal } from '@/components/modals/FeedbackSummaryModal';
+import { useNotifications } from '@/hooks/useNotifications';
+import { apiClient } from '@/lib/api/client';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -22,6 +27,11 @@ export default function DashboardPage() {
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<string>('');
   const [filterBy, setFilterBy] = useState<string>('');
+  const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
+  const [isFeedbackSummaryModalOpen, setIsFeedbackSummaryModalOpen] = useState(false);
+  const [selectedQuestionnaireId, setSelectedQuestionnaireId] = useState<string | null>(null);
+  const { unreadCount, untreatedAlertCount } = useNotifications();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -437,11 +447,36 @@ export default function DashboardPage() {
                 questionnaire={questionnaire}
                 isPaidPlan={isPaidPlan}
                 trialEndDate={trialEndDateStr}
+                onOpenAlertsModal={() => setIsAlertsModalOpen(true)}
+                onOpenSummaryModal={(questionnaireId) => {
+                  setSelectedQuestionnaireId(questionnaireId);
+                  setIsFeedbackSummaryModalOpen(true);
+                }}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <NotificationsModal
+        isOpen={isNotificationsModalOpen}
+        onClose={() => setIsNotificationsModalOpen(false)}
+      />
+      <AlertsModal
+        isOpen={isAlertsModalOpen}
+        onClose={() => setIsAlertsModalOpen(false)}
+      />
+      {selectedQuestionnaireId && (
+        <FeedbackSummaryModal
+          isOpen={isFeedbackSummaryModalOpen}
+          onClose={() => {
+            setIsFeedbackSummaryModalOpen(false);
+            setSelectedQuestionnaireId(null);
+          }}
+          questionnaireId={selectedQuestionnaireId}
+        />
+      )}
     </div>
   );
 }
@@ -450,9 +485,15 @@ interface QuestionnaireCardProps {
   questionnaire: SubjectWithResponses['questionnaires'][0] & { subject: SubjectWithResponses };
   isPaidPlan: boolean;
   trialEndDate: string;
+  onOpenAlertsModal: () => void;
+  onOpenSummaryModal: (questionnaireId: string) => void;
 }
 
-function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate }: QuestionnaireCardProps) {
+function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAlertsModal, onOpenSummaryModal }: QuestionnaireCardProps) {
+  const [summaryPreview, setSummaryPreview] = useState<string | null>(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const { alerts, untreatedAlertCount } = useNotifications();
+
   const formTypeLabel =
     questionnaire.type === 'DURING_COURSE'
       ? 'FORMULAIRE PENDANT LE COURS'
@@ -461,29 +502,81 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate }: Question
   const formTypeColor = questionnaire.type === 'DURING_COURSE' ? '#FF6B35' : '#4A90E2';
   const formTypeBgColor = questionnaire.type === 'DURING_COURSE' ? '#FFF3E0' : '#E3F2FD';
 
-  // Simuler des alertes (à remplacer par la vraie logique)
-  const hasAlerts = questionnaire.averageRating < 3.5 || questionnaire.visibleResponses < 5;
-  const alertCount = hasAlerts ? (questionnaire.averageRating < 3.5 ? 2 : 2) : 0;
-  const isDuringCourse = questionnaire.type === 'DURING_COURSE';
-  const alerts = hasAlerts
-    ? [
-        {
-          type: isDuringCourse ? 'success' : 'warning',
-          text: 'Ricotta Chicago Aussie extra pie. Ranch parmesan anchovies sautéed lovers red Chicago stuffed.',
-        },
-        ...(questionnaire.averageRating < 3.5 && questionnaire.visibleResponses < 5
-          ? [
-              {
-                type: isDuringCourse ? 'success' : 'warning',
-                text: 'Score moyen faible et nombre de retours insuffisant.',
-              },
-            ]
-          : []),
-      ]
-    : [];
+  // Charger la synthèse depuis l'API
+  useEffect(() => {
+    const loadSummary = async () => {
+      if (!questionnaire.id) return;
+      
+      setIsLoadingSummary(true);
+      try {
+        const data = await apiClient.get<{
+          summary: string;
+          sentiment: string;
+          strengths: string[];
+          improvements: string[];
+          pedagogicalAlerts: string[];
+        }>(`/questionnaires/${questionnaire.id}/ai-summary`);
+        
+        // Afficher les premiers 150 caractères de la synthèse
+        if (data.summary && data.summary.length > 0) {
+          const preview = data.summary.length > 150 
+            ? data.summary.substring(0, 150) + '...' 
+            : data.summary;
+          setSummaryPreview(preview);
+        }
+      } catch (error: any) {
+        // Si la synthèse n'existe pas encore, ne pas afficher d'erreur
+        // Elle sera générée automatiquement lors de la prochaine alerte
+        if (error?.response?.status !== 404) {
+          console.error('Error loading summary:', error);
+        }
+        setSummaryPreview(null);
+      } finally {
+        setIsLoadingSummary(false);
+      }
+    };
 
-  // Générer une synthèse factice (à remplacer par la vraie logique IA)
-  const summary = `Deep ipsum steak thin personal party. Personal mouth large broccoli bbq crust Hawaiian pesto mushrooms. Lasagna.`;
+    loadSummary();
+  }, [questionnaire.id]);
+
+  // Récupérer les vraies alertes pour ce questionnaire
+  const questionnaireAlerts = alerts.filter(
+    (alert) => alert.questionnaire?.id === questionnaire.id && alert.status === 'UNTREATED'
+  );
+  
+  // Debug: log pour vérifier les alertes
+  useEffect(() => {
+    if (questionnaire.id) {
+      console.log(`[QuestionnaireCard] Questionnaire ID: ${questionnaire.id}`);
+      console.log(`[QuestionnaireCard] Total alerts: ${alerts.length}`);
+      console.log(`[QuestionnaireCard] Alerts for this questionnaire:`, questionnaireAlerts);
+      console.log(`[QuestionnaireCard] All alerts:`, alerts.map(a => ({
+        id: a.id,
+        questionnaireId: a.questionnaire?.id,
+        status: a.status,
+        message: a.message?.substring(0, 50)
+      })));
+    }
+  }, [questionnaire.id, alerts, questionnaireAlerts]);
+  
+  // Utiliser le nombre total d'alertes non traitées pour correspondre au modal
+  const alertCount = untreatedAlertCount;
+  const isDuringCourse = questionnaire.type === 'DURING_COURSE';
+  
+  // Trier les alertes par date (plus récente en premier) et prendre la première
+  const sortedQuestionnaireAlerts = [...questionnaireAlerts].sort((a, b) => {
+    const dateA = new Date((a as any).updatedAt || a.createdAt).getTime();
+    const dateB = new Date((b as any).updatedAt || b.createdAt).getTime();
+    return dateB - dateA; // Plus récent en premier
+  });
+  
+  // Afficher seulement la dernière alerte non traitée pour ce questionnaire
+  const lastAlert = sortedQuestionnaireAlerts.length > 0 
+    ? {
+        type: sortedQuestionnaireAlerts[0].type === 'ALERT_POSITIVE' ? 'success' : 'warning',
+        text: sortedQuestionnaireAlerts[0].message,
+      }
+    : null;
 
   return (
     <div
@@ -655,97 +748,97 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate }: Question
                 >
                   {alertCount} Alertes disponibles
                 </h4>
-                <Link
-                  href="#"
+                <button
+                  onClick={onOpenAlertsModal}
                   style={{
+                    background: 'none',
+                    border: 'none',
                     fontFamily: 'Poppins, sans-serif',
                     fontSize: '13px',
                     color: '#2F2E2C',
                     textDecoration: 'underline',
                     whiteSpace: 'nowrap',
                     fontWeight: 500,
+                    cursor: 'pointer',
+                    padding: 0,
                   }}
                 >
                   Voir toutes les alertes
-                </Link>
+                </button>
               </div>
-          {alerts.map((alert, index) => {
-            const isGreenAlert = alert.type === 'success';
-            return (
-              <div
-                key={index}
-                style={{
-                  padding: '12px 14px',
-                  backgroundColor: isGreenAlert ? '#4CAF50' : '#FF6B35',
-                  borderRadius: '8px',
-                  marginBottom: index < alerts.length - 1 ? '8px' : '0',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '10px',
-                  border: 'none',
-                  position: 'relative',
-                }}
-              >
-                {/* Badge 1/2 en position absolue dans le coin supérieur droit */}
-                <span
+              {/* Afficher seulement la dernière alerte pour ce questionnaire si elle existe */}
+              {lastAlert && (
+                <div
                   style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '12px',
-                    padding: '3px 9px',
-                    backgroundColor: 'rgba(255,255,255,0.3)',
-                    borderRadius: '12px',
-                    fontFamily: 'Poppins, sans-serif',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: '#FFF',
-                    whiteSpace: 'nowrap',
+                    padding: '12px 14px',
+                    backgroundColor: lastAlert.type === 'success' ? '#4CAF50' : '#FF6B35',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    border: 'none',
+                    position: 'relative',
                   }}
                 >
-                  {index + 1}/{alertCount}
-                </span>
-                {isGreenAlert ? (
-                  <span style={{ fontSize: '18px', lineHeight: '1', flexShrink: 0, marginTop: '2px' }}>❤️</span>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0, marginTop: '2px' }}>
-                    <path d="M12 2L22 20H2L12 2Z" />
-                  </svg>
-                )}
-                <div style={{ flex: 1, minWidth: 0, paddingRight: '50px' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    marginBottom: '6px',
-                    flexWrap: 'wrap',
-                  }}>
-                    <span
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        color: '#FFF',
-                      }}
-                    >
-                      Alerte
-                    </span>
-                  </div>
-                  <p
+                  {/* Badge avec le numéro de la dernière alerte */}
+                  <span
                     style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '12px',
+                      padding: '3px 9px',
+                      backgroundColor: 'rgba(255,255,255,0.3)',
+                      borderRadius: '12px',
                       fontFamily: 'Poppins, sans-serif',
-                      fontSize: '13px',
+                      fontSize: '11px',
+                      fontWeight: 700,
                       color: '#FFF',
-                      lineHeight: '1.5',
-                      margin: 0,
-                      wordBreak: 'break-word',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {alert.text}
-                  </p>
+                    {questionnaireAlerts.length > 0 ? `${questionnaireAlerts.length}/${questionnaireAlerts.length}` : '0/0'}
+                  </span>
+                  {lastAlert.type === 'success' ? (
+                    <span style={{ fontSize: '18px', lineHeight: '1', flexShrink: 0, marginTop: '2px' }}>❤️</span>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0, marginTop: '2px' }}>
+                      <path d="M12 2L22 20H2L12 2Z" />
+                    </svg>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0, paddingRight: '50px' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      marginBottom: '6px',
+                      flexWrap: 'wrap',
+                    }}>
+                      <span
+                        style={{
+                          fontFamily: 'Poppins, sans-serif',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: '#FFF',
+                        }}
+                      >
+                        Alerte
+                      </span>
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontSize: '13px',
+                        color: '#FFF',
+                        lineHeight: '1.5',
+                        margin: 0,
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {lastAlert.text}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              )}
             </div>
           )}
 
@@ -770,29 +863,63 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate }: Question
                 Synthèse des retours
               </h4>
             </div>
-            <p
-              style={{
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '13px',
-                color: '#2F2E2C',
-                lineHeight: '1.6',
-                marginBottom: '10px',
-              }}
-            >
-              {summary}
-            </p>
-            <Link
-              href="#"
-              style={{
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '13px',
-                color: '#2F2E2C',
-                textDecoration: 'underline',
-                fontWeight: 500,
-              }}
-            >
-              Voir plus
-            </Link>
+            {isLoadingSummary ? (
+              <p
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '13px',
+                  color: '#6B6B6B',
+                  lineHeight: '1.6',
+                  marginBottom: '10px',
+                  fontStyle: 'italic',
+                }}
+              >
+                Chargement de la synthèse...
+              </p>
+            ) : summaryPreview ? (
+              <>
+                <p
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '13px',
+                    color: '#2F2E2C',
+                    lineHeight: '1.6',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {summaryPreview}
+                </p>
+                <button
+                  onClick={() => onOpenSummaryModal(questionnaire.id)}
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '13px',
+                    color: '#2F2E2C',
+                    textDecoration: 'underline',
+                    fontWeight: 500,
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  Voir plus
+                </button>
+              </>
+            ) : (
+              <p
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '13px',
+                  color: '#6B6B6B',
+                  lineHeight: '1.6',
+                  marginBottom: '10px',
+                  fontStyle: 'italic',
+                }}
+              >
+                Aucune synthèse disponible pour le moment. La synthèse sera générée automatiquement lors de la prochaine alerte.
+              </p>
+            )}
           </div>
         </div>
 

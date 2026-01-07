@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -13,6 +14,11 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+
+    // Le Super Admin a accès à toutes les routes
+    if (user?.role === UserRole.SUPER_ADMIN) {
+      return true;
+    }
 
     return requiredRoles.some((role) => user?.role === role);
   }

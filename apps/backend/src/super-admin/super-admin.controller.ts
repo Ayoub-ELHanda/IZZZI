@@ -1,0 +1,74 @@
+import {
+  Controller,
+  Get,
+  Put,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import { SuperAdminService } from './super-admin.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
+
+@Controller('super-admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.SUPER_ADMIN)
+export class SuperAdminController {
+  constructor(private superAdminService: SuperAdminService) {}
+
+  /**
+   * Récupérer tous les utilisateurs avec filtrage optionnel par rôle
+   */
+  @Get('users')
+  async getAllUsers(@Query('role') role?: string) {
+    // Valider que le rôle est valide s'il est fourni
+    if (role && !Object.values(UserRole).includes(role as UserRole)) {
+      return this.superAdminService.getAllUsers(undefined);
+    }
+    return this.superAdminService.getAllUsers(role as UserRole | undefined);
+  }
+
+  /**
+   * Récupérer un utilisateur par ID avec ses détails complets
+   */
+  @Get('users/:id')
+  async getUserById(@Param('id') id: string) {
+    return this.superAdminService.getUserById(id);
+  }
+
+  /**
+   * Récupérer tous les professeurs pédagogiques associés à un Admin
+   */
+  @Get('admins/:adminId/teachers')
+  async getTeachersByAdmin(@Param('adminId') adminId: string) {
+    return this.superAdminService.getTeachersByAdmin(adminId);
+  }
+
+  /**
+   * Récupérer tous les abonnements d'un Admin
+   */
+  @Get('admins/:adminId/subscriptions')
+  async getAdminSubscriptions(@Param('adminId') adminId: string) {
+    return this.superAdminService.getAdminSubscriptions(adminId);
+  }
+
+  /**
+   * Annuler un abonnement
+   */
+  @Put('subscriptions/:subscriptionId/cancel')
+  async cancelSubscription(@Param('subscriptionId') subscriptionId: string) {
+    return this.superAdminService.cancelSubscription(subscriptionId);
+  }
+
+  /**
+   * Renouveler un abonnement
+   */
+  @Put('subscriptions/:subscriptionId/renew')
+  async renewSubscription(@Param('subscriptionId') subscriptionId: string) {
+    return this.superAdminService.renewSubscription(subscriptionId);
+  }
+}
+

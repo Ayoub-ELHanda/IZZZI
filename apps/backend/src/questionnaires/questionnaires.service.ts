@@ -1,9 +1,12 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { AIService } from '../ai/ai.service';
 import { CreateQuestionnairesDto } from './dto/create-questionnaires.dto';
 import { UpdateQuestionnairesDto } from './dto/update-questionnaires.dto';
-import { QuestionnaireType } from '@prisma/client';
+import { QuestionnaireType, NotificationType } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as QRCode from 'qrcode';
 
@@ -11,7 +14,10 @@ import * as QRCode from 'qrcode';
 export class QuestionnairesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly mailerService: MailerService
+    private readonly mailerService: MailerService,
+    private readonly notificationsService: NotificationsService,
+    private readonly notificationsGateway: NotificationsGateway,
+    private readonly aiService: AIService
   ) {}
 
  
@@ -297,6 +303,18 @@ export class QuestionnairesService {
       },
     });
 
+    // Vérifier et générer des alertes après la soumission
+    await this.checkAndGenerateAlerts(questionnaire.id);
+
+    // Générer automatiquement toutes les statistiques IA après chaque nouveau retour
+    this.aiService.generateAllStatistics(questionnaire.id)
+      .then(() => {
+        console.log(`Statistics generated for questionnaire ${questionnaire.id} after new response`);
+      })
+      .catch((error) => {
+        console.error(`Failed to generate statistics for questionnaire ${questionnaire.id}: ${error.message}`);
+      });
+
     return {
       success: true,
       message: 'Merci pour votre retour !',
@@ -306,6 +324,110 @@ export class QuestionnairesService {
         createdAt: response.createdAt,
       },
     };
+  }
+
+  /**
+   * Vérifier les critères d'alerte et générer des alertes si nécessaire
+   */
+  private async checkAndGenerateAlerts(questionnaireId: string) {
+    const questionnaire = await this.prisma.questionnaire.findUnique({
+      where: { id: questionnaireId },
+      include: {
+        responses: true,
+        subject: {
+          include: {
+            class: true,
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!questionnaire || questionnaire.responses.length === 0) {
+      return;
+    }
+
+    const userId = questionnaire.subject.createdBy;
+    const totalResponses = questionnaire.responses.length;
+    const averageRating =
+      questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) /
+      totalResponses;
+
+    // Critères d'alerte
+    const hasLowRating = averageRating < 3.5;
+    const hasLowResponses = totalResponses < 5;
+
+    // Générer des alertes selon les critères
+    if (hasLowRating || hasLowResponses) {
+      const alertType = questionnaire.type === QuestionnaireType.DURING_COURSE
+        ? NotificationType.ALERT_POSITIVE
+        : NotificationType.ALERT_NEGATIVE;
+
+      let message = '';
+      if (hasLowRating && hasLowResponses) {
+        message = `Score moyen faible (${averageRating.toFixed(1)}/5) et nombre de retours insuffisant (${totalResponses} retours).`;
+      } else if (hasLowRating) {
+        message = `Score moyen faible détecté sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5).`;
+      } else if (hasLowResponses) {
+        message = `Nombre de retours insuffisant sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${totalResponses} retours).`;
+      }
+
+      // Créer l'alerte
+      const alert = await this.notificationsService.createAlert(
+        userId,
+        questionnaireId,
+        alertType,
+        message,
+      );
+
+      // Envoyer via WebSocket
+      await this.notificationsGateway.sendAlertToUser(userId, alert);
+
+      // Générer la synthèse AI uniquement lors de la création d'une nouvelle alerte
+      // Vérifier si une synthèse existe déjà pour éviter les appels API inutiles
+      try {
+        const existingSummary = await this.prisma.feedbackSummary.findUnique({
+          where: { questionnaireId },
+        });
+
+        if (!existingSummary) {
+          // Générer la synthèse en arrière-plan (ne pas bloquer la réponse)
+          this.aiService.generateFeedbackSummary(questionnaireId).catch((error) => {
+            console.error('Error generating feedback summary:', error);
+          });
+        }
+      } catch (error) {
+        // Ignorer les erreurs de génération de synthèse pour ne pas bloquer la création d'alerte
+        console.error('Error checking/generating feedback summary:', error);
+      }
+    } else if (averageRating >= 4.5 && totalResponses >= 5) {
+      // Alerte positive pour les bons scores
+      const alert = await this.notificationsService.createAlert(
+        userId,
+        questionnaireId,
+        NotificationType.ALERT_POSITIVE,
+        `Excellent score détecté sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 avec ${totalResponses} retours).`,
+      );
+
+      await this.notificationsGateway.sendAlertToUser(userId, alert);
+
+      // Générer la synthèse AI uniquement lors de la création d'une nouvelle alerte
+      try {
+        const existingSummary = await this.prisma.feedbackSummary.findUnique({
+          where: { questionnaireId },
+        });
+
+        if (!existingSummary) {
+          // Générer la synthèse en arrière-plan (ne pas bloquer la réponse)
+          this.aiService.generateFeedbackSummary(questionnaireId).catch((error) => {
+            console.error('Error generating feedback summary:', error);
+          });
+        }
+      } catch (error) {
+        // Ignorer les erreurs de génération de synthèse pour ne pas bloquer la création d'alerte
+        console.error('Error checking/generating feedback summary:', error);
+      }
+    }
   }
 
   
@@ -560,5 +682,15 @@ export class QuestionnairesService {
       console.error('Error sending reminder emails:', error);
       throw new BadRequestException('Erreur lors de l\'envoi des emails de relance');
     }
+  }
+
+  /**
+   * Récupérer les statistiques d'un questionnaire depuis la base de données
+   */
+  async getQuestionnaireStatistics(questionnaireId: string) {
+    const statistics = await this.prisma.questionnaireStatistics.findUnique({
+      where: { questionnaireId },
+    });
+    return statistics;
   }
 }
