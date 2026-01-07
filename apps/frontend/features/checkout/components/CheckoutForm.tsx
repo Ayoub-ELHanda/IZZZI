@@ -9,11 +9,11 @@ import { useAuth } from '@/hooks/useAuth';
 interface CheckoutFormProps {
   classCount: number;
   isAnnual: boolean;
-  pricePerClass: number;
+  totalAmount: number;
   onSubmit: (formData: any) => void;
 }
 
-export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: CheckoutFormProps) {
+export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: CheckoutFormProps) {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -67,12 +67,12 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
         // Si le mois dépasse 12, le limiter à 12
         limitedNumbers = '12' + limitedNumbers.slice(2);
       } else if (month === 0) {
-        // Si le mois est 00, le remplacer par 01
+  
         limitedNumbers = '01' + limitedNumbers.slice(2);
       }
     }
     
-    // Si on a au moins 2 chiffres, ajouter le "/"
+
     if (limitedNumbers.length >= 2) {
       return `${limitedNumbers.slice(0, 2)}/${limitedNumbers.slice(2)}`;
     }
@@ -83,13 +83,13 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
   const handleChange = (field: string, value: string) => {
     let formattedValue = value;
     
-    // Appliquer le formatage selon le champ
+
     if (field === 'cardNumber') {
       formattedValue = formatCardNumber(value);
     } else if (field === 'expiryDate') {
       formattedValue = formatExpiryDate(value);
     } else if (field === 'cvc') {
-      // Pour le CVC, ne garder que les chiffres et limiter à 4
+
       formattedValue = value.replace(/\D/g, '').slice(0, 4);
     }
     
@@ -103,14 +103,14 @@ export function CheckoutForm({ classCount, isAnnual, pricePerClass, onSubmit }: 
       ...formData,
       classCount,
       isAnnual,
-      pricePerClass,
-      total: classCount * pricePerClass
+      totalAmount,
+      total: totalAmount
     };
     
     onSubmit(checkoutData);
   };
 
-  const total = classCount * pricePerClass;
+  const total = totalAmount;
 
   return (
     <form id="checkout-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

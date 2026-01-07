@@ -10,6 +10,8 @@ import {
   QuestionnaireReminderTemplate,
   StudentAddedTemplate,
   PaymentInvoiceTemplate,
+  ProfessionalInvoiceTemplate,
+  SubscriptionConfirmationTemplate,
 } from './templates';
 
 @Injectable()
@@ -23,6 +25,8 @@ export class MailerService {
   private readonly questionnaireReminderTemplate = new QuestionnaireReminderTemplate();
   private readonly studentAddedTemplate = new StudentAddedTemplate();
   private readonly paymentInvoiceTemplate = new PaymentInvoiceTemplate();
+  private readonly professionalInvoiceTemplate = new ProfessionalInvoiceTemplate();
+  private readonly subscriptionConfirmationTemplate = new SubscriptionConfirmationTemplate();
 
   constructor(private configService: ConfigService) {
     const host = this.configService.get('MAIL_HOST') || this.configService.get('SMTP_HOST') || 'localhost';
@@ -189,6 +193,67 @@ export class MailerService {
       console.log(`Payment invoice email sent to ${email}`);
     } catch (error) {
       console.error('Error sending payment invoice email:', error);
+      throw error;
+    }
+  }
+
+  async sendProfessionalInvoiceEmail(email: string, data: {
+    customerName: string;
+    customerEmail: string;
+    invoiceNumber: string;
+    invoiceDate: string;
+    billingPeriod: string;
+    planName: string;
+    planDescription: string;
+    unitPrice: string;
+    lineTotal: string;
+    subtotal: string;
+    taxAmount: string;
+    totalAmount: string;
+    paymentMethod: string;
+    paymentDate: string;
+    transactionId: string;
+    invoiceUrl?: string;
+  }) {
+    const mailOptions = {
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
+      to: email,
+      subject: `Facture IZZZI N° ${data.invoiceNumber} - ${data.planName}`,
+      html: this.professionalInvoiceTemplate.generate(data),
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Professional invoice email sent to ${email} - Invoice #${data.invoiceNumber}`);
+    } catch (error) {
+      console.error('Error sending professional invoice email:', error);
+      throw error;
+    }
+  }
+
+  async sendSubscriptionConfirmationEmail(email: string, data: {
+    userName: string;
+    planName: string;
+    classCount: number;
+    pricePerClass: number;
+    totalAmount: number;
+    billingPeriod: string;
+    nextBillingDate: string;
+  }) {
+    const dashboardUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/dashboard`;
+    
+    const mailOptions = {
+      from: this.configService.get('MAIL_FROM') || this.configService.get('SMTP_FROM') || 'IZZZI <noreply@izzzi.io>',
+      to: email,
+      subject: `🎉 Bienvenue dans ${data.planName} !`,
+      html: this.subscriptionConfirmationTemplate.generate({ ...data, dashboardUrl }),
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Subscription confirmation email sent to ${email}`);
+    } catch (error) {
+      console.error('Error sending subscription confirmation email:', error);
       throw error;
     }
   }

@@ -43,7 +43,7 @@ export class PaymentController {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-      // Gérer les autres erreurs
+    
       if (error instanceof HttpException) {
         throw error;
       }
@@ -68,6 +68,12 @@ export class PaymentController {
       throw new Error('Raw body is required for webhook');
     }
     return this.paymentService.handleWebhook(signature, req.rawBody);
+  }
+
+  @Post('verify-session')
+  @UseGuards(JwtAuthGuard)
+  async verifySession(@Body() body: { sessionId: string }) {
+    return this.paymentService.verifyCheckoutSession(body.sessionId);
   }
 
   @Get('subscription')

@@ -15,25 +15,25 @@ interface CardSuperIzzyProps {
 export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
   
-  let monthlyPricePerClass: number;
+
+  let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
-    monthlyPricePerClass = 19;
+    monthlyPrice = 19;
   } else if (classCount >= 6 && classCount <= 10) {
-    monthlyPricePerClass = 17;
+    monthlyPrice = 17;
   } else if (classCount >= 11 && classCount <= 15) {
-    monthlyPricePerClass = 15;
+    monthlyPrice = 15;
   } else if (classCount >= 16 && classCount <= 20) {
-    monthlyPricePerClass = 13;
+    monthlyPrice = 13;
   } else {
-    monthlyPricePerClass = 13;
+    monthlyPrice = 13;
   }
   
-  // Prix annuel avec -30% de réduction
-  const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
+
+  const annualPrice = Math.round(monthlyPrice * 0.7);
   
-  // Prix utilisé selon le mode
-  const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
-  const totalPrice = classCount * pricePerClass;
+
+  const displayPrice = isAnnual ? annualPrice : monthlyPrice;
   return (
     <div 
       style={{
@@ -129,7 +129,7 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
                   color: '#2F2E2C',
                   lineHeight: '125%'
                 }}>
-                  {pricePerClass}€
+                  {displayPrice}€
                 </span>
                 <span style={{
                   fontFamily: 'Poppins',
@@ -139,7 +139,7 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
                   lineHeight: '100%',
                   marginLeft: '8px'
                 }}>
-                  par mois / par classe
+                  par mois
                 </span>
               </div>
             ) : (
