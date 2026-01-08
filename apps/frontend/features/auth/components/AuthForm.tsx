@@ -72,8 +72,16 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
 
     try {
       const { authService } = await import('@/services/auth/auth.service');
-      await authService.login(loginData);
-      router.push(routes.dashboard);
+      const response = await authService.login(loginData);
+      // Redirect based on user role
+      const userRole = response?.user?.role || response?.role;
+      if (userRole === 'SUPER_ADMIN') {
+        router.push(routes.superAdmin);
+      } else if (userRole === 'ADMIN') {
+        router.push(routes.account.profile);
+      } else {
+        router.push(routes.dashboard);
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       alert(error.message || 'Email ou mot de passe incorrect');
@@ -111,15 +119,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
         });
       }
       
-      // Show success message with role information
-      const roleName = response.user.role === 'ADMIN' 
-        ? 'Administrateur' 
-        : response.user.role === 'RESPONSABLE_PEDAGOGIQUE'
-        ? 'Responsable Pédagogique'
-        : 'Visiteur';
-      
-      alert(`Inscription réussie !\n\nRôle: ${roleName}\nEmail: ${response.user.email}\n\nVous allez être redirigé vers votre tableau de bord.`);
-      
+      // Redirect to dashboard after successful registration
       router.push(routes.dashboard);
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -257,7 +257,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   href={routes.auth.forgotPassword}
                   className="text-sm text-gray-600 hover:text-gray-900"
                 >
-                  Mot de passe oubliÃ© ?
+                  Mot de passe oublié ?
                 </Link>
               </div>
 
@@ -286,12 +286,12 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
               {!isInvitedRegistration && (
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Nom de l'Ã©tablissement
+                    Nom de l'établissement
                   </label>
                   <input
                     type="text"
                     name="establishmentName"
-                    placeholder="Entrez le nom de l'Ã©tablissement"
+                    placeholder="Entrez le nom de l'établissement"
                     value={registerData.establishmentName}
                     onChange={handleRegisterChange}
                     required
@@ -314,7 +314,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   onChange={handleRegisterChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
 
@@ -331,24 +331,24 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   onChange={handleRegisterChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
 
               {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  PrÃ©nom
+                  Prénom
                 </label>
                 <input
                   type="text"
                   name="firstName"
-                  placeholder="Entrez votre prÃ©nom"
+                  placeholder="Entrez votre prénom"
                   value={registerData.firstName}
                   onChange={handleRegisterChange}
                   required
                   disabled={isLoading}
-                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
 
@@ -392,7 +392,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    CrÃ©er un compte
+                    Créer un compte
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
@@ -453,7 +453,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
 
           {activeTab === 'register' && (
             <p className="mt-6 text-center text-sm text-gray-600">
-              Vous avez dÃ©jÃ  un compte ?{' '}
+              Vous avez déjà un compte ?{' '}
               <button
                 onClick={() => setActiveTab('login')}
                 className="text-gray-900 font-medium hover:underline"

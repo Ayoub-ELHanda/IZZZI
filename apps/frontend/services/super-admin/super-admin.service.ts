@@ -58,6 +58,17 @@ export interface Subscription {
   createdAt: string;
   updatedAt: string;
   payments?: Payment[];
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    establishment?: {
+      id: string;
+      name: string;
+    };
+  };
 }
 
 export interface Payment {
@@ -116,6 +127,32 @@ export const superAdminService = {
    */
   async renewSubscription(subscriptionId: string): Promise<Subscription> {
     const response = await apiClient.put<Subscription>(`/super-admin/subscriptions/${subscriptionId}/renew`);
+    return response;
+  },
+
+  /**
+   * Récupérer tous les abonnements actifs avec les informations utilisateur
+   */
+  async getAllActiveSubscriptions(): Promise<Subscription[]> {
+    const response = await apiClient.get<Subscription[]>('/super-admin/subscriptions/active');
+    return response;
+  },
+
+  /**
+   * Réassigner un RESPONSABLE_PEDAGOGIQUE à un autre ADMIN
+   */
+  async reassignTeacherToAdmin(teacherId: string, newAdminId: string): Promise<User> {
+    const response = await apiClient.put<User>(`/super-admin/teachers/${teacherId}/reassign`, {
+      newAdminId,
+    });
+    return response;
+  },
+
+  /**
+   * Récupérer tous les ADMIN pour la sélection
+   */
+  async getAllAdmins(): Promise<User[]> {
+    const response = await apiClient.get<User[]>('/super-admin/admins');
     return response;
   },
 };

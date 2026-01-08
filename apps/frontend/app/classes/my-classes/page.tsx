@@ -32,8 +32,9 @@ export default function MyClassesPage() {
   
   const { user } = useAuth();
   
-  // Vérifier si l'utilisateur est en période d'essai
+  // Vérifier si l'utilisateur est en période d'essai ou plan gratuit
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isFreePlan = user?.subscriptionStatus === 'FREE';
   
   useEffect(() => {
     setIsAdmin(user?.role === UserRole.ADMIN);
@@ -114,11 +115,11 @@ export default function MyClassesPage() {
     <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
       <div className="mx-auto max-w-[1650px]">
       
-        {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
-        {isTrialing && (
+        {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
+        {(isTrialing || isFreePlan) && (
           <TrialBanner
-            message1="Période d'essai en cours :"
-            message2="Tout est illimité jusqu'au 18 septembre 2025."
+            message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
+            message2={isTrialing ? "Tout est illimité jusqu'au 18 septembre 2025." : "Passez au plan Super Izzzi pour débloquer toutes les fonctionnalités."}
             linkText="Je passe au plan Super Izzzi →"
             linkHref="/pricing"
             position="left"

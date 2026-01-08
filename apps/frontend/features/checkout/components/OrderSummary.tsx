@@ -12,18 +12,18 @@ interface OrderSummaryProps {
 export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummaryProps) {
   const [acceptedCGV, setAcceptedCGV] = useState(false);
   
-  // Prix mensuel par palier
+  // Prix mensuel par palier (doit correspondre au backend)
   let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
-    monthlyPrice = 13;
+    monthlyPrice = 19;
   } else if (classCount >= 6 && classCount <= 10) {
-    monthlyPrice = 12;
+    monthlyPrice = 17;
   } else if (classCount >= 11 && classCount <= 15) {
-    monthlyPrice = 11;
+    monthlyPrice = 15;
   } else if (classCount >= 16 && classCount <= 20) {
-    monthlyPrice = 9;
+    monthlyPrice = 13;
   } else {
-    monthlyPrice = 9;
+    monthlyPrice = 13;
   }
 
   return (

@@ -20,8 +20,10 @@ function GoogleCallbackContent() {
         try {
           const { authService } = await import('@/services/auth/auth.service');
           const user = await authService.getProfile();
-          // Redirect admin users to profile page, others to dashboard
-          if (user?.role === 'ADMIN') {
+          // Redirect based on user role
+          if (user?.role === 'SUPER_ADMIN') {
+            router.push(routes.superAdmin);
+          } else if (user?.role === 'ADMIN') {
             router.push(routes.account.profile);
           } else {
             router.push(routes.dashboard);

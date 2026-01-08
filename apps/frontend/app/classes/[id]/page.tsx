@@ -19,6 +19,7 @@ export default function ClassDetailPage() {
   
 
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isFreePlan = user?.subscriptionStatus === 'FREE';
   const [searchQuery, setSearchQuery] = useState('');
   const [classData, setClassData] = useState<any>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -154,11 +155,11 @@ export default function ClassDetailPage() {
             </button>
           </Link>
 
-          {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
-          {isTrialing && (
+          {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
+          {(isTrialing || isFreePlan) && (
             <TrialBanner
-              message1="Période d'essai en cours :"
-              message2="Tout est illimité jusqu'au 18 septembre 2025."
+              message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
+              message2={isTrialing ? "Tout est illimité jusqu'au 18 septembre 2025." : "Passez au plan Super Izzzi pour débloquer toutes les fonctionnalités."}
               linkText="Je passe au plan Super Izzzi →"
               linkHref="/pricing"
               position="right"
