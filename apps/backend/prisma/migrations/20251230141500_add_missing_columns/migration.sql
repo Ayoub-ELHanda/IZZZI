@@ -1,0 +1,16 @@
+-- Add missing columns to Class table
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "description" TEXT;
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "studentCount" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "studentEmails" TEXT[] DEFAULT '{}';
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "isArchived" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "archivedAt" TIMESTAMP(3);
+ALTER TABLE "Class" ADD COLUMN IF NOT EXISTS "archivedBy" TEXT;
+
+-- Add missing columns to Subject table
+ALTER TABLE "Subject" ADD COLUMN IF NOT EXISTS "teacherName" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "Subject" ADD COLUMN IF NOT EXISTS "teacherEmail" TEXT;
+ALTER TABLE "Subject" ADD COLUMN IF NOT EXISTS "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "Subject" ADD COLUMN IF NOT EXISTS "endDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- Create index for isArchived if it doesn't exist
+CREATE INDEX IF NOT EXISTS "Class_isArchived_idx" ON "Class"("isArchived");

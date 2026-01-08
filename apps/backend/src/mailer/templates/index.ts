@@ -1,0 +1,11 @@
+export { PasswordResetTemplate, PasswordResetData } from './password-reset.template';
+export { WelcomeTemplate, WelcomeData } from './welcome.template';
+export { InvitationReceivedTemplate, InvitationReceivedData } from './invitation-received.template';
+export { InvitationConfirmationTemplate, InvitationConfirmationData } from './invitation-confirmation.template';
+export { ClassArchivedTemplate, ClassArchivedData } from './class-archived.template';
+export { QuestionnaireReminderTemplate, QuestionnaireReminderData } from './questionnaire-reminder.template';
+export { StudentAddedTemplate, StudentAddedData } from './student-added.template';
+export { PaymentInvoiceTemplate, PaymentInvoiceData } from './payment-invoice.template';
+export { CustomMessageTemplate, CustomMessageData } from './custom-message.template';
+export { ProfessionalInvoiceTemplate, ProfessionalInvoiceData } from './professional-invoice.template';
+export { SubscriptionConfirmationTemplate, SubscriptionConfirmationData } from './subscription-confirmation.template';
