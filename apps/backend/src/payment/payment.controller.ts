@@ -11,15 +11,30 @@ import {
   HttpStatus,
   HttpException,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+@ApiTags('payment')
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post('create-checkout-session')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Create Stripe checkout session' })
+  @ApiResponse({ status: 201, description: 'Checkout session created successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBody({ 
+    schema: { 
+      type: 'object', 
+      properties: { 
+        classCount: { type: 'number', example: 7 }, 
+        isAnnual: { type: 'boolean', example: false } 
+      } 
+    } 
+  })
   async createCheckoutSession(
     @Req() req: any,
     @Body() body: { classCount: number; isAnnual: boolean },
@@ -60,6 +75,7 @@ export class PaymentController {
 
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
+  @ApiExcludeEndpoint()
   async handleWebhook(
     @Headers('stripe-signature') signature: string,
     @Req() req: RawBodyRequest<Request>,

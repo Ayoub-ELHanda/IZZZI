@@ -11,6 +11,7 @@ import {
   StreamableFile,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger';
 import { QuestionnairesService } from './questionnaires.service';
 import { AIService } from '../ai/ai.service';
 import { CreateQuestionnairesDto } from './dto/create-questionnaires.dto';
@@ -20,6 +21,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 
+@ApiTags('questionnaires')
 @Controller('questionnaires')
 export class QuestionnairesController {
   constructor(
@@ -30,6 +32,12 @@ export class QuestionnairesController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Create a new questionnaire' })
+  @ApiResponse({ status: 201, description: 'Questionnaire created successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Insufficient permissions' })
+  @ApiBody({ type: CreateQuestionnairesDto })
   create(@Request() req, @Body() createDto: CreateQuestionnairesDto) {
     return this.questionnairesService.createQuestionnaires(
       req.user.userId,
@@ -72,6 +80,23 @@ export class QuestionnairesController {
 
  
   @Post('public/:token/submit')
+  @ApiOperation({ summary: 'Submit a questionnaire response (Public endpoint)' })
+  @ApiParam({ name: 'token', description: 'Questionnaire token', example: 'abc123-def456-ghi789' })
+  @ApiResponse({ status: 200, description: 'Response submitted successfully', schema: { example: { success: true, message: 'Merci pour votre retour !' } } })
+  @ApiResponse({ status: 400, description: 'Bad request - Already responded or invalid data' })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found' })
+  @ApiBody({ 
+    schema: { 
+      type: 'object', 
+      properties: { 
+        email: { type: 'string', example: 'student@example.com' }, 
+        rating: { type: 'number', example: 4, minimum: 1, maximum: 5 }, 
+        comment: { type: 'string', example: 'Great course!' }, 
+        isAnonymous: { type: 'boolean', example: true } 
+      },
+      required: ['email', 'rating']
+    } 
+  })
   submitResponse(
     @Param('token') token: string,
     @Body() dto: any
@@ -87,6 +112,10 @@ export class QuestionnairesController {
 
 
   @Get(':token/qrcode')
+  @ApiOperation({ summary: 'Download QR code for questionnaire' })
+  @ApiParam({ name: 'token', description: 'Questionnaire token' })
+  @ApiResponse({ status: 200, description: 'QR code image', content: { 'image/png': {} } })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found' })
   async downloadQRCode(
     @Param('token') token: string,
     @Res({ passthrough: true }) res: Response
@@ -147,6 +176,11 @@ export class QuestionnairesController {
   @Get(':questionnaireId/ai-summary')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get AI-generated feedback summary' })
+  @ApiParam({ name: 'questionnaireId', description: 'Questionnaire ID' })
+  @ApiResponse({ status: 200, description: 'AI summary retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Summary not found' })
   async getAISummary(
     @Request() req,
     @Param('questionnaireId') questionnaireId: string
@@ -167,6 +201,11 @@ export class QuestionnairesController {
   @Get(':questionnaireId/all-statistics')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE, 'SUPER_ADMIN' as any)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all AI-generated statistics for a questionnaire' })
+  @ApiParam({ name: 'questionnaireId', description: 'Questionnaire ID' })
+  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found' })
   async getAllStatistics(
     @Request() req,
     @Param('questionnaireId') questionnaireId: string
