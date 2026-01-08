@@ -1,0 +1,16 @@
+locals {
+  vpc_name        = "${var.project_name}-${var.environment}-vpc"
+  vpc_description = "VPC for ${var.project_name} ${var.environment} environment"
+}
+
+resource "digitalocean_vpc" "main" {
+  name        = local.vpc_name
+  region      = var.region
+  ip_range    = var.vpc_cidr
+  description = local.vpc_description
+
+  lifecycle {
+    create_before_destroy = true
+    prevent_destroy       = false
+  }
+}
