@@ -12,25 +12,19 @@ interface OrderSummaryProps {
 export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummaryProps) {
   const [acceptedCGV, setAcceptedCGV] = useState(false);
   
- 
-  const total = totalAmount;
-  
-  
+  // Prix mensuel par palier
   let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
-    monthlyPrice = 19;
+    monthlyPrice = 13;
   } else if (classCount >= 6 && classCount <= 10) {
-    monthlyPrice = 17;
+    monthlyPrice = 12;
   } else if (classCount >= 11 && classCount <= 15) {
-    monthlyPrice = 15;
+    monthlyPrice = 11;
   } else if (classCount >= 16 && classCount <= 20) {
-    monthlyPrice = 13;
+    monthlyPrice = 9;
   } else {
-    monthlyPrice = 13;
+    monthlyPrice = 9;
   }
-  
-
-  const annualPrice = Math.round(monthlyPrice * 0.7);
 
   return (
     <div style={{
@@ -142,7 +136,7 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
               color: '#6B6B6B',
               lineHeight: '100%'
             }}>
-              {annualPrice}€/mois
+              {totalAmount}€/ans
             </div>
           </div>
           {/* Badge -30% */}
@@ -193,13 +187,31 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
           Total
         </span>
         <div style={{
-          fontFamily: 'Poppins',
-          fontSize: '16px',
-          fontWeight: 700,
-          color: '#2F2E2C',
-          lineHeight: '100%'
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '4px'
         }}>
-          {total}€/mois TTC
+          {isAnnual && (
+            <span style={{
+              fontFamily: 'Poppins',
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#9CA3AF',
+              textDecoration: 'line-through',
+              lineHeight: '100%'
+            }}>
+              {monthlyPrice * 12}€/an
+            </span>
+          )}
+          <div style={{
+            fontFamily: 'Poppins',
+            fontWeight: 700,
+            color: '#2F2E2C',
+            lineHeight: '100%'
+          }}>
+            {isAnnual ? `${totalAmount}€/an TTC` : `${totalAmount}€/mois TTC`}
+          </div>
         </div>
       </div>
 
@@ -252,8 +264,8 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
         }}
       >
         {isAnnual 
-          ? `Valider et payer ${total * 12}€/an (ou ${total}€/mois)`
-          : `Valider et payer ${total}€/mois`
+          ? `Valider et payer ${totalAmount}€/an`
+          : `Valider et payer ${totalAmount}€/mois`
         }
       </button>
 

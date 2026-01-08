@@ -23,23 +23,27 @@ export default function CheckoutPage() {
   // Valider la période (annual ou monthly)
   const isAnnual = periodParam === 'annual';
   
-  // Prix FIXE par palier (non multiplié par le nombre de classes)
-  let totalAmount: number;
+  // Prix mensuel par palier
+  let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
-    totalAmount = 19;
+    monthlyPrice = 13;
   } else if (classCount >= 6 && classCount <= 10) {
-    totalAmount = 17;
+    monthlyPrice = 12;
   } else if (classCount >= 11 && classCount <= 15) {
-    totalAmount = 15;
+    monthlyPrice = 11;
   } else if (classCount >= 16 && classCount <= 20) {
-    totalAmount = 13;
+    monthlyPrice = 9;
   } else {
-    totalAmount = 13; 
+    monthlyPrice = 9; 
   }
   
-  // Appliquer la réduction de 30% pour l'abonnement annuel
+  // Calculer le prix total selon la période
+  let totalAmount: number;
   if (isAnnual) {
-    totalAmount = Math.round(totalAmount * 0.7);
+    const baseAnnualPrice = monthlyPrice * 12; // Ex: 9 × 12 = 108€
+    totalAmount = Math.round(baseAnnualPrice * 0.7); // 108 × 0.7 = 76€
+  } else {
+    totalAmount = monthlyPrice; // 9€/mois
   }
   
   const [isProcessing, setIsProcessing] = useState(false);
