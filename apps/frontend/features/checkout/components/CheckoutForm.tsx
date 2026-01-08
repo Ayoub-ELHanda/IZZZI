@@ -110,8 +110,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
     onSubmit(checkoutData);
   };
 
-  const total = totalAmount;
-
   return (
     <form id="checkout-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Titre de la section */}
