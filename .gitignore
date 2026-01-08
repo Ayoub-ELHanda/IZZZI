@@ -49,3 +49,10 @@ redis-data/
 !docs/*.md
 *.md
 
+# Terraform
+infrastructure/*.tfvars
+infrastructure/.terraform/
+infrastructure/*.tfstate
+infrastructure/*.tfstate.*
+infrastructure/.terraform.lock.hcl
+
