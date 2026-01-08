@@ -37,7 +37,6 @@ export function Slider({
   
   return (
     <div className={cn('relative w-full', className)} style={{ paddingTop: '40px' }}>
-      {/* Badge affichant le nombre au-dessus du thumb */}
       <div
         className="absolute transition-all"
         style={{
@@ -69,7 +68,6 @@ export function Slider({
       </div>
       
       <div className="relative h-2 w-full rounded-full" style={{ backgroundColor: 'white' }}>
-        {/* Points fixes aux positions 1, 5, 10, 15, 20 */}
         {[1, 5, 10, 15, 20].map((dotValue) => {
           const dotPercentage = ((dotValue - min) / (max - min)) * 100;
           return (

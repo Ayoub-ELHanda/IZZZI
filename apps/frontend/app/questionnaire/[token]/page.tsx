@@ -13,7 +13,6 @@ export default function QuestionnairePage() {
   const [questionnaire, setQuestionnaire] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     const loadQuestionnaire = async () => {
       try {
@@ -77,9 +76,7 @@ export default function QuestionnairePage() {
       <Toaster position="top-right" />
       <div style={{ minHeight: '100vh', backgroundColor: '#F8F8F8', padding: '48px' }}>
         <div style={{ display: 'flex', gap: '60px', maxWidth: '1400px', margin: '0 auto' }}>
-          {/* Infos à gauche */}
           <div style={{ width: '320px', flexShrink: 0 }}>
-            {/* Logo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
               <div style={{
                 width: '32px',
@@ -110,7 +107,6 @@ export default function QuestionnairePage() {
               </span>
             </div>
 
-           
             <h1 style={{
               fontFamily: 'Mochiy Pop One, sans-serif',
               fontSize: '28px',
@@ -152,8 +148,7 @@ export default function QuestionnairePage() {
                   {questionnaire.subject.class.school}
                 </span>
               </div>
-              
-             
+
               <div style={{
                 flex: '0 0 10%',
                 display: 'flex',
@@ -165,8 +160,7 @@ export default function QuestionnairePage() {
                   backgroundColor: '#E5E5E5'
                 }} />
               </div>
-              
-          
+
               <div style={{
                 flex: '0 0 40%',
                 display: 'flex',
@@ -187,8 +181,6 @@ export default function QuestionnairePage() {
                 </span>
               </div>
             </div>
-
-            {/* Texte d'explication */}
             <div style={{
               fontFamily: 'Poppins, sans-serif',
               fontSize: '13px',
@@ -204,7 +196,6 @@ export default function QuestionnairePage() {
             </div>
           </div>
 
-       
           <div style={{ flex: 1, maxWidth: '680px' }}>
             <QuestionnaireForm token={token} formType={questionnaire.formType} />
           </div>

@@ -16,7 +16,6 @@ export default function ClassDetailPage() {
   const params = useParams();
   const classId = params.id as string;
   const { user } = useAuth();
-  
 
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
   const isFreePlan = user?.subscriptionStatus === 'FREE';
@@ -43,7 +42,6 @@ export default function ClassDetailPage() {
       setClassData(classInfo);
       setSubjects(subjectsData);
     } catch (error) {
-      console.error('Error loading class data:', error);
       toast.error('Erreur lors du chargement des données');
     } finally {
       setIsLoading(false);
@@ -69,7 +67,6 @@ export default function ClassDetailPage() {
       setIsModalOpen(false);
       await loadData(); 
     } catch (error: any) {
-      console.error('Error creating subject:', error);
       toast.error(error.message || 'Erreur lors de la création de la matière');
     } finally {
       setIsCreating(false);
@@ -78,10 +75,8 @@ export default function ClassDetailPage() {
 
   const handleCSVImport = (file: File) => {
     toast.info('Import CSV en cours de développement');
-    console.log('CSV file:', file);
   };
 
-  // Fonction pour formater une date en dd/MM/yyyy
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
@@ -92,8 +87,7 @@ export default function ClassDetailPage() {
 
   const transformedSubjects = useMemo(() => {
     let filteredSubjects = subjects;
-    
-    // Apply search filter
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filteredSubjects = subjects.filter(subject =>
@@ -166,8 +160,6 @@ export default function ClassDetailPage() {
               <span className="text-sm md:text-sm">Retour à mes classes</span>
             </button>
           </Link>
-
-          {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
           {(isTrialing || isFreePlan) && (
             <TrialBanner
               message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
@@ -178,7 +170,6 @@ export default function ClassDetailPage() {
             />
           )}
         </div>
-
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full md:w-auto">
@@ -226,8 +217,6 @@ export default function ClassDetailPage() {
         <div className="overflow-x-auto -mx-4 sm:mx-0">
           <SubjectsTable subjects={transformedSubjects} onRefresh={loadData} />
         </div>
-
-        {/* Modal pour ajouter une matière */}
         <SubjectModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

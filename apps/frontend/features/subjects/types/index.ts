@@ -1,4 +1,3 @@
-// Types et interfaces pour la feature Subjects
 
 export interface SubjectFormData {
   name: string;

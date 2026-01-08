@@ -48,7 +48,6 @@ export function SubjectModal({ isOpen, onClose, onSubmit, onCSVImport, classId, 
           overflow: 'hidden',
         }}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           style={{
@@ -64,17 +63,15 @@ export function SubjectModal({ isOpen, onClose, onSubmit, onCSVImport, classId, 
         >
           <X size={20} color="#6B6B6B" />
         </button>
-
-        {/* Scrollable form content - scrollbar hidden */}
         <div
           style={{
             flex: 1,
             overflowY: 'auto',
             overflowX: 'hidden',
-            // Hide scrollbar for Chrome, Safari and Opera
+            
             WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none', // Firefox
-            msOverflowStyle: 'none', // IE and Edge
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none', 
           }}
           className="hide-scrollbar"
         >

@@ -43,10 +43,9 @@ export default function DashboardPage() {
       }
 
       try {
-        // Only load responses, user is already loaded by AuthProvider
+        
         await loadResponses();
       } catch (error) {
-        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -60,12 +59,10 @@ export default function DashboardPage() {
       const data = await questionnairesService.getMyResponses();
       setSubjects(data);
     } catch (error: unknown) {
-      console.error('Error loading responses:', error);
       toast.error('Erreur lors du chargement des retours');
     }
   };
 
-  // Filtrer les matières selon l'onglet actif et la recherche
   const filteredSubjects = useMemo(() => {
     return subjects.filter((subject) => {
       const now = new Date();
@@ -88,7 +85,6 @@ export default function DashboardPage() {
     });
   }, [subjects, activeTab, searchQuery]);
 
-  // Aplatir tous les questionnaires pour l'affichage
   const allQuestionnairesBase = useMemo(() => {
     return filteredSubjects.flatMap((subject) =>
       subject.questionnaires.map((q) => ({
@@ -98,38 +94,33 @@ export default function DashboardPage() {
     );
   }, [filteredSubjects]);
 
-  // Trier les questionnaires d'abord
   const sortedQuestionnaires = useMemo(() => {
     const sorted = [...allQuestionnairesBase];
     if (sortBy === 'date') {
       sorted.sort((a, b) => {
         const dateA = new Date(a.subject.startDate).getTime();
         const dateB = new Date(b.subject.startDate).getTime();
-        return dateB - dateA; // Plus récent en premier
+        return dateB - dateA; 
       });
     } else if (sortBy === 'score') {
       sorted.sort((a, b) => {
-        return (b.averageRating || 0) - (a.averageRating || 0); // Score le plus élevé en premier
+        return (b.averageRating || 0) - (a.averageRating || 0); 
       });
     } else if (sortBy === 'responses') {
       sorted.sort((a, b) => {
-        return (b.visibleResponses || 0) - (a.visibleResponses || 0); // Plus de retours en premier
+        return (b.visibleResponses || 0) - (a.visibleResponses || 0); 
       });
     }
     return sorted;
   }, [allQuestionnairesBase, sortBy]);
 
-  // Filtrer par alertes si nécessaire (après le tri)
   const displayedQuestionnaires = useMemo(() => {
     if (!showAlertsOnly) {
       return sortedQuestionnaires;
     }
     
     const filtered = sortedQuestionnaires.filter((q) => {
-      // Vérifier si le questionnaire a des alertes
-      // Un questionnaire a une alerte si :
-      // - Le score moyen est inférieur à 3.5 OU
-      // - Le nombre de retours visibles est inférieur à 5
+
       const averageRating = Number(q.averageRating) || 0;
       const visibleResponses = Number(q.visibleResponses) || 0;
       
@@ -142,9 +133,6 @@ export default function DashboardPage() {
     return filtered;
   }, [showAlertsOnly, sortedQuestionnaires]);
 
-  // Filtrer par matière si nécessaire (pour l'instant, "all" affiche tout)
-  // Cette fonctionnalité peut être étendue plus tard pour filtrer par matière spécifique
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
@@ -156,7 +144,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Calculer la date de fin d'essai (4 mois à partir de maintenant)
   const trialEndDate = new Date();
   trialEndDate.setMonth(trialEndDate.getMonth() + 4);
   const trialEndDateStr = trialEndDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -164,11 +151,8 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5]" style={{ paddingTop: '120px' }}>
       <div className="mx-auto p-4 md:p-8" style={{ maxWidth: '1650px', width: '100%', boxSizing: 'border-box' }}>
-        {/* En-tête avec onglets */}
         <div style={{ marginBottom: '24px' }}>
-          {/* Ligne 1 : Titre + Onglets à gauche, Bannière à droite */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', marginBottom: '24px', flexWrap: 'wrap' }}>
-            {/* Gauche : Titre + Onglets */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
               <h1
                 className="font-mochiy"
@@ -220,8 +204,6 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-
-            {/* Droite : Bannière période d'essai - Afficher pour TRIALING et plan gratuit */}
             {(isTrialing || isFreePlan) && (
               <div
                 style={{
@@ -284,8 +266,6 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-
-          {/* Ligne 2 : Barre de recherche (gauche) + Dropdowns et toggle (droite) - MÊME LIGNE */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -294,7 +274,6 @@ export default function DashboardPage() {
             marginBottom: '0',
             flexWrap: 'wrap',
           }}>
-            {/* Barre de recherche à gauche */}
             <div style={{ flex: '1 1 300px', minWidth: '200px', maxWidth: '500px' }}>
               <SearchInput
                 placeholder="rechercher par classe, intervenant, cours..."
@@ -302,8 +281,6 @@ export default function DashboardPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-
-            {/* Dropdowns et toggle à droite */}
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -428,8 +405,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
-        {/* Grille de cartes */}
         {displayedQuestionnaires.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '64px', color: '#6B6B6B' }}>
             <p>Aucun retour disponible pour le moment.</p>
@@ -459,8 +434,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-
-      {/* Modals */}
       <NotificationsModal
         isOpen={isNotificationsModalOpen}
         onClose={() => setIsNotificationsModalOpen(false)}
@@ -504,7 +477,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
   const formTypeColor = questionnaire.type === 'DURING_COURSE' ? '#FF6B35' : '#4A90E2';
   const formTypeBgColor = questionnaire.type === 'DURING_COURSE' ? '#FFF3E0' : '#E3F2FD';
 
-  // Charger la synthèse depuis l'API
   useEffect(() => {
     const loadSummary = async () => {
       if (!questionnaire.id) return;
@@ -518,8 +490,7 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
           improvements: string[];
           pedagogicalAlerts: string[];
         }>(`/questionnaires/${questionnaire.id}/ai-summary`);
-        
-        // Afficher les premiers 150 caractères de la synthèse
+
         if (data.summary && data.summary.length > 0) {
           const preview = data.summary.length > 150 
             ? data.summary.substring(0, 150) + '...' 
@@ -527,10 +498,8 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
           setSummaryPreview(preview);
         }
       } catch (error: any) {
-        // Si la synthèse n'existe pas encore, ne pas afficher d'erreur
-        // Elle sera générée automatiquement lors de la prochaine alerte
+
         if (error?.response?.status !== 404) {
-          console.error('Error loading summary:', error);
         }
         setSummaryPreview(null);
       } finally {
@@ -541,38 +510,25 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
     loadSummary();
   }, [questionnaire.id]);
 
-  // Récupérer les vraies alertes pour ce questionnaire
   const questionnaireAlerts = alerts.filter(
     (alert) => alert.questionnaire?.id === questionnaire.id && alert.status === 'UNTREATED'
   );
-  
-  // Debug: log pour vérifier les alertes
+
   useEffect(() => {
     if (questionnaire.id) {
-      console.log(`[QuestionnaireCard] Questionnaire ID: ${questionnaire.id}`);
-      console.log(`[QuestionnaireCard] Total alerts: ${alerts.length}`);
-      console.log(`[QuestionnaireCard] Alerts for this questionnaire:`, questionnaireAlerts);
-      console.log(`[QuestionnaireCard] All alerts:`, alerts.map(a => ({
-        id: a.id,
-        questionnaireId: a.questionnaire?.id,
-        status: a.status,
-        message: a.message?.substring(0, 50)
       })));
     }
   }, [questionnaire.id, alerts, questionnaireAlerts]);
-  
-  // Utiliser le nombre total d'alertes non traitées pour correspondre au modal
+
   const alertCount = untreatedAlertCount;
   const isDuringCourse = questionnaire.type === 'DURING_COURSE';
-  
-  // Trier les alertes par date (plus récente en premier) et prendre la première
+
   const sortedQuestionnaireAlerts = [...questionnaireAlerts].sort((a, b) => {
     const dateA = new Date((a as any).updatedAt || a.createdAt).getTime();
     const dateB = new Date((b as any).updatedAt || b.createdAt).getTime();
-    return dateB - dateA; // Plus récent en premier
+    return dateB - dateA; 
   });
-  
-  // Afficher seulement la dernière alerte non traitée pour ce questionnaire
+
   const lastAlert = sortedQuestionnaireAlerts.length > 0 
     ? {
         type: sortedQuestionnaireAlerts[0].type === 'ALERT_POSITIVE' ? 'success' : 'warning',
@@ -593,9 +549,7 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
         height: '100%',
       }}
     >
-      {/* En-tête - Ligne 1 : Titre | Badge formulaire | Badges Retours/Score */}
       <div className="questionnaire-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}>
-        {/* Gauche : Titre seul */}
         <div style={{ flex: '0 1 auto', minWidth: '150px' }}>
           <h3
             style={{
@@ -610,8 +564,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
             {questionnaire.subject.name}
           </h3>
         </div>
-
-        {/* Centre : Badge formulaire */}
         <div
           style={{
             padding: '8px 14px',
@@ -630,8 +582,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
         >
           {formTypeLabel}
         </div>
-
-        {/* Droite : Badges Retours et Score */}
         <div className="questionnaire-card-badges" style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
           <div
             style={{
@@ -705,8 +655,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
           </div>
         </div>
       </div>
-
-      {/* Ligne 2 : Classe | Prof directement sous le titre */}
       <div style={{ marginBottom: '20px' }}>
         <p
           style={{
@@ -722,13 +670,8 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
           {questionnaire.subject.className} | {questionnaire.subject.teacherName}
         </p>
       </div>
-
-      {/* Contenu principal en 2 colonnes */}
       <div className="questionnaire-card-content" style={{ display: 'flex', gap: '24px', flex: 1, alignItems: 'stretch' }}>
-        {/* Colonne gauche : Alertes + Synthèse */}
         <div style={{ flex: 1, minWidth: 0 }}>
-
-          {/* Section Alertes */}
           {alertCount > 0 && (
             <div style={{ marginBottom: '24px' }}>
               <div style={{ 
@@ -768,7 +711,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
                   Voir toutes les alertes
                 </button>
               </div>
-              {/* Afficher seulement la dernière alerte pour ce questionnaire si elle existe */}
               {lastAlert && (
                 <div
                   style={{
@@ -782,7 +724,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
                     position: 'relative',
                   }}
                 >
-                  {/* Badge avec le numéro de la dernière alerte */}
                   <span
                     style={{
                       position: 'absolute',
@@ -843,8 +784,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
               )}
             </div>
           )}
-
-          {/* Section Synthèse */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -924,8 +863,6 @@ function QuestionnaireCard({ questionnaire, isPaidPlan, trialEndDate, onOpenAler
             )}
           </div>
         </div>
-
-        {/* Colonne droite : Actions - Positionnée en bas */}
         <div className="questionnaire-card-actions" style={{ width: '200px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start', marginTop: 'auto' }}>
           <p
             style={{

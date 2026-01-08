@@ -30,7 +30,6 @@ export class ProfessionalInvoiceTemplate implements EmailTemplate<ProfessionalIn
     try {
       this.template = fs.readFileSync(templatePath, 'utf-8');
     } catch (error) {
-      console.error('Error loading invoice template:', error);
       this.template = this.getFallbackTemplate();
     }
   }

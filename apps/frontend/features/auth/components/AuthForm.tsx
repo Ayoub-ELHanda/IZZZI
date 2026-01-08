@@ -18,14 +18,12 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoadingInvitation, setIsLoadingInvitation] = useState(!!inviteToken);
-  
 
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
   });
 
-  // Register form data
   const [registerData, setRegisterData] = useState({
     establishmentName: '',
     email: '',
@@ -46,8 +44,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           }
           
           const invitationData = await response.json();
-          
-      
+
           setRegisterData(prev => ({
             ...prev,
             email: invitationData.email || '',
@@ -55,7 +52,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
             lastName: invitationData.lastName || '',
           }));
         } catch (error: any) {
-          console.error('Error loading invitation:', error);
           alert(error.message || 'Erreur lors du chargement de l\'invitation');
         } finally {
           setIsLoadingInvitation(false);
@@ -73,7 +69,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     try {
       const { authService } = await import('@/services/auth/auth.service');
       const response = await authService.login(loginData);
-      // Redirect based on user role
+      
       const userRole = response?.user?.role || response?.role;
       if (userRole === 'SUPER_ADMIN') {
         router.push(routes.superAdmin);
@@ -83,14 +79,12 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
         router.push(routes.dashboard);
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       alert(error.message || 'Email ou mot de passe incorrect');
     } finally {
       setIsLoading(false);
     }
   };
 
-  
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -109,7 +103,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           inviteToken: inviteToken,
         });
       } else {
-        // Admin registration
+        
         response = await authService.registerAdmin({
           establishmentName: registerData.establishmentName,
           email: registerData.email,
@@ -118,11 +112,9 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
           password: registerData.password,
         });
       }
-      
-      // Redirect to dashboard after successful registration
+
       router.push(routes.dashboard);
     } catch (error: any) {
-      console.error('Registration error:', error);
       const errorMessage = error?.message || error?.toString() || 'Une erreur est survenue lors de l\'inscription';
       alert(errorMessage);
     } finally {
@@ -130,7 +122,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
     }
   };
 
-  // Handle Google OAuth
   const handleGoogleAuth = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
     if (inviteToken) {
@@ -159,7 +150,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image 
             src="/logo-izzzi.svg"
@@ -174,10 +164,7 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
             className="h-[41px] w-auto"
           />
         </div>
-
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
-          {/* Tabs */}
           <div className="flex gap-2 mb-8">
             <button
               onClick={() => setActiveTab('login')}
@@ -201,10 +188,9 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
             </button>
           </div>
 
-          {/* Login Form */}
           {activeTab === 'login' && (
             <form onSubmit={handleLogin} className="space-y-4">
-              {/* Email */}
+              
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Adresse email
@@ -221,7 +207,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Mot de passe
@@ -251,7 +236,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                 </div>
               </div>
 
-              {/* Forgot Password Link */}
               <div className="flex justify-end">
                 <Link
                   href={routes.auth.forgotPassword}
@@ -261,7 +245,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                 </Link>
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -279,10 +262,9 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
             </form>
           )}
 
-          {/* Register Form */}
           {activeTab === 'register' && (
             <form onSubmit={handleRegister} className="space-y-4">
-              {/* Establishment Name - Only for Admin */}
+              
               {!isInvitedRegistration && (
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -300,8 +282,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   />
                 </div>
               )}
-
-              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Adresse email
@@ -317,8 +297,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
-
-              {/* Last Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Nom
@@ -334,8 +312,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
-
-              {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Prénom
@@ -351,8 +327,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
                 />
               </div>
-
-              {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Mot de passe
@@ -381,8 +355,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
                   </button>
                 </div>
               </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -399,8 +371,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
               </button>
             </form>
           )}
-
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -409,8 +379,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
               <span className="px-4 bg-white text-gray-500 font-medium">Ou</span>
             </div>
           </div>
-
-          {/* Google Auth Button */}
           <button
             type="button"
             onClick={handleGoogleAuth}
@@ -437,8 +405,6 @@ function AuthFormContent({ defaultTab = 'register', inviteToken }: AuthFormProps
             </svg>
             Se connecter avec Google
           </button>
-
-          {/* Bottom Link */}
           {activeTab === 'login' && (
             <p className="mt-6 text-center text-sm text-gray-600">
               Pas encore de compte ?{' '}

@@ -45,7 +45,6 @@ export class QuestionnairesController {
     );
   }
 
-
   @Get('subject/:subjectId/can-modify')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -56,7 +55,6 @@ export class QuestionnairesController {
     );
   }
 
-  
   @Patch('subject/:subjectId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -72,13 +70,11 @@ export class QuestionnairesController {
     );
   }
 
-
   @Get('public/:token')
   getByToken(@Param('token') token: string) {
     return this.questionnairesService.getByToken(token);
   }
 
- 
   @Post('public/:token/submit')
   @ApiOperation({ summary: 'Submit a questionnaire response (Public endpoint)' })
   @ApiParam({ name: 'token', description: 'Questionnaire token', example: 'abc123-def456-ghi789' })
@@ -110,7 +106,6 @@ export class QuestionnairesController {
     );
   }
 
-
   @Get(':token/qrcode')
   @ApiOperation({ summary: 'Download QR code for questionnaire' })
   @ApiParam({ name: 'token', description: 'Questionnaire token' })
@@ -130,20 +125,18 @@ export class QuestionnairesController {
     return new StreamableFile(qrCodeBuffer);
   }
 
-
   @Get('my-responses')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
   getMyResponses(@Request() req) {
-    // TODO: Vérifier le plan de l'utilisateur (pour l'instant, par défaut gratuit)
-    const isPaidPlan = false; // À remplacer par la vérification du plan Stripe
+    
+    const isPaidPlan = false; 
     return this.questionnairesService.getAllQuestionnairesWithResponses(
       req.user.userId,
       isPaidPlan
     );
   }
 
- 
   @Get(':questionnaireId/details')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.RESPONSABLE_PEDAGOGIQUE)
@@ -151,8 +144,8 @@ export class QuestionnairesController {
     @Request() req,
     @Param('questionnaireId') questionnaireId: string
   ) {
-    // TODO: Vérifier le plan de l'utilisateur (pour l'instant, par défaut gratuit)
-    const isPaidPlan = false; // À remplacer par la vérification du plan Stripe
+    
+    const isPaidPlan = false; 
     return this.questionnairesService.getQuestionnaireDetails(
       req.user.userId,
       questionnaireId,
@@ -210,12 +203,12 @@ export class QuestionnairesController {
     @Request() req,
     @Param('questionnaireId') questionnaireId: string
   ) {
-    // Récupérer les statistiques depuis la base de données
+    
     const statistics = await this.questionnairesService.getQuestionnaireStatistics(questionnaireId);
     if (statistics) {
       return statistics;
     }
-    // Si pas de statistiques, les générer
+    
     return this.aiService.generateAllStatistics(questionnaireId);
   }
 }

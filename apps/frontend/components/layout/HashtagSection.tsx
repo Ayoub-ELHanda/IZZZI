@@ -64,4 +64,3 @@ const HashtagSection = ({ backgroundClassName = "bg-white" }: { backgroundClassN
 };
 
 export default HashtagSection;
-

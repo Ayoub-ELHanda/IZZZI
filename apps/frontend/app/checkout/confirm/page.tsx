@@ -16,7 +16,7 @@ export default function ConfirmPage() {
   
   const success = searchParams.get('success') === 'true';
   const sessionId = searchParams.get('session_id');
-  // Récupérer depuis l'URL si disponible, sinon sera mis à jour depuis la session Stripe
+  
   const [classCount, setClassCount] = useState(parseInt(searchParams.get('classes') || '0'));
   const [period, setPeriod] = useState(searchParams.get('period') || 'monthly');
   const paymentMethod = searchParams.get('paymentMethod') || '**** **** **** 1234 (Visa)';
@@ -32,15 +32,12 @@ export default function ConfirmPage() {
    
         if (sessionId) {
           const response = await apiClient.post<any>('/payment/verify-session', { sessionId });
-          // Récupérer le montant et les autres infos depuis la réponse
-          console.log('Payment verification response:', response);
           if (response?.amount !== null && response?.amount !== undefined) {
             setPaymentAmount(response.amount);
           } else if (response?.totalAmount !== null && response?.totalAmount !== undefined) {
             setPaymentAmount(response.totalAmount);
           }
-          
-          // Mettre à jour classCount et period depuis la session si disponibles
+
           if (response?.classCount) {
             setClassCount(response.classCount);
           }
@@ -52,9 +49,6 @@ export default function ConfirmPage() {
         await loadUser();
         setIsRefreshing(false);
       } catch (error: any) {
-        console.error('Error verifying session:', error?.message || error);
-        
- 
         let attempts = 0;
         const maxAttempts = 5;
         const interval = setInterval(async () => {
@@ -81,11 +75,9 @@ export default function ConfirmPage() {
     return null;
   }
 
-  // Calculer le montant avec useMemo pour qu'il se mette à jour quand les données changent
   const { finalAmount, planName, formattedNextPayment } = useMemo(() => {
     const isAnnual = period === 'annual';
-    
-    // Si on a le montant depuis Stripe, l'utiliser directement (priorité absolue)
+
     if (paymentAmount !== null && paymentAmount !== undefined && paymentAmount > 0) {
       const nextPaymentDate = new Date();
       if (isAnnual) {
@@ -93,9 +85,6 @@ export default function ConfirmPage() {
       } else {
         nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
       }
-      
-      console.log('Using paymentAmount from Stripe:', paymentAmount);
-      
       return {
         finalAmount: paymentAmount,
         planName: `Super Izzzi – Paiement ${isAnnual ? 'annuel' : 'mensuel'}`,
@@ -106,10 +95,9 @@ export default function ConfirmPage() {
         })
       };
     }
-    
-    // Sinon, calculer à partir de classCount et period seulement si on a des valeurs valides
+
     if (classCount > 0) {
-      // Prix mensuel par palier (doit correspondre au backend et checkout)
+      
       let monthlyPrice: number;
       if (classCount >= 1 && classCount <= 5) {
         monthlyPrice = 19;
@@ -122,11 +110,10 @@ export default function ConfirmPage() {
       } else {
         monthlyPrice = 13;
       }
-      
-      // Calculer le prix total selon la période (doit correspondre au backend et checkout)
+
       let totalAmount: number;
       if (isAnnual) {
-        // Prix annuel avec réduction de 30% : (prix mensuel * 12) * 0.7
+        
         const annualPrice = monthlyPrice * 12;
         totalAmount = Math.round(annualPrice * 0.7);
       } else {
@@ -139,18 +126,6 @@ export default function ConfirmPage() {
       } else {
         nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
       }
-      
-      // Debug: afficher les valeurs pour comprendre le problème
-      console.log('Calculating amount from classCount:', {
-        classCount,
-        period,
-        isAnnual,
-        monthlyPrice,
-        totalAmount,
-        paymentAmount,
-        sessionId
-      });
-      
       return {
         finalAmount: totalAmount,
         planName: `Super Izzzi – Paiement ${isAnnual ? 'annuel' : 'mensuel'}`,
@@ -161,13 +136,12 @@ export default function ConfirmPage() {
         })
       };
     }
-    
-    // Valeur par défaut si aucune donnée n'est disponible
+
     const nextPaymentDate = new Date();
     nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
     
     return {
-      finalAmount: 0, // Sera mis à jour quand les données arriveront
+      finalAmount: 0, 
       planName: 'Super Izzzi – Paiement mensuel',
       formattedNextPayment: nextPaymentDate.toLocaleDateString('fr-FR', {
         day: 'numeric',
@@ -192,7 +166,6 @@ export default function ConfirmPage() {
           </p>
         </div>
 
-     
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12">
           <SubscriptionDetailsCard
             plan={planName}
@@ -204,7 +177,6 @@ export default function ConfirmPage() {
           <ActionsCard />
         </div>
 
-        
         <div 
           className="text-center font-poppins px-4"
           style={{

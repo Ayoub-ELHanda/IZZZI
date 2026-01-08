@@ -42,7 +42,6 @@ export default function PricingMensuelPage() {
               Commencez gratuitement et passez au niveau supérieur quand vous êtes prêts.
             </p>
 
-        
             <div 
               className="flex items-center mt-8 mx-auto w-full max-w-[328px] md:w-[380px] h-[67px] bg-[#FBFBFB] border border-[#E0E0E0] rounded-lg p-[10px] gap-4 md:gap-[30px]"
             >
@@ -71,8 +70,6 @@ export default function PricingMensuelPage() {
           </div>
         </div>
       </div>
-
-      {/* Pricing Cards - positionnées pour chevaucher le fond gris */}
       <div 
         className="bg-white -mt-16 md:-mt-[270px] pb-10 md:pb-20"
       >
@@ -83,8 +80,6 @@ export default function PricingMensuelPage() {
           <CardSuperIzzy isAnnual={false} isAuthenticated={isAuthenticated} />
         </div>
       </div>
-      
-      {/* Section tableau de comparaison et FAQ - uniquement pour visiteurs */}
       {!isAuthenticated && (
         <>
           <div className="bg-white py-8 md:py-16">
@@ -144,4 +139,3 @@ export default function PricingMensuelPage() {
     </div>
   );
 }
-

@@ -15,14 +15,12 @@ export function useNotifications() {
   const [isConnected, setIsConnected] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // S'assurer que le hook ne s'exécute que côté client
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Initialiser la connexion WebSocket
   useEffect(() => {
-    // Ne pas s'exécuter côté serveur
+    
     if (typeof window === 'undefined' || !isMounted) {
       return;
     }
@@ -40,59 +38,53 @@ export function useNotifications() {
     });
 
     newSocket.on('connect', () => {
-      console.log('✅ Connecté au serveur WebSocket');
       setIsConnected(true);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('❌ Déconnecté du serveur WebSocket');
       setIsConnected(false);
     });
 
     newSocket.on('new_notification', (notification: Notification) => {
-      console.log('📬 Nouvelle notification reçue:', notification);
       setNotifications((prev) => {
-        // Vérifier si la notification existe déjà (éviter les doublons)
+        
         const exists = prev.some((n) => n.id === notification.id);
         if (exists) {
-          return prev; // Ne pas ajouter de doublon
+          return prev; 
         }
         return [notification, ...prev];
       });
-      // Incrémenter seulement si la notification n'est pas lue
+      
       if (!notification.isRead) {
         setUnreadCount((prev) => prev + 1);
       }
     });
 
     newSocket.on('new_alert', (alert: Alert) => {
-      console.log('🚨 Nouvelle alerte reçue:', alert);
       setAlerts((prev) => {
-        // Vérifier si l'alerte existe déjà (mise à jour)
+        
         const existingIndex = prev.findIndex((a) => a.id === alert.id);
         if (existingIndex !== -1) {
-          // Mettre à jour l'alerte existante et la déplacer en haut de la liste
+          
           const existingAlert = prev[existingIndex];
           const wasUntreated = existingAlert.status === 'UNTREATED';
           const isNowUntreated = alert.status === 'UNTREATED';
           
           const updated = [...prev];
-          updated.splice(existingIndex, 1); // Retirer l'ancienne
-          const newAlerts = [alert, ...updated]; // Ajouter la mise à jour en haut
-          
-          // Mettre à jour le compteur seulement si le statut change
+          updated.splice(existingIndex, 1); 
+          const newAlerts = [alert, ...updated]; 
+
           if (wasUntreated && !isNowUntreated) {
-            // L'alerte était non traitée et est maintenant traitée
+            
             setUntreatedAlertCount((prev) => Math.max(0, prev - 1));
           } else if (!wasUntreated && isNowUntreated) {
-            // L'alerte était traitée et est maintenant non traitée (peu probable mais possible)
+            
             setUntreatedAlertCount((prev) => prev + 1);
           }
-          // Si le statut reste UNTREATED, ne pas changer le compteur (c'est une mise à jour)
-          
+
           return newAlerts;
         }
-        // Nouvelle alerte : ajouter en haut de la liste
+        
         if (alert.status === 'UNTREATED') {
           setUntreatedAlertCount((prev) => prev + 1);
         }
@@ -110,7 +102,6 @@ export function useNotifications() {
 
     setSocket(newSocket);
 
-    // Charger les notifications et alertes initiales
     loadNotifications();
     loadAlerts();
     loadCounts();
@@ -125,7 +116,6 @@ export function useNotifications() {
       const data = await notificationsService.getNotifications();
       setNotifications(data);
     } catch (error) {
-      console.error('Erreur lors du chargement des notifications:', error);
     }
   }, []);
 
@@ -134,7 +124,6 @@ export function useNotifications() {
       const data = await notificationsService.getAlerts();
       setAlerts(data);
     } catch (error) {
-      console.error('Erreur lors du chargement des alertes:', error);
     }
   }, []);
 
@@ -147,7 +136,6 @@ export function useNotifications() {
       setUnreadCount(unread);
       setUntreatedAlertCount(untreated);
     } catch (error) {
-      console.error('Erreur lors du chargement des compteurs:', error);
     }
   }, []);
 
@@ -161,7 +149,6 @@ export function useNotifications() {
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Erreur lors du marquage comme lu:', error);
     }
   }, []);
 
@@ -173,7 +160,6 @@ export function useNotifications() {
       );
       setUnreadCount(0);
     } catch (error) {
-      console.error('Erreur lors du marquage de toutes comme lues:', error);
     }
   }, []);
 
@@ -189,7 +175,6 @@ export function useNotifications() {
       );
       setUntreatedAlertCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Erreur lors du marquage comme traitée:', error);
     }
   }, []);
 
@@ -202,7 +187,6 @@ export function useNotifications() {
         )
       );
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du commentaire:', error);
       throw error;
     }
   }, []);
@@ -219,7 +203,7 @@ export function useNotifications() {
       return alerts
         .filter((a) => a.status === status)
         .sort((a, b) => {
-          // Trier par updatedAt ou createdAt (le plus récent en premier)
+          
           const dateA = new Date((a as any).updatedAt || a.createdAt).getTime();
           const dateB = new Date((b as any).updatedAt || b.createdAt).getTime();
           return dateB - dateA;
@@ -232,8 +216,8 @@ export function useNotifications() {
     socket,
     notifications,
     alerts,
-    unreadCount: isMounted ? unreadCount : 0, // Retourner 0 côté serveur pour éviter l'hydratation
-    untreatedAlertCount: isMounted ? untreatedAlertCount : 0, // Retourner 0 côté serveur
+    unreadCount: isMounted ? unreadCount : 0, 
+    untreatedAlertCount: isMounted ? untreatedAlertCount : 0, 
     isConnected,
     markAsRead,
     markAllAsRead,
@@ -245,4 +229,3 @@ export function useNotifications() {
     refreshAlerts: loadAlerts,
   };
 }
-

@@ -1,7 +1,6 @@
-// Entity types - Shared with backend via @izzzi/types package
+
 export * from '@izzzi/types';
 
-// Additional frontend-specific entity extensions
 export interface UserProfile {
   id: string;
   email: string;
@@ -34,7 +33,3 @@ export interface MatiereWithStats {
   createdAt: Date;
   updatedAt: Date;
 }
-
-
-
-

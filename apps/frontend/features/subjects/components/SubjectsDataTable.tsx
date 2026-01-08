@@ -28,7 +28,6 @@ export function SubjectsDataTable({ subjects, onEdit, onDelete }: SubjectsDataTa
         overflow: 'hidden',
       }}
     >
-      {/* Header */}
       <div
         style={{
           display: 'grid',
@@ -91,8 +90,6 @@ export function SubjectsDataTable({ subjects, onEdit, onDelete }: SubjectsDataTa
         </div>
         <div></div>
       </div>
-
-      {/* Rows */}
       {subjects.map((subject) => (
         <div
           key={subject.id}

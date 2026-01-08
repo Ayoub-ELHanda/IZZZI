@@ -6,9 +6,6 @@ import { UserRole, SubscriptionStatus } from '@prisma/client';
 export class SuperAdminService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Récupérer tous les utilisateurs avec filtrage par rôle
-   */
   async getAllUsers(role?: UserRole) {
     const where: any = {};
     if (role) {
@@ -51,9 +48,6 @@ export class SuperAdminService {
     return users;
   }
 
-  /**
-   * Récupérer un utilisateur par ID avec ses détails
-   */
   async getUserById(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -102,11 +96,8 @@ export class SuperAdminService {
     return user;
   }
 
-  /**
-   * Récupérer tous les professeurs pédagogiques associés à un Admin
-   */
   async getTeachersByAdmin(adminId: string) {
-    // Vérifier que l'utilisateur est un Admin
+    
     const admin = await this.prisma.user.findUnique({
       where: { id: adminId },
       select: { role: true },
@@ -120,8 +111,6 @@ export class SuperAdminService {
       throw new BadRequestException('L\'utilisateur spécifié n\'est pas un Admin');
     }
 
-    // Récupérer tous les professeurs pédagogiques qui appartiennent au même établissement
-    // ou qui ont été invités par cet Admin
     const teachers = await this.prisma.user.findMany({
       where: {
         OR: [
@@ -163,9 +152,6 @@ export class SuperAdminService {
     return teachers;
   }
 
-  /**
-   * Récupérer tous les abonnements d'un Admin
-   */
   async getAdminSubscriptions(adminId: string) {
     const admin = await this.prisma.user.findUnique({
       where: { id: adminId },
@@ -197,9 +183,6 @@ export class SuperAdminService {
     return subscriptions;
   }
 
-  /**
-   * Annuler un abonnement
-   */
   async cancelSubscription(subscriptionId: string) {
     const subscription = await this.prisma.subscription.findUnique({
       where: { id: subscriptionId },
@@ -218,7 +201,6 @@ export class SuperAdminService {
       },
     });
 
-    // Mettre à jour le statut de l'utilisateur
     await this.prisma.user.update({
       where: { id: subscription.userId },
       data: {
@@ -229,9 +211,6 @@ export class SuperAdminService {
     return updated;
   }
 
-  /**
-   * Renouveler un abonnement
-   */
   async renewSubscription(subscriptionId: string) {
     const subscription = await this.prisma.subscription.findUnique({
       where: { id: subscriptionId },
@@ -250,7 +229,6 @@ export class SuperAdminService {
       },
     });
 
-    // Mettre à jour le statut de l'utilisateur
     await this.prisma.user.update({
       where: { id: subscription.userId },
       data: {
@@ -261,10 +239,6 @@ export class SuperAdminService {
     return updated;
   }
 
-  /**
-   * Récupérer tous les abonnements actifs avec les informations utilisateur
-   * Inclut ACTIVE et TRIALING car les deux sont considérés comme des abonnements actifs
-   */
   async getAllActiveSubscriptions() {
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
@@ -292,7 +266,7 @@ export class SuperAdminService {
           orderBy: {
             createdAt: 'desc',
           },
-          take: 1, // Dernier paiement
+          take: 1, 
         },
       },
       orderBy: {
@@ -303,9 +277,6 @@ export class SuperAdminService {
     return subscriptions;
   }
 
-  /**
-   * Récupérer tous les abonnements (pour debug)
-   */
   async getAllSubscriptions() {
     const subscriptions = await this.prisma.subscription.findMany({
       include: {
@@ -339,9 +310,6 @@ export class SuperAdminService {
     return subscriptions;
   }
 
-  /**
-   * Vérifier si un utilisateur est Super Admin
-   */
   async isSuperAdmin(userId: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -351,9 +319,6 @@ export class SuperAdminService {
     return user?.role === UserRole.SUPER_ADMIN;
   }
 
-  /**
-   * Vérifier qu'un utilisateur ne peut pas modifier un Super Admin
-   */
   async ensureNotSuperAdmin(userId: string, action: string = 'modifier') {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -365,11 +330,8 @@ export class SuperAdminService {
     }
   }
 
-  /**
-   * Réassigner un RESPONSABLE_PEDAGOGIQUE à un autre ADMIN
-   */
   async reassignTeacherToAdmin(teacherId: string, newAdminId: string) {
-    // Vérifier que le teacher existe et est bien un RESPONSABLE_PEDAGOGIQUE
+    
     const teacher = await this.prisma.user.findUnique({
       where: { id: teacherId },
       select: { role: true, establishmentId: true },
@@ -383,7 +345,6 @@ export class SuperAdminService {
       throw new BadRequestException('L\'utilisateur spécifié n\'est pas un Responsable pédagogique');
     }
 
-    // Vérifier que le nouvel admin existe et est bien un ADMIN
     const newAdmin = await this.prisma.user.findUnique({
       where: { id: newAdminId },
       select: { role: true, id: true },
@@ -397,11 +358,6 @@ export class SuperAdminService {
       throw new BadRequestException('L\'utilisateur spécifié n\'est pas un Admin');
     }
 
-    // Si le teacher a un établissement, vérifier si on doit le réassigner aussi
-    // Pour l'instant, on garde l'établissement mais on change juste l'invitedBy
-    // Si nécessaire, on pourra aussi changer l'établissement plus tard
-
-    // Mettre à jour le champ invitedBy
     const updatedTeacher = await this.prisma.user.update({
       where: { id: teacherId },
       data: {
@@ -420,9 +376,6 @@ export class SuperAdminService {
     return updatedTeacher;
   }
 
-  /**
-   * Récupérer tous les ADMIN pour la sélection lors de la réassignation
-   */
   async getAllAdmins() {
     const admins = await this.prisma.user.findMany({
       where: {
@@ -454,4 +407,3 @@ export class SuperAdminService {
     return admins;
   }
 }
-

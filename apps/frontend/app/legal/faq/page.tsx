@@ -60,7 +60,6 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero Section with Search */}
       <section className="bg-[#F4F4F4] pt-32 pb-16">
         <div className="max-w-3xl mx-auto px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
@@ -80,8 +79,6 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
           </div>
         </div>
       </section>
-
-      {/* Questions fréquentes */}
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Questions fréquentes</h2>
@@ -120,13 +117,9 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
           </div>
         </div>
       </section>
-
-      {/* Autres questions */}
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">Autres questions</h2>
-          
-          {/* Tabs */}
           <div className="flex gap-6 mb-8 border-b border-gray-200">
             {Object.keys(otherQuestions).map((tab) => (
               <button
@@ -145,8 +138,6 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
               </button>
             ))}
           </div>
-
-          {/* Tab Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {otherQuestions[activeTab as keyof typeof otherQuestions].map((item) => (
               <div
@@ -184,4 +175,3 @@ Une matière est un enseignement, associé à un intervenant. Une même classe p
     </div>
   );
 }
-

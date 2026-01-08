@@ -79,7 +79,6 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           )}
         </div>
 
-
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <Link href={isArchived ? `/classes/archived/${id}` : `/classes/${id}`} prefetch={true} className="hidden sm:inline">
             <span
@@ -124,7 +123,6 @@ export function ClassCard({ id, name, description, studentCount, archivedDate, i
           </Link>
         </div>
       </div>
-
 
       {isArchived ? (
         <div className="flex justify-start items-center mt-4">

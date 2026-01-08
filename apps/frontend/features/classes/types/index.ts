@@ -1,4 +1,3 @@
-// Types et interfaces pour la feature Classes
 
 export interface ClassFormData {
   className: string;

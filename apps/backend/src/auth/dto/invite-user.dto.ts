@@ -15,4 +15,3 @@ export class InviteUserDto {
   @IsNotEmpty()
   role: 'RESPONSABLE_PEDAGOGIQUE';
 }
-

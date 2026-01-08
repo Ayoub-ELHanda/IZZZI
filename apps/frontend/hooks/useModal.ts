@@ -12,4 +12,3 @@ export function useModal() {
     onOpenChange: (value: boolean) => setOpen(value),
   };
 }
-

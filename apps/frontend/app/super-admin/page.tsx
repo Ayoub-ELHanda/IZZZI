@@ -15,21 +15,18 @@ export default function SuperAdminDashboard() {
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<ActiveSection>('users');
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Users section
+
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
   const [selectedAdminTeachers, setSelectedAdminTeachers] = useState<Teacher[]>([]);
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Subscriptions section
+
   const [selectedAdminSubscriptions, setSelectedAdminSubscriptions] = useState<Subscription[]>([]);
   const [selectedAdminId, setSelectedAdminId] = useState<string | null>(null);
   const [allActiveSubscriptions, setAllActiveSubscriptions] = useState<Subscription[]>([]);
   const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(false);
-  
-  // Reassign teacher section
+
   const [allAdmins, setAllAdmins] = useState<User[]>([]);
   const [showReassignModal, setShowReassignModal] = useState(false);
   const [teacherToReassign, setTeacherToReassign] = useState<User | null>(null);
@@ -43,7 +40,6 @@ export default function SuperAdminDashboard() {
         return;
       }
 
-      // Vérifier que l'utilisateur est Super Admin
       if (user?.role !== 'SUPER_ADMIN') {
         router.push(routes.dashboard);
         return;
@@ -52,7 +48,6 @@ export default function SuperAdminDashboard() {
       try {
         await loadUsers();
       } catch (error) {
-        console.error('Error loading data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -67,7 +62,6 @@ export default function SuperAdminDashboard() {
       const data = await superAdminService.getAllUsers(role);
       setUsers(data);
     } catch (error) {
-      console.error('Error loading users:', error);
     }
   };
 
@@ -75,8 +69,7 @@ export default function SuperAdminDashboard() {
     try {
       const details = await superAdminService.getUserById(userId);
       setSelectedUser(details);
-      
-      // Si c'est un Admin, charger ses professeurs
+
       if (details.role === 'ADMIN') {
         const teachers = await superAdminService.getTeachersByAdmin(userId);
         setSelectedAdminTeachers(teachers);
@@ -86,7 +79,6 @@ export default function SuperAdminDashboard() {
         setSelectedAdminId(null);
       }
     } catch (error) {
-      console.error('Error loading user details:', error);
     }
   };
 
@@ -95,7 +87,6 @@ export default function SuperAdminDashboard() {
       const subscriptions = await superAdminService.getAdminSubscriptions(adminId);
       setSelectedAdminSubscriptions(subscriptions);
     } catch (error) {
-      console.error('Error loading subscriptions:', error);
     }
   };
 
@@ -147,7 +138,6 @@ export default function SuperAdminDashboard() {
       const subscriptions = await superAdminService.getAllActiveSubscriptions();
       setAllActiveSubscriptions(subscriptions);
     } catch (error) {
-      console.error('Error loading active subscriptions:', error);
     } finally {
       setIsLoadingSubscriptions(false);
     }
@@ -164,7 +154,6 @@ export default function SuperAdminDashboard() {
       const admins = await superAdminService.getAllAdmins();
       setAllAdmins(admins);
     } catch (error) {
-      console.error('Error loading admins:', error);
     }
   };
 
@@ -185,8 +174,7 @@ export default function SuperAdminDashboard() {
     try {
       setIsReassigning(true);
       await superAdminService.reassignTeacherToAdmin(teacherToReassign.id, selectedNewAdminId);
-      
-      // Recharger les données
+
       if (selectedUser?.role === 'ADMIN' && selectedUser.id) {
         await loadUserDetails(selectedUser.id);
       }
@@ -269,7 +257,6 @@ export default function SuperAdminDashboard() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-      {/* Header */}
       <div className="bg-white border-b" style={{ borderColor: '#E5E5E5' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-3xl font-bold" style={{ color: '#2F2E2C' }}>Dashboard Super Admin</h1>
@@ -278,7 +265,6 @@ export default function SuperAdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation Tabs */}
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
@@ -335,11 +321,8 @@ export default function SuperAdminDashboard() {
             </nav>
           </div>
         </div>
-
-        {/* Users Section */}
         {activeSection === 'users' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Users List */}
             <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold" style={{ color: '#2F2E2C' }}>Tous les utilisateurs</h2>
@@ -438,8 +421,6 @@ export default function SuperAdminDashboard() {
                 ))}
               </div>
             </div>
-
-            {/* User Details */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               {selectedUser ? (
                 <div>
@@ -559,7 +540,6 @@ export default function SuperAdminDashboard() {
           </div>
         )}
 
-        {/* Subscriptions Section */}
         {activeSection === 'subscriptions' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-6" style={{ color: '#2F2E2C' }}>Tous les abonnements actifs</h2>
@@ -688,7 +668,6 @@ export default function SuperAdminDashboard() {
           </div>
         )}
 
-        {/* Billing Section */}
         {activeSection === 'billing' && (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-6" style={{ color: '#2F2E2C' }}>Facturation</h2>
@@ -701,7 +680,6 @@ export default function SuperAdminDashboard() {
         )}
       </div>
 
-      {/* Modal de réassignation */}
       {showReassignModal && teacherToReassign && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
@@ -785,4 +763,3 @@ export default function SuperAdminDashboard() {
     </div>
   );
 }
-

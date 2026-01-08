@@ -18,7 +18,6 @@ export class SubjectsService {
       throw new ForbiddenException('User not found');
     }
 
-   
     const whereClause: any = { id: dto.classId };
     if (user.establishmentId) {
       whereClause.establishmentId = user.establishmentId;
@@ -123,7 +122,6 @@ export class SubjectsService {
       throw new NotFoundException('Subject not found');
     }
 
-
     if (user.establishmentId && subject.class.establishmentId !== user.establishmentId) {
       throw new NotFoundException('Subject not found');
     }
@@ -150,7 +148,6 @@ export class SubjectsService {
 
   async remove(id: string, userId: string) {
     const subject = await this.findOne(id, userId);
-
 
     const responseCount = await this.prisma.response.count({
       where: {

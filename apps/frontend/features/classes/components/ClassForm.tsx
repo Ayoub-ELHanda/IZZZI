@@ -65,7 +65,6 @@ export function ClassForm({
             </div>
           )}
 
- 
           <h2
             className="font-mochiy mx-auto"
             style={{
@@ -82,7 +81,6 @@ export function ClassForm({
             {mode === 'edit' ? 'Modifier la classe' : 'Informations de la classe'}
           </h2>
 
-    
           {mode === 'create' && (
             <div
               className="absolute"

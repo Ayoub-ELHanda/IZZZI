@@ -38,10 +38,8 @@ export class AuthService {
       throw new ConflictException('Un utilisateur avec cet email existe déjà');
     }
 
-
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
- 
     const trialEndDate = new Date();
     trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
@@ -54,7 +52,6 @@ export class AuthService {
         },
       });
 
-    
       const user = await prisma.user.create({
         data: {
           email: dto.email,
@@ -68,7 +65,6 @@ export class AuthService {
         },
       });
 
-      
       await prisma.establishment.update({
         where: { id: establishment.id },
         data: { createdBy: user.id },
@@ -77,16 +73,11 @@ export class AuthService {
       return { user, establishment };
     });
 
-    
     const token = await this.generateToken(result.user.id, result.user.email, result.user.role);
 
-   
     try {
       await this.mailerService.sendWelcomeEmail(result.user.email, result.user.firstName);
-      console.log(`✅ Welcome email sent successfully to ${result.user.email}`);
     } catch (error) {
-      console.error(`❌ Failed to send welcome email to ${result.user.email}:`, error);
-
     }
 
     return {
@@ -115,7 +106,6 @@ export class AuthService {
       throw new BadRequestException('Un administrateur peut uniquement inviter des responsables pédagogiques');
     }
 
-   
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -126,7 +116,6 @@ export class AuthService {
 
     const inviteToken = randomBytes(32).toString('hex');
 
-    
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -144,7 +133,6 @@ export class AuthService {
 
     InvitationStore.create(invitation);
 
-
     const inviterName = `${inviter.firstName} ${inviter.lastName}`;
     try {
       await this.mailerService.sendInvitationEmail(
@@ -152,15 +140,12 @@ export class AuthService {
         inviterName,
         inviteToken,
       );
-      
-  
+
       await this.mailerService.sendInvitationConfirmationEmail(
         inviter.email,
         dto.email,
       );
     } catch (error) {
-      console.error('Error sending invitation email (non-blocking):', error);
-  
     }
 
     return {
@@ -176,7 +161,6 @@ export class AuthService {
       throw new BadRequestException('Le lien d\'invitation est invalide ou expiré');
     }
 
-  
     return {
       email: invitation.email,
       firstName: invitation.firstName,
@@ -193,11 +177,9 @@ export class AuthService {
       throw new BadRequestException('Le lien d\'invitation est invalide ou expiré');
     }
 
-
     if (invitation.email !== dto.email) {
       throw new BadRequestException('L\'email ne correspond pas à l\'invitation');
     }
-
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
@@ -212,7 +194,6 @@ export class AuthService {
     const trialEndDate = new Date();
     trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
-
     const establishmentUsersWithSubscription = await this.prisma.user.findFirst({
       where: {
         establishmentId: invitation.establishmentId,
@@ -225,7 +206,6 @@ export class AuthService {
       },
     });
 
-   
     const subscriptionStatus = establishmentUsersWithSubscription 
       ? establishmentUsersWithSubscription.subscriptionStatus 
       : 'FREE';
@@ -241,29 +221,20 @@ export class AuthService {
         invitedBy: invitation.invitedBy,
         authProvider: 'LOCAL',
         trialEndDate: trialEndDate,
-        subscriptionStatus: subscriptionStatus, // ✅ Hériter du statut de l'établissement
+        subscriptionStatus: subscriptionStatus, 
       },
       include: { establishment: true },
     });
 
-
     InvitationStore.delete(dto.inviteToken);
-
 
     const token = await this.generateToken(user.id, user.email, user.role);
 
-
     try {
       await this.mailerService.sendWelcomeEmail(user.email, user.firstName);
-      console.log(`✅ Welcome email sent successfully to ${user.email}`);
-      
-     
       if (subscriptionStatus === 'ACTIVE') {
-        console.log(`✅ User inherited ACTIVE subscription from establishment ${invitation.establishmentId}`);
       }
     } catch (error) {
-      console.error(`❌ Failed to send welcome email to ${user.email}:`, error);
-     
     }
 
     return {
@@ -290,7 +261,6 @@ export class AuthService {
       );
     }
 
-
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPasswordValid) {
@@ -300,7 +270,6 @@ export class AuthService {
     if (!user.isActive) {
       throw new UnauthorizedException('Ce compte a été désactivé');
     }
-
 
     const token = await this.generateToken(user.id, user.email, user.role);
 
@@ -316,7 +285,6 @@ export class AuthService {
       where: { email: dto.email },
     });
 
-
     if (!user) {
       return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
     }
@@ -324,7 +292,6 @@ export class AuthService {
     if (!user.password) {
       return { message: 'Ce compte utilise Google OAuth et n\'a pas de mot de passe' };
     }
-
 
     const resetToken = randomBytes(32).toString('hex');
     const hashedToken = await bcrypt.hash(resetToken, 10);
@@ -340,8 +307,7 @@ export class AuthService {
       },
     });
 
-
-    this.mailerService.sendPasswordResetEmail(user.email, resetToken).catch(console.error);
+    this.mailerService.sendPasswordResetEmail(user.email, resetToken).catch(() => {});
 
     return { message: 'Si cet email existe, un lien de réinitialisation a été envoyé' };
   }
@@ -360,17 +326,14 @@ export class AuthService {
       throw new BadRequestException('Le lien de réinitialisation est invalide ou expiré');
     }
 
-
     const isTokenValid = await bcrypt.compare(dto.token, user.resetPasswordToken);
 
     if (!isTokenValid) {
       throw new BadRequestException('Le lien de réinitialisation est invalide ou expiré');
     }
 
-
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
@@ -401,7 +364,6 @@ export class AuthService {
           'Un compte avec cet email existe déjà. Veuillez vous connecter avec votre mot de passe.',
         );
       }
-
 
       throw new BadRequestException(
         'Veuillez d\'abord créer un compte avant de vous connecter avec Google',
@@ -459,7 +421,6 @@ export class AuthService {
       }
     }
 
-    // Update user
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -470,7 +431,6 @@ export class AuthService {
       },
       include: { establishment: true },
     });
-
 
     if (dto.establishmentName && user.establishmentId) {
       await this.prisma.establishment.update({
@@ -500,7 +460,6 @@ export class AuthService {
       throw new BadRequestException('Ce compte utilise Google OAuth et n\'a pas de mot de passe');
     }
 
-   
     const isPasswordValid = await bcrypt.compare(dto.oldPassword, user.password);
 
     if (!isPasswordValid) {
@@ -532,7 +491,6 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('Utilisateur introuvable');
     }
-
 
     if (user.establishment && user.establishment.createdBy === userId) {
 

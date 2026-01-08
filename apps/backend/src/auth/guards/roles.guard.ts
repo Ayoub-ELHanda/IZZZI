@@ -15,7 +15,6 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    // Le Super Admin a accès à toutes les routes
     if (user?.role === UserRole.SUPER_ADMIN) {
       return true;
     }
@@ -23,4 +22,3 @@ export class RolesGuard implements CanActivate {
     return requiredRoles.some((role) => user?.role === role);
   }
 }
-

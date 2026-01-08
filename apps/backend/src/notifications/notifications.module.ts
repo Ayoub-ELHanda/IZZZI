@@ -25,4 +25,3 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   exports: [NotificationsService, NotificationsGateway],
 })
 export class NotificationsModule {}
-

@@ -1,7 +1,6 @@
-// Data Transfer Objects
+
 export * from '@izzzi/types';
 
-// Additional frontend-specific DTOs
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -25,7 +24,3 @@ export interface FilterParams {
   endDate?: string;
   status?: string;
 }
-
-
-
-

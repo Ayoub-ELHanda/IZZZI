@@ -71,8 +71,6 @@ export interface Avis {
   studentPseudo?: string;
   createdAt: Date;
 }
-
-// DTOs for API requests/responses
 export interface CreateClasseDto {
   name: string;
 }
@@ -99,8 +97,6 @@ export interface RegisterDto {
   firstName: string;
   lastName: string;
 }
-
-
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;

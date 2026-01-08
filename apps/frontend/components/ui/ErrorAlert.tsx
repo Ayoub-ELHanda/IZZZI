@@ -67,4 +67,3 @@ export function ErrorAlert({ title, message, errors }: ErrorAlertProps) {
     </div>
   );
 }
-

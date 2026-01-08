@@ -57,14 +57,12 @@ export default function ProfilePage() {
           const profile = await authService.getProfile();
           setUser(profile);
         } catch (error) {
-          console.error('Error refreshing profile:', error);
         }
       } else {
         try {
           const profile = await authService.getProfile();
           setUser(profile);
         } catch (error) {
-          console.error('Error loading profile:', error);
           router.push(routes.auth.login);
         } finally {
           setIsLoading(false);
@@ -163,7 +161,7 @@ export default function ProfilePage() {
     setAvatarUploadError(null);
 
     try {
-      // Simulate upload progress
+      
       const progressInterval = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev >= 90) {
@@ -174,7 +172,6 @@ export default function ProfilePage() {
         });
       }, 200);
 
-      // Convert to base64 for now
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -280,9 +277,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-3" style={{ alignItems: 'start' }}>
-            {/* Left Column */}
             <div className="flex flex-col gap-6 md:gap-6">
-              {/* Profile Card */}
               <div
                 className="p-6 md:p-12"
                 style={{
@@ -425,8 +420,6 @@ export default function ProfilePage() {
                   <ArrowUpRight size={16} />
                 </Button>
               </div>
-
-              {/* Billing Management Card */}
               {isAdmin && (
                 <div
                   className="p-6 md:p-12"
@@ -524,10 +517,7 @@ export default function ProfilePage() {
               )}
 
             </div>
-
-            {/* Middle Column - Profile Form & Invite User */}
             <div className="flex flex-col gap-6 md:gap-6">
-              {/* Profile Form */}
               <div
                 className="p-6 md:p-14"
                 style={{
@@ -573,8 +563,6 @@ export default function ProfilePage() {
                   />
                 </div>
               </div>
-
-              {/* Invite User Card - Only for Admin */}
               {isAdmin && (
                 <div
                   className="p-6 md:p-12"
@@ -639,10 +627,7 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-
-            {/* Right Column - Password Form & Delete Account */}
             <div className="flex flex-col gap-6 md:gap-6">
-              {/* Password Form */}
               <div
                 className="p-6 md:p-14"
                 style={{
@@ -684,8 +669,6 @@ export default function ProfilePage() {
                   />
                 </div>
               </div>
-
-              {/* Delete Account Card */}
               <div
                 className="p-6 md:p-12"
                 style={{
@@ -771,7 +754,7 @@ export default function ProfilePage() {
         isOpen={inviteUserModal.open}
         onClose={inviteUserModal.onClose}
         onSuccess={() => {
-          // Optionally refresh data or show success message
+          
         }}
       />
     </>

@@ -97,7 +97,6 @@ export function NotificationsModal({ isOpen, onClose }: NotificationsModalProps)
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             padding: '24px',
@@ -133,8 +132,6 @@ export function NotificationsModal({ isOpen, onClose }: NotificationsModalProps)
             <X size={24} color="#2F2E2C" />
           </button>
         </div>
-
-        {/* Tabs */}
         <div
           style={{
             padding: '0 24px',
@@ -180,8 +177,6 @@ export function NotificationsModal({ isOpen, onClose }: NotificationsModalProps)
             Lues
           </button>
         </div>
-
-        {/* Mark all as read button */}
         {activeTab === 'unread' && unreadNotifications.length > 0 && (
           <div
             style={{
@@ -212,8 +207,6 @@ export function NotificationsModal({ isOpen, onClose }: NotificationsModalProps)
             </button>
           </div>
         )}
-
-        {/* Notifications List */}
         <div
           style={{
             flex: 1,
@@ -327,6 +320,3 @@ export function NotificationsModal({ isOpen, onClose }: NotificationsModalProps)
     </div>
   );
 }
-
-
-

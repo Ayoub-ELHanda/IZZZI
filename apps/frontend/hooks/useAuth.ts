@@ -1,4 +1,4 @@
-// Custom authentication hook
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -13,8 +13,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
-  // Actions
+
   login: (credentials: LoginDto) => Promise<void>;
   register: (data: RegisterDto) => Promise<void>;
   logout: () => Promise<void>;
@@ -76,7 +75,7 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
           });
         } catch (error) {
-          // Even if logout fails on server, clear local state
+          
           set({
             user: null,
             isAuthenticated: false,
@@ -119,7 +118,6 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-// Wrapper hook that handles hydration properly to avoid SSR mismatches
 export function useAuth() {
   const store = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
@@ -127,17 +125,15 @@ export function useAuth() {
 
   useEffect(() => {
     setIsMounted(true);
-    // Only check once on mount
+    
     if (!hasCheckedRef.current && authService.isAuthenticated() && !store.isAuthenticated) {
       hasCheckedRef.current = true;
       store.loadUser();
     }
-  }, []); // Empty dependency array - only run once
+  }, []); 
 
-  // During SSR and initial render, check localStorage for auth state
-  // Zustand persist should hydrate automatically, but we check localStorage as fallback
   if (!isMounted) {
-    // Check if user is authenticated in localStorage to avoid flash of "Se connecter"
+    
     let initialAuth = false;
     let initialUser = null;
     if (typeof window !== 'undefined') {
@@ -150,12 +146,12 @@ export function useAuth() {
             initialUser = parsed.state.user || null;
           }
         }
-        // Also check if token exists as fallback
+        
         if (!initialAuth && authService.isAuthenticated()) {
           initialAuth = true;
         }
       } catch (e) {
-        // Ignore parse errors
+        
       }
     }
 

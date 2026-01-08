@@ -12,25 +12,20 @@ export function FormPreview({ formType }: FormPreviewProps) {
     return <BasicFormPreview />;
   }
 
-
   if (formType === 'technical') {
     return <TechnicalFormPreview />;
   }
 
- 
   if (formType === 'soft-skills') {
     return <SoftSkillsFormPreview />;
   }
-
 
   if (formType === 'logiciel') {
     return <LogicielFormPreview />;
   }
 
- 
   return <BasicFormPreview />;
 }
-
 
 function BasicFormPreview() {
   return (
@@ -65,7 +60,6 @@ function BasicFormPreview() {
     </div>
   );
 }
-
 
 function TechnicalFormPreview() {
   return (
@@ -122,7 +116,6 @@ function TechnicalFormPreview() {
   );
 }
 
-
 function SoftSkillsFormPreview() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxHeight: '580px', overflowY: 'auto' }}>
@@ -178,7 +171,6 @@ function SoftSkillsFormPreview() {
   );
 }
 
-
 function LogicielFormPreview() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxHeight: '580px', overflowY: 'auto' }}>
@@ -233,7 +225,6 @@ function LogicielFormPreview() {
     </div>
   );
 }
-
 
 function PreviewCard({ title, children }: { title?: string; children: React.ReactNode }) {
   return (

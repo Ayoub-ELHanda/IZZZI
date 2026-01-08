@@ -18,7 +18,6 @@ export default function ForgotPasswordPage() {
       await authService.forgotPassword(email);
       setIsEmailSent(true);
     } catch (error: any) {
-      console.error('Forgot password error:', error);
       alert(error.message || 'Une erreur est survenue');
     } finally {
       setIsLoading(false);
@@ -29,7 +28,6 @@ export default function ForgotPasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <div className="flex justify-center mb-8">
             <Image
               src="/logo-izzzi.svg"
@@ -39,8 +37,6 @@ export default function ForgotPasswordPage() {
               className="h-auto w-auto"
             />
           </div>
-
-          {/* Success Card */}
           <div className="bg-white rounded-2xl shadow-sm p-8">
             <div className="mb-6">
               <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
@@ -88,7 +84,6 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image
             src="/logo-izzzi.svg"
@@ -98,8 +93,6 @@ export default function ForgotPasswordPage() {
             className="h-auto w-auto"
           />
         </div>
-
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Mot de passe oublié</h2>
           <p className="text-sm text-gray-600 mb-6">Saisissez votre adresse email</p>

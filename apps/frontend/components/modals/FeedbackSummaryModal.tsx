@@ -27,7 +27,7 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
     if (isOpen && questionnaireId) {
       loadSummary();
     } else {
-      // Reset state when modal closes
+      
       setSummary(null);
       setError(null);
     }
@@ -43,7 +43,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
       );
       setSummary(data);
     } catch (err: any) {
-      console.error('Error loading summary:', err);
       setError(err.message || 'Erreur lors du chargement de la synthèse');
     } finally {
       setIsLoading(false);
@@ -55,11 +54,11 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
-        return '#10B981'; // green
+        return '#10B981'; 
       case 'negative':
-        return '#EF4444'; // red
+        return '#EF4444'; 
       default:
-        return '#6B7280'; // gray
+        return '#6B7280'; 
     }
   };
 
@@ -104,7 +103,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button - Top right */}
         <button
           onClick={onClose}
           style={{
@@ -123,8 +121,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
         >
           <X size={20} color="#2F2E2C" />
         </button>
-
-        {/* Header */}
         <div
           style={{
             padding: '24px 24px 16px 24px',
@@ -133,7 +129,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
             gap: '12px',
           }}
         >
-          {/* Document icon */}
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <polyline points="14 2 14 8 20 8" stroke="#2F2E2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -156,8 +151,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
             Synthèse des retours
           </h2>
         </div>
-
-        {/* Content */}
         <div
           style={{
             padding: '0 24px',
@@ -234,7 +227,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
                 marginBottom: '16px',
               }}
             >
-              {/* Simple text block like image 2 */}
               <p
                 style={{
                   fontFamily: 'Poppins, sans-serif',
@@ -250,8 +242,6 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
             </div>
           ) : null}
         </div>
-
-        {/* Footer */}
         <div
           style={{
             padding: '16px 24px 24px 24px',
@@ -288,4 +278,3 @@ export function FeedbackSummaryModal({ isOpen, onClose, questionnaireId }: Feedb
     </div>
   );
 }
-

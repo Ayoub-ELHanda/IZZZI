@@ -35,7 +35,7 @@ export class AIService {
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
-    // Accepter OPENAI_API_KEY ou SYNTHESIS_API_KEY
+    
     const apiKey = this.configService.get<string>('OPENAI_API_KEY') || 
                    this.configService.get<string>('SYNTHESIS_API_KEY');
     if (apiKey) {
@@ -48,12 +48,8 @@ export class AIService {
     }
   }
 
-  /**
-   * Générer une synthèse AI des retours pour un questionnaire
-   * Retourne la synthèse existante si elle existe, sinon en génère une nouvelle
-   */
   async generateFeedbackSummary(questionnaireId: string, forceRegenerate: boolean = false): Promise<FeedbackSummary> {
-    // Vérifier si une synthèse existe déjà
+    
     if (!forceRegenerate) {
       const existingSummary = await this.prisma.feedbackSummary.findUnique({
         where: { questionnaireId },
@@ -75,7 +71,6 @@ export class AIService {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Récupérer le questionnaire avec toutes les réponses
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { id: questionnaireId },
       include: {
@@ -111,7 +106,6 @@ export class AIService {
       };
     }
 
-    // Calculer les statistiques
     const totalResponses = questionnaire.responses.length;
     const averageRating = questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) / totalResponses;
     const ratingDistribution = [1, 2, 3, 4, 5].map((rating) => ({
@@ -119,7 +113,6 @@ export class AIService {
       count: questionnaire.responses.filter((r) => r.rating === rating).length,
     }));
 
-    // Préparer les données pour l'IA
     const comments = questionnaire.responses
       .filter((r) => r.comment)
       .map((r) => ({
@@ -135,7 +128,6 @@ export class AIService {
       questionnaireType: questionnaire.type,
     };
 
-    // Construire le prompt pour OpenAI
     const prompt = this.buildPrompt(courseInfo, totalResponses, averageRating, ratingDistribution, comments);
 
     try {
@@ -172,7 +164,6 @@ export class AIService {
         pedagogicalAlerts: parsedResponse.pedagogicalAlerts || [],
       };
 
-      // Stocker la synthèse en base de données
       await this.prisma.feedbackSummary.upsert({
         where: { questionnaireId },
         update: {
@@ -202,15 +193,11 @@ export class AIService {
     }
   }
 
-  /**
-   * Générer des statistiques IA pour la page des retours
-   */
   async generateStatistics(questionnaireId: string): Promise<AIStatistics> {
     if (!this.openai) {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Récupérer le questionnaire avec toutes les réponses
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { id: questionnaireId },
       include: {
@@ -246,11 +233,9 @@ export class AIService {
       };
     }
 
-    // Calculer les statistiques de base
     const totalResponses = questionnaire.responses.length;
     const averageRating = questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) / totalResponses;
 
-    // Extraire les commentaires et analyser le contenu JSON si présent
     const comments = questionnaire.responses
       .filter((r) => r.comment)
       .map((r) => {
@@ -322,7 +307,7 @@ export class AIService {
     averageRating: number,
     comments: any[],
   ): string {
-    // Extraire les données structurées des commentaires JSON
+    
     const theoryPracticeData = comments
       .filter((c) => c.parsed && c.parsed.ratioTheoriePratique)
       .map((c) => c.parsed.ratioTheoriePratique);
@@ -402,15 +387,11 @@ Génère une analyse complète au format JSON avec les champs suivants :
 Réponds uniquement avec le JSON, sans texte supplémentaire.`;
   }
 
-  /**
-   * Générer toutes les statistiques IA pour un questionnaire
-   */
   async generateAllStatistics(questionnaireId: string): Promise<any> {
     if (!this.openai) {
       throw new Error('OpenAI API key not configured');
     }
 
-    // Récupérer le questionnaire avec toutes les réponses
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { id: questionnaireId },
       include: {
@@ -466,7 +447,6 @@ Réponds uniquement avec le JSON, sans texte supplémentaire.`;
 
       const parsedResponse = JSON.parse(responseContent);
 
-      // Stocker les statistiques en base de données
       await this.prisma.questionnaireStatistics.upsert({
         where: { questionnaireId },
         update: {
@@ -565,4 +545,3 @@ Réponds uniquement avec le JSON, sans texte supplémentaire.`;
     };
   }
 }
-

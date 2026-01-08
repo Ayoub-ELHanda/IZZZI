@@ -29,7 +29,6 @@ export function useCreateClass() {
       router.push(`/create-subject?classId=${newClass.id}`);
       return newClass;
     } catch (error: any) {
-      console.error('Error creating class:', error);
       toast.error(error.message || 'Erreur lors de la création de la classe');
       throw error;
     } finally {

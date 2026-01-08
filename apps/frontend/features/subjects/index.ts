@@ -1,4 +1,4 @@
-// Subjects feature exports
+
 export * from './types';
 export * from './hooks/useCreateSubject';
 export * from './components/SubjectForm';

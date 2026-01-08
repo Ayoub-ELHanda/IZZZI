@@ -1,4 +1,4 @@
-// Button component with extensive Figma-based variants
+
 import * as React from 'react';
 import { cn } from '@/lib/utils/cn';
 
@@ -90,7 +90,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       full: 'rounded-full',
     };
 
-    // Styles spéciaux pour variantes Figma spécifiques
     const getSpecialStyles = () => {
       const styles: React.CSSProperties = {};
       

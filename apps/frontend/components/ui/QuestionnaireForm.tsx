@@ -23,7 +23,6 @@ export function QuestionnaireForm({ token, formType }: QuestionnaireFormProps) {
     return <SuccessMessage />;
   }
 
-  // Rendu des différents types de formulaires
   if (formType === 'BASIC' || formType === 'basic') {
     return <BasicForm token={token} setHasAlreadyResponded={setHasAlreadyResponded} />;
   }
@@ -40,11 +39,9 @@ export function QuestionnaireForm({ token, formType }: QuestionnaireFormProps) {
     return <LogicielForm token={token} setHasAlreadyResponded={setHasAlreadyResponded} />;
   }
 
-  // Par défaut, afficher le formulaire BASIC
   return <BasicForm token={token} setHasAlreadyResponded={setHasAlreadyResponded} />;
 }
 
-// MESSAGE DE SUCCÈS
 function SuccessMessage() {
   return (
     <div
@@ -72,7 +69,6 @@ function SuccessMessage() {
   );
 }
 
-// FORMULAIRE BASIC
 function BasicForm({ token, setHasAlreadyResponded }: { token: string; setHasAlreadyResponded: (value: boolean) => void }) {
   const [globalRating, setGlobalRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
@@ -129,7 +125,6 @@ function BasicForm({ token, setHasAlreadyResponded }: { token: string; setHasAlr
   );
 }
 
-// FORMULAIRE TECHNICAL
 function TechnicalForm({ token, setHasAlreadyResponded }: { token: string; setHasAlreadyResponded: (value: boolean) => void }) {
   const [globalRating, setGlobalRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
@@ -317,7 +312,6 @@ function SoftSkillsForm({ token, setHasAlreadyResponded }: { token: string; setH
     </form>
   );
 }
-
 
 function LogicielForm({ token, setHasAlreadyResponded }: { token: string; setHasAlreadyResponded: (value: boolean) => void }) {
   const [globalRating, setGlobalRating] = useState(0);

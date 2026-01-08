@@ -14,7 +14,6 @@ interface CardSuperIzzyProps {
 
 export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: CardSuperIzzyProps) {
   const [classCount, setClassCount] = useState(7);
-  
 
   let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
@@ -28,10 +27,8 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
   } else {
     monthlyPrice = 13;
   }
-  
 
   const annualPrice = Math.round(monthlyPrice * 0.7);
-  
 
   const displayPrice = isAnnual ? annualPrice : monthlyPrice;
   return (
@@ -51,14 +48,12 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
           </span>
         </div>
       </div>
-      
-   
+
       <div className="mb-8">
         <h3 className="font-poppins font-bold text-sm md:text-base leading-none text-[#2F2E2C] mb-4">
           Estimez le prix de votre abonnement
         </h3>
-        
- 
+
         <div className="mb-8">
      
           <div className="mb-4">
@@ -80,8 +75,7 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
               </div>
             </div>
           </div>
-          
-         
+
           <div className="mb-6">
             {classCount <= 20 ? (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
@@ -147,8 +141,7 @@ export function CardSuperIzzy({ isAnnual = true, isAuthenticated = false }: Card
           )}
         </div>
       </div>
-      
- 
+
       <div className="flex flex-col gap-3">
         <h3 className="font-poppins text-sm md:text-base font-bold text-[#2F2E2C] leading-none mb-4">
           Tout ce qu&apos;il y a dans le plan gratuit,<br className="hidden md:block"/>

@@ -15,7 +15,6 @@ export function ActionsCard() {
         gap: '32px'
       }}
     >
-      {/* Titre */}
       <h2 
         className="font-mochiy"
         style={{
@@ -26,8 +25,6 @@ export function ActionsCard() {
       >
         Ce que vous pouvez faire maintenant
       </h2>
-
-      {/* Liste des actions */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: '2px' }}>
@@ -63,10 +60,7 @@ export function ActionsCard() {
           </span>
         </div>
       </div>
-
-      {/* Boutons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* Bouton 1: Accéder à mon dashboard */}
         <Link href="/dashboard" style={{ textDecoration: 'none', width: '100%' }}>
           <button
             className="w-full"
@@ -91,8 +85,6 @@ export function ActionsCard() {
             <ArrowUpRight size={18} />
           </button>
         </Link>
-
-        {/* Bouton 2: Télécharger ma facture */}
         <button
           className="w-full"
           style={{

@@ -20,7 +20,6 @@ export class QuestionnairesService {
     private readonly aiService: AIService
   ) {}
 
- 
   async createQuestionnaires(userId: string, dto: CreateQuestionnairesDto) {
   
     const subject = await this.prisma.subject.findFirst({
@@ -34,7 +33,6 @@ export class QuestionnairesService {
       throw new ForbiddenException('Subject not found or access denied');
     }
 
-    
     const existingQuestionnaires = await this.prisma.questionnaire.findMany({
       where: { subjectId: dto.subjectId },
     });
@@ -43,7 +41,6 @@ export class QuestionnairesService {
       throw new ForbiddenException('Questionnaires already exist for this subject');
     }
 
-  
     const duringCourseToken = randomUUID();
     const afterCourseToken = randomUUID();
 
@@ -86,7 +83,6 @@ export class QuestionnairesService {
     };
   }
 
-
   async updateQuestionnaires(userId: string, subjectId: string, dto: UpdateQuestionnairesDto) {
    
     const subject = await this.prisma.subject.findFirst({
@@ -115,7 +111,6 @@ export class QuestionnairesService {
       throw new NotFoundException('No questionnaires found for this subject');
     }
 
-
     const hasResponses = subject.questionnaires.some(
       (q) => q._count.responses > 0
     );
@@ -135,7 +130,6 @@ export class QuestionnairesService {
       },
     });
 
-
     return this.prisma.questionnaire.findMany({
       where: {
         subjectId: subjectId,
@@ -150,8 +144,6 @@ export class QuestionnairesService {
     });
   }
 
-
-   
   async canModifyQuestionnaires(userId: string, subjectId: string) {
     const subject = await this.prisma.subject.findFirst({
       where: {
@@ -189,7 +181,6 @@ export class QuestionnairesService {
     };
   }
 
-
   async generateQRCode(token: string): Promise<Buffer> {
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { token },
@@ -199,7 +190,6 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire not found');
     }
 
-    
     const url = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/questionnaire/${token}`;
 
     const qrCodeBuffer = await QRCode.toBuffer(url, {
@@ -210,7 +200,6 @@ export class QuestionnairesService {
 
     return qrCodeBuffer;
   }
-
 
   async getByToken(token: string) {
     const questionnaire = await this.prisma.questionnaire.findUnique({
@@ -271,7 +260,6 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire introuvable ou inactif');
     }
 
-
     const studentEmails = questionnaire.subject.class.studentEmails || [];
     const isAnonymousEmail = email.endsWith('@questionnaire.com');
     
@@ -292,7 +280,6 @@ export class QuestionnairesService {
       throw new BadRequestException('Vous avez déjà répondu à ce questionnaire');
     }
 
-
     const response = await this.prisma.response.create({
       data: {
         questionnaireId: questionnaire.id,
@@ -303,16 +290,12 @@ export class QuestionnairesService {
       },
     });
 
-    // Vérifier et générer des alertes après la soumission
     await this.checkAndGenerateAlerts(questionnaire.id);
 
-    // Générer automatiquement toutes les statistiques IA après chaque nouveau retour
     this.aiService.generateAllStatistics(questionnaire.id)
       .then(() => {
-        console.log(`Statistics generated for questionnaire ${questionnaire.id} after new response`);
       })
       .catch((error) => {
-        console.error(`Failed to generate statistics for questionnaire ${questionnaire.id}: ${error.message}`);
       });
 
     return {
@@ -325,7 +308,6 @@ export class QuestionnairesService {
       },
     };
   }
-
 
   private async checkAndGenerateAlerts(questionnaireId: string) {
     const questionnaire = await this.prisma.questionnaire.findUnique({
@@ -351,24 +333,22 @@ export class QuestionnairesService {
       questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) /
       totalResponses;
 
-    // 🔥 NOUVELLE LOGIQUE: Créer des alertes dès la première réponse
     let shouldCreateAlert = false;
     let alertType: NotificationType = NotificationType.ALERT_POSITIVE;
     let message = '';
 
-    // Cas 1: Score faible détecté (dès la première réponse)
     if (averageRating < 3.5) {
       shouldCreateAlert = true;
       alertType = NotificationType.ALERT_NEGATIVE;
       message = `⚠️ Score faible détecté sur le cours "${questionnaire.subject.name}" de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 sur ${totalResponses} retour${totalResponses > 1 ? 's' : ''}).`;
     }
-    // Cas 2: Excellent score (dès 3 réponses minimum)
+    
     else if (averageRating >= 4.5 && totalResponses >= 3) {
       shouldCreateAlert = true;
       alertType = NotificationType.ALERT_POSITIVE;
       message = `🎉 Excellent score sur le cours "${questionnaire.subject.name}" de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 avec ${totalResponses} retours) !`;
     }
-    // Cas 3: Alerte d'information - premiers retours reçus
+    
     else if (totalResponses === 1) {
       shouldCreateAlert = true;
       alertType = NotificationType.ALERT_POSITIVE;
@@ -390,30 +370,23 @@ export class QuestionnairesService {
         message,
       );
 
-      
       await this.notificationsGateway.sendAlertToUser(userId, alert);
-
-      console.log(`✅ Alerte créée pour le questionnaire ${questionnaireId}: ${message}`);
     }
 
-    // 🔥 GÉNÉRATION SYSTÉMATIQUE DE LA SYNTHÈSE IA (dès 1 réponse et à chaque nouvelle réponse)
     if (totalResponses >= 1) {
       try {
-        // Générer/Régénérer la synthèse IA à CHAQUE nouvelle réponse
+        
         this.aiService.generateFeedbackSummary(questionnaireId)
           .then(() => {
-            console.log(`✅ Synthèse IA générée/mise à jour pour le questionnaire ${questionnaireId} (${totalResponses} retour${totalResponses > 1 ? 's' : ''})`);
+            `);
           })
           .catch((error) => {
-            console.error(`❌ Erreur génération synthèse IA:`, error);
           });
       } catch (error) {
-        console.error('❌ Erreur lors de la génération de synthèse:', error);
       }
     }
   }
 
-  
   async getAllQuestionnairesWithResponses(userId: string, isPaidPlan: boolean = false) {
 
     const user = await this.prisma.user.findUnique({
@@ -424,7 +397,6 @@ export class QuestionnairesService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
 
     const whereClause: any = {};
     if (user.role !== 'ADMIN') {
@@ -514,7 +486,6 @@ export class QuestionnairesService {
       throw new NotFoundException('User not found');
     }
 
-    
     const whereClause: any = { id: questionnaireId };
     if (user.role !== 'ADMIN') {
       whereClause.subject = { createdBy: userId };
@@ -566,16 +537,13 @@ export class QuestionnairesService {
       ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
       : 0;
 
- 
     const ratingDistribution = [1, 2, 3, 4, 5].map((rating) => ({
       rating,
       count: ratings.filter((r) => r === rating).length,
     }));
 
- 
     const responsesWithComments = questionnaire.responses.filter((r) => r.comment);
 
-   
     const positiveComments = responsesWithComments.filter((r) => r.rating >= 4);
     const negativeComments = responsesWithComments.filter((r) => r.rating <= 2);
 
@@ -608,7 +576,6 @@ export class QuestionnairesService {
     };
   }
 
-   
   async sendRemindersToStudents(userId: string, questionnaireId: string) {
  
     const questionnaire = await this.prisma.questionnaire.findUnique({
@@ -626,24 +593,20 @@ export class QuestionnairesService {
       throw new NotFoundException('Questionnaire non trouvé');
     }
 
- 
     if (questionnaire.subject.createdBy !== userId) {
       throw new ForbiddenException(
         "Vous n'avez pas la permission d'envoyer des relances pour ce questionnaire"
       );
     }
 
-    
     const studentEmails = questionnaire.subject.class.studentEmails;
 
     if (!studentEmails || studentEmails.length === 0) {
       throw new BadRequestException('Aucun email étudiant trouvé pour cette classe');
     }
 
-   
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const questionnaireUrl = `${frontendUrl}/questionnaire/${questionnaire.token}`;
-
 
     const emailPromises = studentEmails.map((email) =>
       this.mailerService.sendQuestionnaireReminderEmail(email, {
@@ -662,14 +625,10 @@ export class QuestionnairesService {
         emailsSent: studentEmails.length,
       };
     } catch (error) {
-      console.error('Error sending reminder emails:', error);
       throw new BadRequestException('Erreur lors de l\'envoi des emails de relance');
     }
   }
 
-  /**
-   * Récupérer les statistiques d'un questionnaire depuis la base de données
-   */
   async getQuestionnaireStatistics(questionnaireId: string) {
     const statistics = await this.prisma.questionnaireStatistics.findUnique({
       where: { questionnaireId },

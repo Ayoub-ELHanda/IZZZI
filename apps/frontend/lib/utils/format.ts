@@ -1,4 +1,4 @@
-// Formatting utilities
+
 export const formatDate = (date: Date | string): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
   return new Intl.DateTimeFormat('fr-FR', {
@@ -33,7 +33,3 @@ export const formatRelativeTime = (date: Date | string): string => {
   if (diffDays < 7) return `Il y a ${diffDays}j`;
   return formatDate(d);
 };
-
-
-
-

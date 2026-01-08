@@ -1,6 +1,5 @@
 import Image from 'next/image';
 
-// Logo component
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <Image 
@@ -17,4 +16,3 @@ export function Logo({ className = "" }: { className?: string }) {
     />
   );
 }
-

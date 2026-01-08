@@ -31,7 +31,6 @@ export function RegisterGuestForm() {
       await authService.registerInvited({ ...formData, inviteToken: inviteToken || '' });
       router.push(routes.dashboard);
     } catch (error: any) {
-      console.error('Registration error:', error);
       alert(error.message || 'Une erreur est survenue lors de l\'inscription');
     } finally {
       setIsLoading(false);
@@ -39,7 +38,7 @@ export function RegisterGuestForm() {
   };
 
   const handleGoogleSignup = async () => {
-    // Redirect to backend Google OAuth with invitation token
+    
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
     window.location.href = `${apiUrl}/auth/google?inviteToken=${inviteToken}`;
   };
@@ -59,7 +58,6 @@ export function RegisterGuestForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="bg-[#2F2E2C] rounded-full p-4 flex items-center gap-2">
             <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
@@ -68,10 +66,7 @@ export function RegisterGuestForm() {
             <span className="text-white font-bold text-xl">izzzi</span>
           </div>
         </div>
-
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
-          {/* Tabs */}
           <div className="flex gap-2 mb-8">
             <button
               onClick={() => setActiveTab('login')}
@@ -87,7 +82,7 @@ export function RegisterGuestForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
+            
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Adresse email
@@ -104,7 +99,6 @@ export function RegisterGuestForm() {
               />
             </div>
 
-            {/* Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Nom
@@ -121,7 +115,6 @@ export function RegisterGuestForm() {
               />
             </div>
 
-            {/* First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Prénom
@@ -138,7 +131,6 @@ export function RegisterGuestForm() {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Mot de passe
@@ -168,7 +160,6 @@ export function RegisterGuestForm() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -185,7 +176,6 @@ export function RegisterGuestForm() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -195,7 +185,6 @@ export function RegisterGuestForm() {
             </div>
           </div>
 
-          {/* Google Sign Up */}
           <button
             type="button"
             onClick={handleGoogleSignup}
@@ -223,7 +212,6 @@ export function RegisterGuestForm() {
             Se connecter avec Google
           </button>
 
-          {/* Login Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Vous avez déjà un compte ?{' '}
             <Link

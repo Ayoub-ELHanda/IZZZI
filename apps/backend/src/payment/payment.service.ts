@@ -35,9 +35,6 @@ export class PaymentService {
     });
   }
 
-  /**
-   * Créer une session de checkout Stripe
-   */
   async createCheckoutSession(
     userId: string,
     classCount: number,
@@ -49,7 +46,6 @@ export class PaymentService {
       this.logger.error('STRIPE_SECRET_KEY is not configured');
       throw new Error('Stripe n\'est pas configuré. Veuillez définir STRIPE_SECRET_KEY dans votre fichier .env');
     }
-
 
     if (!this.stripe || !stripeSecretKey.startsWith('sk_test_') && !stripeSecretKey.startsWith('sk_live_')) {
       this.logger.error('Invalid Stripe configuration');
@@ -65,8 +61,6 @@ export class PaymentService {
         throw new Error('User not found');
       }
 
-     
-      // Prix FIXE par palier (non multiplié par le nombre de classes)
       let monthlyPrice: number;
       if (classCount >= 1 && classCount <= 5) {
         monthlyPrice = 19;
@@ -80,16 +74,14 @@ export class PaymentService {
         throw new Error('Invalid class count');
       }
 
-      // Calculer le prix total selon la période
       let totalAmount: number;
       if (isAnnual) {
-        // Prix annuel avec réduction de 30% : (prix mensuel * 12) * 0.7
+        
         const annualPrice = monthlyPrice * 12;
         totalAmount = Math.round(annualPrice * 0.7);
       } else {
         totalAmount = monthlyPrice;
       }
-
 
       let customerId = user.stripeCustomerId;
       if (!customerId) {
@@ -102,14 +94,12 @@ export class PaymentService {
         });
         customerId = customer.id;
 
- 
         await this.prisma.user.update({
           where: { id: userId },
           data: { stripeCustomerId: customerId },
         });
       }
 
- 
       const session = await this.stripe.checkout.sessions.create({
         customer: customerId,
         mode: 'subscription',
@@ -183,8 +173,7 @@ export class PaymentService {
           break;
         
         case 'invoice_payment.paid':
-          // Ce webhook concerne un objet InvoicePayment, pas une Invoice
-          // Les factures sont déjà gérées par invoice.payment_succeeded
+
           this.logger.log('invoice_payment.paid received (already handled by invoice.payment_succeeded)');
           break;
 
@@ -222,7 +211,6 @@ export class PaymentService {
       return;
     }
 
-    // Fetch user early so it's available throughout the method
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -232,23 +220,19 @@ export class PaymentService {
       return;
     }
 
-    
     const stripeSubscription = await this.stripe.subscriptions.retrieve(
       session.subscription as string,
     );
-    
-    // Les dates sont dans items.data[0], pas au niveau racine!
+
     const subscriptionItem = (stripeSubscription as any).items.data[0];
     const currentPeriodStart = subscriptionItem.current_period_start;
     const currentPeriodEnd = subscriptionItem.current_period_end;
 
-    // Validate dates exist
     if (!currentPeriodStart || !currentPeriodEnd) {
       this.logger.error(`Invalid subscription dates - start: ${currentPeriodStart}, end: ${currentPeriodEnd}`);
       return;
     }
 
-  
     const newSubscription = await this.prisma.subscription.create({
       data: {
         userId,
@@ -258,17 +242,15 @@ export class PaymentService {
         status: SubscriptionStatus.ACTIVE,
         billingPeriod: isAnnual ? 'ANNUAL' : 'MONTHLY',
         classCount,
-        pricePerClass: totalAmount * 100, // Prix fixe du palier en cents
-        totalAmount: totalAmount * 100, // Prix total en cents
+        pricePerClass: totalAmount * 100, 
+        totalAmount: totalAmount * 100, 
         currentPeriodStart: new Date(currentPeriodStart * 1000),
         currentPeriodEnd: new Date(currentPeriodEnd * 1000),
       },
     });
 
-    // ✅ NOUVEAU: Partager l'abonnement avec tous les utilisateurs du même établissement
     await this.updateEstablishmentSubscriptionStatus(userId, SubscriptionStatus.ACTIVE);
 
-    // Envoyer l'email de confirmation d'abonnement
     try {
       const planName = isAnnual ? 'Super Izzzi - Annuel' : 'Super Izzzi - Mensuel';
       const nextBillingDate = newSubscription.currentPeriodEnd.toLocaleDateString('fr-FR', {
@@ -281,7 +263,7 @@ export class PaymentService {
         userName: `${user.firstName} ${user.lastName}`,
         planName,
         classCount,
-        pricePerClass: totalAmount * 100, // Convert to cents
+        pricePerClass: totalAmount * 100, 
         totalAmount: totalAmount * 100,
         billingPeriod: isAnnual ? 'ANNUAL' : 'MONTHLY',
         nextBillingDate,
@@ -290,17 +272,15 @@ export class PaymentService {
       this.logger.log(`✅ Subscription confirmation email sent to ${user.email}`);
     } catch (error) {
       this.logger.error(`Error sending subscription confirmation email: ${error.message}`);
-      // Don't fail the transaction if email sending fails
+      
     }
 
-    // Créer aussi le Payment initial et envoyer la facture (si pas déjà créé par invoice.payment_succeeded)
     try {
       const latestInvoiceId = (stripeSubscription as any).latest_invoice;
       if (latestInvoiceId) {
         const invoice = await this.stripe.invoices.retrieve(latestInvoiceId as string);
         const paymentIntent = (invoice as any).payment_intent;
-        
-        // Vérifier si le payment n'existe pas déjà (par invoice OU par paymentIntent)
+
         const existingPayment = await this.prisma.payment.findFirst({
           where: {
             OR: [
@@ -325,26 +305,22 @@ export class PaymentService {
           });
         }
 
-        // Envoyer l'email de facture pour le premier paiement
         try {
           await this.sendInvoiceEmail(invoice, newSubscription, user);
           this.logger.log(`✅ Initial invoice email sent to ${user.email}`);
         } catch (emailError) {
           this.logger.error(`Error sending initial invoice email: ${emailError.message}`);
-          // Don't fail the transaction if email sending fails
+          
         }
       }
     } catch (error) {
       this.logger.error(`Error creating payment: ${error.message}`);
-      // Ne pas faire échouer toute la transaction si le payment échoue
+      
     }
   }
 
-  /**
-   * Envoyer l'email de facture pour une invoice donnée
-   */
   private async sendInvoiceEmail(invoice: Stripe.Invoice, subscription: any, user: any) {
-    // Format dates
+    
     const paymentDate = new Date(invoice.created * 1000).toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: 'long',
@@ -357,15 +333,12 @@ export class PaymentService {
       year: 'numeric',
     });
 
-    // Calculate amounts (Stripe amounts are in cents)
     const totalTTC = invoice.amount_paid / 100;
-    const totalHT = totalTTC / 1.20; // Remove 20% VAT
+    const totalHT = totalTTC / 1.20; 
     const taxAmount = totalTTC - totalHT;
 
-    // Format amounts
     const formatAmount = (amount: number) => `${amount.toFixed(2)}€`;
 
-    // Get payment method info
     let paymentMethod = 'Carte bancaire';
     const chargeId = (invoice as any).charge;
     if (chargeId) {
@@ -380,19 +353,15 @@ export class PaymentService {
       }
     }
 
-    // Generate invoice number
     const invoiceNumber = invoice.number || `INV-${new Date().getFullYear()}-${String(invoice.created).slice(-6)}`;
 
-    // Plan details
     const planName = subscription.billingPeriod === 'ANNUAL' ? 'Super Izzzi - Annuel' : 'Super Izzzi - Mensuel';
     const planDescription = `${subscription.classCount} classe${subscription.classCount > 1 ? 's' : ''} - Facturation ${subscription.billingPeriod === 'ANNUAL' ? 'annuelle' : 'mensuelle'}`;
-    
-    // Billing period
+
     const periodStart = subscription.currentPeriodStart.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
     const periodEnd = subscription.currentPeriodEnd.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
     const billingPeriod = `${periodStart} au ${periodEnd}`;
 
-    // Send professional invoice email
     await this.mailerService.sendProfessionalInvoiceEmail(user.email, {
       customerName: `${user.firstName} ${user.lastName}`,
       customerEmail: user.email,
@@ -414,10 +383,9 @@ export class PaymentService {
   }
 
   private async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-    // Dans la nouvelle API Stripe, le subscription ID peut être dans différents endroits
-    let invoiceSubscription = (invoice as any).subscription;
     
-    // Si pas trouvé directement, chercher dans parent.subscription_details (nouvelle structure API)
+    let invoiceSubscription = (invoice as any).subscription;
+
     if (!invoiceSubscription && (invoice as any).parent?.subscription_details?.subscription) {
       invoiceSubscription = (invoice as any).parent.subscription_details.subscription;
     }
@@ -432,15 +400,13 @@ export class PaymentService {
     });
 
     if (!subscription) {
-      // Normal case: invoice arrives before checkout.session.completed creates the subscription
+      
       return;
     }
 
-    // Créer l'enregistrement de paiement (si pas déjà existant)
     try {
       const paymentIntent = (invoice as any).payment_intent;
-      
-      // Vérifier si le payment existe déjà
+
       const existingPayment = await this.prisma.payment.findFirst({
         where: {
           OR: [
@@ -466,10 +432,9 @@ export class PaymentService {
       }
     } catch (error) {
       this.logger.error(`Error creating payment: ${error.message}`);
-      // Don't throw - continue to send invoice email
+      
     }
 
-    // Envoyer l'email de facture (seulement pour les paiements récurrents, pas le premier)
     try {
       await this.sendInvoiceEmail(invoice, subscription, subscription.user);
       this.logger.log(`✅ Recurring invoice email sent to ${subscription.user.email}`);
@@ -492,7 +457,6 @@ export class PaymentService {
       where: { id: subscription.id },
       data: { status: 'PAST_DUE' },
     });
-
 
     await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.PAST_DUE);
 
@@ -518,7 +482,6 @@ export class PaymentService {
       },
     });
 
-    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
     await this.updateEstablishmentSubscriptionStatus(subscription.userId, newStatus);
   }
 
@@ -537,7 +500,6 @@ export class PaymentService {
       },
     });
 
-    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
     await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.CANCELED);
   }
 
@@ -552,10 +514,6 @@ export class PaymentService {
     return statusMap[status] || SubscriptionStatus.ACTIVE;
   }
 
-  /**
-   * ✅ NOUVEAU: Mettre à jour le statut d'abonnement pour tous les utilisateurs du même établissement
-   * Cette méthode permet de partager l'abonnement entre l'admin et le responsable pédagogique
-   */
   private async updateEstablishmentSubscriptionStatus(userId: string, status: SubscriptionStatus) {
     try {
   
@@ -569,7 +527,6 @@ export class PaymentService {
         return;
       }
 
-    
       const establishmentUsers = await this.prisma.user.findMany({
         where: {
           establishmentId: user.establishmentId,
@@ -585,7 +542,6 @@ export class PaymentService {
         return;
       }
 
-      // Mettre à jour le statut pour tous les utilisateurs de l'établissement
       await this.prisma.user.updateMany({
         where: {
           id: {
@@ -601,7 +557,6 @@ export class PaymentService {
         `✅ Shared subscription status (${status}) updated for ${establishmentUsers.length} user(s) in establishment ${user.establishmentId}`,
       );
 
-   
       establishmentUsers.forEach(u => {
         this.logger.log(`   - ${u.role}: ${u.email} → ${status}`);
       });
@@ -610,7 +565,6 @@ export class PaymentService {
         }
   }
 
-  
   async verifyCheckoutSession(sessionId: string) {
     try {
       const session = await this.stripe.checkout.sessions.retrieve(sessionId);
@@ -622,8 +576,7 @@ export class PaymentService {
         if (!userId) {
           throw new Error('User ID not found in session metadata');
         }
-        
-       
+
       let amount: number | null = null;
         if (totalAmount) {
         
@@ -637,7 +590,6 @@ export class PaymentService {
           this.logger.warn('No amount found in session metadata or amount_total');
         }
 
-        
         const existingSubscription = await this.prisma.subscription.findFirst({
           where: {
             userId,
@@ -645,7 +597,6 @@ export class PaymentService {
           },
         });
 
-      
         if (!existingSubscription) {
           await this.handleCheckoutSessionCompleted(session);
         }
@@ -673,8 +624,6 @@ export class PaymentService {
     }
   }
 
-
-   
   async getUserSubscription(userId: string) {
     return this.prisma.subscription.findFirst({
       where: {
@@ -705,8 +654,6 @@ export class PaymentService {
       data: { cancelAtPeriodEnd: true },
     });
 
-    // Note: Le statut restera ACTIVE jusqu'à la fin de la période
-    // L'annulation effective sera gérée par le webhook customer.subscription.deleted
     this.logger.log(`✅ Subscription ${subscription.id} will be canceled at period end for user ${userId} and their establishment`);
 
     return { success: true, message: 'Subscription will be canceled at period end' };

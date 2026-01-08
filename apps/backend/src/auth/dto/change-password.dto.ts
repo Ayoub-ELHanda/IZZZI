@@ -10,4 +10,3 @@ export class ChangePasswordDto {
   @MinLength(8)
   newPassword: string;
 }
-

@@ -28,11 +28,8 @@ import { MailerModule } from '../mailer/mailer.module';
   providers: [
     AuthService,
     JwtStrategy,
-    // GoogleStrategy is optional - only load if credentials are provided
-    // Uncomment when Google OAuth is configured
-    // GoogleStrategy,
+
   ],
   exports: [AuthService],
 })
 export class AuthModule {}
-

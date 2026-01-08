@@ -102,13 +102,11 @@ const features: FeatureRow[] = [
 ];
 
 export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
-  // Prix de base mensuel par classe
+  
   const monthlyPricePerClass = 19;
-  
-  // Prix annuel avec -30% de réduction
+
   const annualPricePerClass = Math.round(monthlyPricePerClass * 0.7);
-  
-  // Prix utilisé selon le mode
+
   const pricePerClass = isAnnual ? annualPricePerClass : monthlyPricePerClass;
   
   return (
@@ -123,7 +121,6 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
         overflow: 'hidden',
       }}
     >
-      {/* Header Row */}
       <div
         style={{
           display: 'grid',
@@ -133,10 +130,7 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
           borderBottom: '1px solid #E0E0E0',
         }}
       >
-        {/* Empty cell */}
         <div></div>
-
-        {/* Izzzi Column Header */}
         <div
           style={{
             display: 'flex',
@@ -179,7 +173,6 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
           </Button>
         </div>
 
-        {/* Super Izzzi Column Header */}
         <div
           style={{
             display: 'flex',
@@ -225,7 +218,6 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
         </div>
       </div>
 
-      {/* Feature Rows */}
       {features.map((feature, index) => (
         <div
           key={index}
@@ -236,7 +228,7 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
             borderBottom: index === features.length - 1 ? 'none' : '1px solid #E0E0E0',
           }}
         >
-          {/* Feature Name */}
+          
           <div
             style={{
               padding: '20px 24px',
@@ -251,7 +243,6 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
             {feature.name}
           </div>
 
-          {/* Izzzi Value */}
           <div
             style={{
               padding: '20px 24px',
@@ -268,7 +259,6 @@ export function PlanTableau({ isAnnual = true }: PlanTableauProps) {
             {feature.izzzi}
           </div>
 
-          {/* Super Izzzi Value */}
           <div
             style={{
               padding: '20px 24px',

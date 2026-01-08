@@ -37,7 +37,6 @@ export function PasswordForm({
     e.preventDefault();
     setError(null);
 
-    // Validation
     if (formData.newPassword !== formData.confirmPassword) {
       setError('Les mots de passe ne correspondent pas');
       return;
@@ -201,4 +200,3 @@ export function PasswordForm({
     </form>
   );
 }
-

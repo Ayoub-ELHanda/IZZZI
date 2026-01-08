@@ -59,7 +59,7 @@ export function SubjectsTable({ subjects, onRefresh, isArchived = false }: Subje
       const subject = subjects.find(s => s.id === selectedSubjectId);
       
       if (subject?.hasQuestionnaire) {
-        // Vérifier si la modification est possible
+        
         const { canModify, reason } = await questionnairesService.canModify(selectedSubjectId);
         
         if (!canModify) {
@@ -67,11 +67,10 @@ export function SubjectsTable({ subjects, onRefresh, isArchived = false }: Subje
           return;
         }
 
-        // Mettre à jour les questionnaires
         await questionnairesService.update(selectedSubjectId, formType as FormType);
         toast.success('Questionnaires mis à jour avec succès');
       } else {
-        // Créer les questionnaires
+        
         await questionnairesService.create(selectedSubjectId, formType as FormType);
         toast.success('Questionnaires créés avec succès');
       }
@@ -79,13 +78,11 @@ export function SubjectsTable({ subjects, onRefresh, isArchived = false }: Subje
       setIsFormModalOpen(false);
       setSelectedSubjectId(null);
       setSelectedSubject(null);
-      
-      // Recharger les données
+
       if (onRefresh) {
         onRefresh();
       }
     } catch (error: any) {
-      console.error('Error with questionnaires:', error);
       toast.error(error.message || 'Une erreur est survenue');
     } finally {
       setIsLoading(false);
@@ -109,7 +106,6 @@ export function SubjectsTable({ subjects, onRefresh, isArchived = false }: Subje
       await questionnairesService.downloadQRCode(token);
       toast.success('QR Code téléchargé avec succès');
     } catch (error) {
-      console.error('Error downloading QR code:', error);
       toast.error('Erreur lors du téléchargement du QR code');
     }
   };
@@ -219,7 +215,6 @@ const handleSendReminders = async () => {
         </div>
       </div>
 
-   
       <div>
         {subjects.map((subject) => (
           <SubjectRow
@@ -236,7 +231,6 @@ const handleSendReminders = async () => {
         ))}
       </div>
 
-   
       <FormTypeSelectionModal
         isOpen={isFormModalOpen}
         onClose={() => {
@@ -345,7 +339,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           </div>
         </div>
 
-  
         {!isArchived && (
           <div style={{ position: 'absolute', left: '320px' }}>
             <button
@@ -385,7 +378,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             }}
           >
             <button
-              onClick={() => console.log('Edit', subject.id)}
+              onClick={() => }
               style={{
                 background: 'none',
                 border: 'none',
@@ -396,7 +389,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
               <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
             </button>
             <button
-              onClick={() => console.log('Delete', subject.id)}
+              onClick={() => }
               style={{
                 background: 'none',
                 border: 'none',
@@ -501,7 +494,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
         )}
       </div>
 
-      
       <div style={{ position: 'absolute', left: '320px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
         <BorderedContainer width="1252.29px">
@@ -667,7 +659,6 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           )}
         </BorderedContainer>
 
-   
         <BorderedContainer width="1252.29px">
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '30px' }}>
             <div
@@ -857,7 +848,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
           }}
         >
           <button
-            onClick={() => console.log('Edit', subject.id)}
+            onClick={() => }
             style={{
               background: 'none',
               border: 'none',
@@ -868,7 +859,7 @@ function SubjectRow({ subject, onCopyLink, onDownloadQR, onOpenEmailModal, copie
             <Pencil size={16} color="#2F2E2C" strokeWidth={1.5} />
           </button>
           <button
-            onClick={() => console.log('Delete', subject.id)}
+            onClick={() => }
             style={{
               background: 'none',
               border: 'none',

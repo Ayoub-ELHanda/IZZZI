@@ -19,10 +19,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isRetoursPage = pathname?.startsWith("/retours") ?? false;
   const isPricingPage = pathname?.startsWith("/pricing") ?? false;
   const isCheckoutPage = pathname?.startsWith("/checkout") ?? false;
-  
 
   const shouldHideFooter = isAuthPage || isClassesPage || isSubjectPage || isAccountPage || isDashboardPage || isRetoursPage || (isPricingPage && isAuthenticated) || isCheckoutPage;
-
 
   if (isAuthPage || isQuestionnairePage) {
     return <>{children}</>;

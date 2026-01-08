@@ -9,21 +9,16 @@ export function Footer() {
   const pathname = usePathname();
   const isSuperAdminPage = pathname?.startsWith("/super-admin");
 
-  // Don't show footer on super admin pages
   if (isSuperAdminPage) {
     return null;
   }
 
   return ( 
     <footer className="relative w-full border-0" style={{ borderTop: 'none', borderBottom: 'none', backgroundColor: 'transparent' }}>
-      {/* Hashtag Section */}
       <HashtagSection backgroundClassName="bg-white" />
-      
-      {/* Footer Content */}
       <div className="bg-primary-dark w-full text-white" style={{ borderTop: 'none' }}>
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
-            {/* Logo - Left */}
             <div className="lg:col-span-3 flex justify-center lg:justify-start">
               <Image 
                 src="/logo-footer.svg"
@@ -38,11 +33,7 @@ export function Footer() {
                 className="h-[50px] md:h-[62px] w-auto"
               />
             </div>
-            
-            {/* Spacer */}
             <div className="hidden lg:block lg:col-span-5"></div>
-            
-            {/* Plan du site - Middle */}
             <div className="lg:col-span-2 text-center lg:text-left">
               <h3 
                 style={{
@@ -68,7 +59,6 @@ export function Footer() {
               </div>
             </div>
             
-            {/* Nous contacter - Right */}
             <div className="lg:col-span-2 text-center lg:text-left">
               <h3 
                 style={{
@@ -90,7 +80,6 @@ export function Footer() {
           </div>
         </div>
         
-        {/* Bottom Links */}
         <div>
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex justify-end items-center gap-4" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '12px', color: '#FFFFFF' }}>
@@ -107,4 +96,3 @@ export function Footer() {
     </footer>
   );
 }
-

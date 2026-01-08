@@ -11,8 +11,7 @@ interface OrderSummaryProps {
 
 export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummaryProps) {
   const [acceptedCGV, setAcceptedCGV] = useState(false);
-  
-  // Prix mensuel par palier (doit correspondre au backend)
+
   let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
     monthlyPrice = 19;
@@ -93,7 +92,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
           </div>
         </label>
 
-
         <label style={{
           display: 'flex',
           alignItems: 'center',
@@ -139,7 +137,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
               {totalAmount}€/ans
             </div>
           </div>
-          {/* Badge -30% */}
           <div style={{
             position: 'absolute',
             top: '16px',
@@ -163,15 +160,11 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
           </div>
         </label>
       </div>
-
-      {/* Séparateur */}
       <div style={{
         width: '100%',
         height: '1px',
         backgroundColor: '#E0E0E0'
       }} />
-
-      {/* Total */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -214,8 +207,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
           </div>
         </div>
       </div>
-
-      {/* Checkbox CGV */}
       <label style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -244,7 +235,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
         </span>
       </label>
 
-      {/* Bouton de paiement */}
       <button
         type="submit"
         form="checkout-form"
@@ -269,7 +259,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
         }
       </button>
 
-      {/* Message sécurité */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -291,7 +280,6 @@ export function OrderSummary({ classCount, isAnnual, totalAmount }: OrderSummary
         </span>
       </div>
 
-      {/* Textes légaux */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',

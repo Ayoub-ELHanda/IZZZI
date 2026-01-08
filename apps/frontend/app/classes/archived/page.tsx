@@ -22,7 +22,6 @@ export default function ArchivedClassesPage() {
       const data = await classesService.getAll(true);
       setArchivedClasses(data);
     } catch (error) {
-      console.error('Error loading archived classes:', error);
       toast.error('Erreur lors du chargement des classes archivées');
     } finally {
       setIsLoading(false);
@@ -87,7 +86,6 @@ export default function ArchivedClassesPage() {
           </div>
         </div>
 
-
         <div style={{ 
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 531px)',
@@ -113,7 +111,6 @@ export default function ArchivedClassesPage() {
             />
           ))}
         </div>
-
 
         <Link href="/classes/my-classes" prefetch={true} style={{ textDecoration: 'none' }}>
           <span

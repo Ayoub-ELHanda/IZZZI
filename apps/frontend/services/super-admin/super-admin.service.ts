@@ -80,9 +80,7 @@ export interface Payment {
 }
 
 export const superAdminService = {
-  /**
-   * Récupérer tous les utilisateurs avec filtrage optionnel par rôle
-   */
+  
   async getAllUsers(role?: string): Promise<User[]> {
     const response = await apiClient.get<User[]>('/super-admin/users', {
       params: role ? { role } : {},
@@ -90,57 +88,36 @@ export const superAdminService = {
     return response;
   },
 
-  /**
-   * Récupérer un utilisateur par ID avec ses détails complets
-   */
   async getUserById(userId: string): Promise<UserDetails> {
     const response = await apiClient.get<UserDetails>(`/super-admin/users/${userId}`);
     return response;
   },
 
-  /**
-   * Récupérer tous les professeurs pédagogiques associés à un Admin
-   */
   async getTeachersByAdmin(adminId: string): Promise<Teacher[]> {
     const response = await apiClient.get<Teacher[]>(`/super-admin/admins/${adminId}/teachers`);
     return response;
   },
 
-  /**
-   * Récupérer tous les abonnements d'un Admin
-   */
   async getAdminSubscriptions(adminId: string): Promise<Subscription[]> {
     const response = await apiClient.get<Subscription[]>(`/super-admin/admins/${adminId}/subscriptions`);
     return response;
   },
 
-  /**
-   * Annuler un abonnement
-   */
   async cancelSubscription(subscriptionId: string): Promise<Subscription> {
     const response = await apiClient.put<Subscription>(`/super-admin/subscriptions/${subscriptionId}/cancel`);
     return response;
   },
 
-  /**
-   * Renouveler un abonnement
-   */
   async renewSubscription(subscriptionId: string): Promise<Subscription> {
     const response = await apiClient.put<Subscription>(`/super-admin/subscriptions/${subscriptionId}/renew`);
     return response;
   },
 
-  /**
-   * Récupérer tous les abonnements actifs avec les informations utilisateur
-   */
   async getAllActiveSubscriptions(): Promise<Subscription[]> {
     const response = await apiClient.get<Subscription[]>('/super-admin/subscriptions/active');
     return response;
   },
 
-  /**
-   * Réassigner un RESPONSABLE_PEDAGOGIQUE à un autre ADMIN
-   */
   async reassignTeacherToAdmin(teacherId: string, newAdminId: string): Promise<User> {
     const response = await apiClient.put<User>(`/super-admin/teachers/${teacherId}/reassign`, {
       newAdminId,
@@ -148,12 +125,8 @@ export const superAdminService = {
     return response;
   },
 
-  /**
-   * Récupérer tous les ADMIN pour la sélection
-   */
   async getAllAdmins(): Promise<User[]> {
     const response = await apiClient.get<User[]>('/super-admin/admins');
     return response;
   },
 };
-

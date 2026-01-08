@@ -29,7 +29,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
       </h3>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {/* Adresse */}
         <div>
           <label style={{
             display: 'block',
@@ -49,8 +48,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
             style={{ width: '100%' }}
           />
         </div>
-
-        {/* Complément d'adresse */}
         <div>
           <label style={{
             display: 'block',
@@ -71,7 +68,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
           />
         </div>
 
-        {/* Ville et Code postal */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div>
             <label style={{
@@ -114,7 +110,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
           </div>
         </div>
 
-        {/* Pays */}
         <div>
           <label style={{
             display: 'block',
@@ -149,7 +144,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
           </select>
         </div>
 
-        {/* Numéro de TVA */}
         <div>
           <label style={{
             display: 'block',
@@ -170,7 +164,6 @@ export function BillingAddressForm({ formData, onChange }: BillingAddressFormPro
           />
         </div>
 
-        {/* SIRET */}
         <div>
           <label style={{
             display: 'block',

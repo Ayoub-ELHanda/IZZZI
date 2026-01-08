@@ -34,7 +34,6 @@ export class ClassesService {
       },
     });
 
-    // Envoyer un email à chaque étudiant ajouté
     if (dto.studentEmails && dto.studentEmails.length > 0) {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -42,8 +41,7 @@ export class ClassesService {
 
       if (user) {
         const teacherName = `${user.firstName} ${user.lastName}`;
-        
-        // Envoi des emails en parallèle (non-bloquant)
+
         dto.studentEmails.forEach(async (email) => {
           try {
             await this.mailer.sendStudentAddedToClassEmail(email, {
@@ -52,8 +50,6 @@ export class ClassesService {
               studentCount: dto.studentCount,
             });
           } catch (error) {
-            console.error(`Failed to send email to ${email}:`, error);
-            // Ne pas faire échouer la création de classe si l'email ne peut pas être envoyé
           }
         });
       }
@@ -114,7 +110,6 @@ export class ClassesService {
       },
     });
 
- 
     if (dto.studentEmails && dto.studentEmails.length > 0) {
       const oldEmails = classItem.studentEmails || [];
       const newEmails = dto.studentEmails.filter(email => !oldEmails.includes(email));
@@ -126,8 +121,7 @@ export class ClassesService {
 
         if (user) {
           const teacherName = `${user.firstName} ${user.lastName}`;
-          
-        
+
           newEmails.forEach(async (email) => {
             try {
               await this.mailer.sendStudentAddedToClassEmail(email, {
@@ -136,8 +130,6 @@ export class ClassesService {
                 studentCount: dto.studentCount || classItem.studentCount,
               });
             } catch (error) {
-              console.error(`Failed to send email to ${email}:`, error);
-              // Ne pas faire échouer la mise à jour si l'email ne peut pas être envoyé
             }
           });
         }
@@ -175,7 +167,6 @@ export class ClassesService {
           archivedAt: archivedClass.archivedAt?.toLocaleDateString('fr-FR') || new Date().toLocaleDateString('fr-FR'),
         });
       } catch (error) {
-        console.error('Failed to send archive email:', error);
       }
     }
 

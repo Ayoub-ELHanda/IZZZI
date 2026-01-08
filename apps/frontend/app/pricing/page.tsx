@@ -47,7 +47,6 @@ export default function PricingPage() {
               Commencez gratuitement et passez au niveau supérieur quand vous êtes prêts.
             </p>
 
-        
             <div 
               className="flex items-center mt-6 md:mt-8 mx-auto w-full max-w-[328px] h-[67px] bg-[#FBFBFB] border border-[#E0E0E0] rounded-lg p-[10px_40px_10px_10px] gap-4 md:gap-[30px]"
             >
@@ -73,7 +72,6 @@ export default function PricingPage() {
         </div>
       </div>
 
-   
       <div 
         className="bg-white -mt-16 md:-mt-[270px] pb-8 md:pb-20"
       >

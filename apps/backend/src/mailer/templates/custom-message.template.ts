@@ -144,4 +144,3 @@ export class CustomMessageTemplate implements EmailTemplate<CustomMessageData> {
     `;
   }
 }
-

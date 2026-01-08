@@ -30,7 +30,7 @@ export class NotificationsGateway
   server: Server;
 
   private readonly logger = new Logger(NotificationsGateway.name);
-  private connectedUsers = new Map<string, string>(); // userId -> socketId
+  private connectedUsers = new Map<string, string>(); 
 
   constructor(
     private jwtService: JwtService,
@@ -40,7 +40,7 @@ export class NotificationsGateway
 
   async handleConnection(client: AuthenticatedSocket) {
     try {
-      // Récupérer le token depuis la query string ou les headers
+      
       const token =
         client.handshake.auth?.token ||
         client.handshake.query?.token?.toString();
@@ -51,7 +51,6 @@ export class NotificationsGateway
         return;
       }
 
-      // Vérifier le token JWT
       const payload = this.jwtService.verify(token);
       const userId = payload.userId || payload.sub;
 
@@ -61,21 +60,17 @@ export class NotificationsGateway
         return;
       }
 
-      // Stocker l'ID utilisateur dans la socket
       client.userId = userId;
       this.connectedUsers.set(userId, client.id);
 
-      // Rejoindre une room spécifique à l'utilisateur
       client.join(`user:${userId}`);
 
       this.logger.log(`Utilisateur connecté: ${userId} (socket: ${client.id})`);
 
-      // Envoyer le nombre de notifications non lues au moment de la connexion
       const unreadCount =
         await this.notificationsService.getUnreadNotificationCount(userId);
       client.emit('unread_count', unreadCount);
-      
-      // Envoyer aussi le nombre d'alertes non traitées au moment de la connexion
+
       const untreatedCount =
         await this.notificationsService.getUntreatedAlertCount(userId);
       client.emit('untreated_alert_count', untreatedCount);
@@ -94,26 +89,18 @@ export class NotificationsGateway
     }
   }
 
-  /**
-   * Envoyer une notification à un utilisateur spécifique
-   */
   async sendNotificationToUser(userId: string, notification: any) {
     this.server.to(`user:${userId}`).emit('new_notification', notification);
-    
-    // Mettre à jour le compteur de notifications non lues
+
     const unreadCount =
       await this.notificationsService.getUnreadNotificationCount(userId);
     this.server.to(`user:${userId}`).emit('unread_count', unreadCount);
   }
 
-  /**
-   * Envoyer une alerte à un utilisateur spécifique
-   */
   async sendAlertToUser(userId: string, alert: any) {
     this.logger.log(`Envoi de l'alerte ${alert.id} à l'utilisateur ${userId} via WebSocket`);
     this.server.to(`user:${userId}`).emit('new_alert', alert);
-    
-    // Mettre à jour le compteur d'alertes non traitées
+
     const untreatedCount =
       await this.notificationsService.getUntreatedAlertCount(userId);
     this.server.to(`user:${userId}`).emit('untreated_alert_count', untreatedCount);
@@ -154,6 +141,3 @@ export class NotificationsGateway
     return { alerts };
   }
 }
-
-
-

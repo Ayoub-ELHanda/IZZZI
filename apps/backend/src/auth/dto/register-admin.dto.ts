@@ -22,4 +22,3 @@ export class RegisterAdminDto {
   @MinLength(8)
   password: string;
 }
-

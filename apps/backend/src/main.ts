@@ -8,13 +8,11 @@ async function bootstrap() {
     rawBody: true, 
   });
 
-
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
   });
 
- 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -24,7 +22,6 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
-
 
   const config = new DocumentBuilder()
     .setTitle('IZZZI API')
@@ -39,7 +36,7 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+      'JWT-auth', 
     )
     .addTag('auth', 'Authentication endpoints')
     .addTag('classes', 'Class management')
@@ -63,8 +60,5 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4000;
   await app.listen(port);
-  
-  console.log(`🚀 Application is running on: http://localhost:${port}/api`);
-  console.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
 }
 bootstrap();

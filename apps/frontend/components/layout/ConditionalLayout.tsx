@@ -6,8 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  
-  // Hide header and footer on authenticated pages (account, dashboard, classes, subjects, questionnaires)
+
   const authenticatedRoutes = ['/account', '/dashboard', '/classes', '/subjects', '/questionnaires'];
   const shouldHideLayout = authenticatedRoutes.some(route => (pathname ?? '').startsWith(route));
 
@@ -23,4 +22,3 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-

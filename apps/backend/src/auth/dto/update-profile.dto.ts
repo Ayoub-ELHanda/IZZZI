@@ -21,4 +21,3 @@ export class UpdateProfileDto {
   @IsString()
   profilePicture?: string;
 }
-

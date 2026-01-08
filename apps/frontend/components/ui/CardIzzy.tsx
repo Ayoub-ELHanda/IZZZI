@@ -55,7 +55,6 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
         )}
       </div>
 
-    
       <div className="mb-6">
         <div className="flex items-baseline gap-2">
           <span className="font-mochiy text-4xl md:text-[58px] font-normal text-[#2F2E2C] leading-[125%]">
@@ -117,7 +116,6 @@ export function CardIzzy({ isAuthenticated = false }: CardIzzyProps) {
         </div>
       </div>
 
-  
       <div className="mb-6">
         <h3 className="font-poppins text-xs font-semibold text-[#2F2E2C] mb-3">
           Au-delà des 4 mois :

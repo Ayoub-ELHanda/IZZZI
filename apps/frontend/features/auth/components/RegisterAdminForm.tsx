@@ -30,10 +30,9 @@ export function RegisterAdminForm() {
     try {
       const { authService } = await import('@/services/auth/auth.service');
       const response = await authService.registerAdmin(formData);
-      // Admin users are redirected to profile page after registration
+      
       router.push(routes.account.profile);
     } catch (error: any) {
-      console.error('Registration error:', error);
       alert(error.message || 'Une erreur est survenue lors de l\'inscription');
     } finally {
       setIsLoading(false);
@@ -41,7 +40,7 @@ export function RegisterAdminForm() {
   };
 
   const handleGoogleSignup = async () => {
-    // Redirect to backend Google OAuth
+    
     const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api';
     window.location.href = `${apiUrl}/auth/google`;
   };
@@ -61,14 +60,10 @@ export function RegisterAdminForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <Logo className="h-[41px] w-auto" />
         </div>
-
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
-          {/* Tabs */}
           <div className="flex gap-2 mb-8">
             <button
               onClick={() => setActiveTab('login')}
@@ -84,7 +79,7 @@ export function RegisterAdminForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Establishment Name */}
+            
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Nom de l'établissement
@@ -100,8 +95,6 @@ export function RegisterAdminForm() {
                 className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
-
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Adresse email
@@ -117,8 +110,6 @@ export function RegisterAdminForm() {
                 className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
-
-            {/* Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Nom
@@ -134,8 +125,6 @@ export function RegisterAdminForm() {
                 className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
-
-            {/* First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Prénom
@@ -151,8 +140,6 @@ export function RegisterAdminForm() {
                 className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
             </div>
-
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Mot de passe
@@ -181,8 +168,6 @@ export function RegisterAdminForm() {
                 </button>
               </div>
             </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -198,8 +183,6 @@ export function RegisterAdminForm() {
               )}
             </button>
           </form>
-
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -208,8 +191,6 @@ export function RegisterAdminForm() {
               <span className="px-4 bg-white text-gray-500 font-medium">Ou</span>
             </div>
           </div>
-
-          {/* Google Sign Up */}
           <button
             type="button"
             onClick={handleGoogleSignup}
@@ -236,8 +217,6 @@ export function RegisterAdminForm() {
             </svg>
             Se connecter avec Google
           </button>
-
-          {/* Login Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Vous avez déjà un compte ?{' '}
             <Link

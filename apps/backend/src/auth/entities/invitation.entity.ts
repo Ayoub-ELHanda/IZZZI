@@ -1,5 +1,3 @@
-// Invitation model for temporary storage of invitation tokens
-// This could be a database table or Redis cache
 
 export interface Invitation {
   token: string;
@@ -7,13 +5,12 @@ export interface Invitation {
   firstName: string;
   lastName: string;
   role: 'RESPONSABLE_PEDAGOGIQUE';
-  invitedBy: string; // User ID who sent the invitation
+  invitedBy: string; 
   establishmentId: string;
   expiresAt: Date;
   createdAt: Date;
 }
 
-// In-memory storage for development (should use Redis or database in production)
 export class InvitationStore {
   private static invitations: Map<string, Invitation> = new Map();
 
@@ -23,8 +20,7 @@ export class InvitationStore {
 
   static findByToken(token: string): Invitation | undefined {
     const invitation = this.invitations.get(token);
-    
-    // Check if expired
+
     if (invitation && invitation.expiresAt < new Date()) {
       this.invitations.delete(token);
       return undefined;
@@ -47,6 +43,4 @@ export class InvitationStore {
   }
 }
 
-// Cleanup expired invitations every hour
 setInterval(() => InvitationStore.cleanup(), 3600000);
-

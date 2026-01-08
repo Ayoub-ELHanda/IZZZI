@@ -47,7 +47,7 @@ export class PaymentController {
         body.isAnnual,
       );
     } catch (error: any) {
-      // Gérer les erreurs de configuration Stripe
+      
       if (error.message && error.message.includes('Stripe n\'est pas configuré')) {
         throw new HttpException(
           {

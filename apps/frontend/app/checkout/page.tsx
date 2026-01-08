@@ -13,17 +13,13 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
-  // Récupérer et valider les paramètres de l'URL
   const classesParam = searchParams.get('classes');
   const periodParam = searchParams.get('period');
-  
-  // Valider le nombre de classes (entre 1 et 20)
+
   const classCount = Math.max(1, Math.min(20, parseInt(classesParam || '7') || 7));
-  
-  // Valider la période (annual ou monthly)
+
   const isAnnual = periodParam === 'annual';
-  
-  // Prix mensuel par palier (doit correspondre au backend)
+
   let monthlyPrice: number;
   if (classCount >= 1 && classCount <= 5) {
     monthlyPrice = 19;
@@ -36,11 +32,10 @@ export default function CheckoutPage() {
   } else {
     monthlyPrice = 13; 
   }
-  
-  // Calculer le prix total selon la période (doit correspondre au backend)
+
   let totalAmount: number;
   if (isAnnual) {
-    // Prix annuel avec réduction de 30% : (prix mensuel * 12) * 0.7
+    
     const annualPrice = monthlyPrice * 12;
     totalAmount = Math.round(annualPrice * 0.7);
   } else {
@@ -49,7 +44,6 @@ export default function CheckoutPage() {
   
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Rediriger vers la page de connexion si non authentifié
   if (!isAuthenticated) {
     const currentUrl = window.location.pathname + window.location.search;
     router.push(`/auth/login?redirect=${encodeURIComponent(currentUrl)}`);
@@ -84,11 +78,10 @@ export default function CheckoutPage() {
 
       if (!response.ok) {
         let errorMessage = 'Erreur lors de la création de la session de paiement';
-        
-        // Gérer spécifiquement les erreurs 401 (non autorisé)
+
         if (response.status === 401) {
           errorMessage = 'Votre session a expiré. Veuillez vous reconnecter.';
-          // Rediriger vers la page de connexion
+          
           router.push('/auth/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search));
           setIsProcessing(false);
           return;
@@ -98,7 +91,7 @@ export default function CheckoutPage() {
           const errorData = await response.json();
           errorMessage = errorData.message || errorData.error || errorMessage;
         } catch (e) {
-          // Si la réponse n'est pas du JSON, essayer de lire le texte
+          
           try {
             const text = await response.text();
             if (text) {
@@ -121,9 +114,6 @@ export default function CheckoutPage() {
         throw new Error('URL de paiement non reçue');
       }
     } catch (error: any) {
-      console.error('Erreur de paiement:', error);
-      
-      // Gérer les erreurs réseau différemment
       let errorMessage = 'Une erreur est survenue lors du paiement. Veuillez réessayer.';
       
       if (error.message) {
@@ -141,7 +131,6 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] pt-10 pb-20">
       <div className="max-w-[1200px] mx-auto px-6">
-        {/* Header avec bouton retour */}
         <div className="mb-10">
           <Link 
             href="/pricing"
@@ -151,8 +140,6 @@ export default function CheckoutPage() {
             Retour
           </Link>
         </div>
-
-        {/* Titre principal */}
         <div className="text-center mb-12">
           <h1 className="font-mochiy text-[32px] font-normal text-[#2F2E2C] mb-2">
             Confirmez votre abonnement
@@ -161,10 +148,7 @@ export default function CheckoutPage() {
             Vérifiez les détails de votre commande avant de procéder au paiement
           </p>
         </div>
-
-        {/* Layout à 2 colonnes - Responsive */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-start">
-          {/* Colonne gauche : Formulaire */}
           <div className="bg-white rounded-lg p-10 shadow-sm">
             {isProcessing ? (
               <div className="flex flex-col items-center justify-center py-20 gap-6">
@@ -182,8 +166,6 @@ export default function CheckoutPage() {
               />
             )}
           </div>
-
-          {/* Colonne droite : Résumé */}
           <OrderSummary
             classCount={classCount}
             isAnnual={isAnnual}

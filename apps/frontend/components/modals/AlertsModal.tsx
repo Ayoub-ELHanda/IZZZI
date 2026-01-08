@@ -96,7 +96,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
         return newTexts;
       });
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du commentaire:', error);
     } finally {
       setIsSavingComment((prev) => ({ ...prev, [alertId]: false }));
     }
@@ -143,7 +142,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             padding: '24px',
@@ -191,8 +189,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
             <X size={24} color="#2F2E2C" />
           </button>
         </div>
-
-        {/* Tabs */}
         <div
           style={{
             padding: '0 24px',
@@ -238,8 +234,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
             Traitées
           </button>
         </div>
-
-        {/* Alerts List */}
         <div
           style={{
             flex: 1,
@@ -282,7 +276,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                     gap: '12px',
                   }}
                 >
-                  {/* Alert Header */}
                   <div
                     style={{
                       display: 'flex',
@@ -365,8 +358,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                       </div>
                     </div>
                   </div>
-
-                  {/* Alert Content */}
                   <div
                     style={{
                       fontFamily: 'Poppins, sans-serif',
@@ -378,8 +369,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                   >
                     {alert.message}
                   </div>
-
-                  {/* Course Info */}
                   <div
                     style={{
                       paddingLeft: '30px',
@@ -390,8 +379,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                   >
                     {courseName} • {className} • {teacherName}
                   </div>
-
-                  {/* Timestamp */}
                   <div
                     style={{
                       paddingLeft: '30px',
@@ -402,8 +389,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                   >
                     {formatDate(alert.createdAt)}
                   </div>
-
-                  {/* Comment Section */}
                   {(alert.comment || editingCommentFor === alert.id) && (
                     <div
                       style={{
@@ -526,8 +511,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
                       )}
                     </div>
                   )}
-
-                  {/* Actions */}
                   <div
                     style={{
                       display: 'flex',
@@ -585,8 +568,6 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
           )}
         </div>
       </div>
-
-      {/* Send Message Modal */}
       {selectedAlertForMessage && (
         <SendMessageModal
           isOpen={sendMessageModalOpen}
@@ -603,6 +584,3 @@ export function AlertsModal({ isOpen, onClose }: AlertsModalProps) {
     </div>
   );
 }
-
-
-

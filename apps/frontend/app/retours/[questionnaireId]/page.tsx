@@ -19,7 +19,7 @@ export default function QuestionnaireDetailsPage() {
   const questionnaireId = params.questionnaireId as string;
   const [data, setData] = useState<QuestionnaireDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPaidPlan] = useState(false); // TODO: Vérifier le plan depuis Stripe
+  const [isPaidPlan] = useState(false); 
   const [aiStatistics, setAiStatistics] = useState<{
     theoryPracticeRatio: { theory: number; practice: number };
     teachingSpeed: { tooSlow: number; justRight: number; tooFast: number };
@@ -47,8 +47,6 @@ export default function QuestionnaireDetailsPage() {
       const stats = await apiClient.get<any>(`/questionnaires/${questionnaireId}/all-statistics`);
       setAllStatistics(stats);
     } catch (error: any) {
-      console.error('Error loading all statistics:', error);
-      // Ne pas afficher d'erreur si les stats ne sont pas disponibles
     } finally {
       setIsLoadingStats(false);
     }
@@ -68,8 +66,6 @@ export default function QuestionnaireDetailsPage() {
       }>(`/questionnaires/${questionnaireId}/ai-statistics`);
       setAiStatistics(stats);
     } catch (error: any) {
-      console.error('Error loading AI statistics:', error);
-      // Ne pas afficher d'erreur si les stats ne sont pas disponibles
     } finally {
       setIsLoadingStats(false);
     }
@@ -81,7 +77,6 @@ export default function QuestionnaireDetailsPage() {
       const response = await questionnairesService.getQuestionnaireDetails(questionnaireId);
       setData(response);
     } catch (error: any) {
-      console.error('Error loading questionnaire details:', error);
       const errorMessage = error?.message || 'Erreur lors du chargement des détails';
       toast.error(errorMessage);
   
@@ -91,8 +86,6 @@ export default function QuestionnaireDetailsPage() {
     }
   };
 
-
-  // Extraire les dates uniques des réponses pour les filtres
   const availableDates = useMemo(() => {
     if (!data?.responses) return [];
     const dates = new Set<string>();
@@ -110,7 +103,6 @@ export default function QuestionnaireDetailsPage() {
     });
   }, [data?.responses]);
 
-  // Filtrer les réponses selon la date sélectionnée
   const filteredResponses = useMemo(() => {
     if (!data?.responses) return [];
     if (!selectedDateFilter || selectedDateFilter === 'all') return data.responses;
@@ -129,13 +121,12 @@ export default function QuestionnaireDetailsPage() {
     return generateTemporalData(filteredResponses);
   }, [filteredResponses]);
 
-  // Calculer ratingDistribution pour les données filtrées
   const filteredRatingDistribution = useMemo(() => {
-    // Utiliser les données IA si disponibles
+    
     if (allStatistics?.overallRatingDistribution && allStatistics.overallRatingDistribution.length > 0) {
       return allStatistics.overallRatingDistribution;
     }
-    // Sinon utiliser les données calculées
+    
     if (!filteredResponses || filteredResponses.length === 0) return data?.ratingDistribution || [];
     const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     filteredResponses.forEach((response) => {
@@ -147,11 +138,10 @@ export default function QuestionnaireDetailsPage() {
     }));
   }, [filteredResponses, data?.ratingDistribution, allStatistics]);
 
-  
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | null>(null);
 
   const weakPoints = useMemo(() => {
-    // Utiliser les données IA si disponibles
+    
     if (allStatistics?.weakPoints && allStatistics.weakPoints.length > 0) {
       return allStatistics.weakPoints.map((point: string, index: number) => ({
         id: `weak-${index}`,
@@ -161,7 +151,7 @@ export default function QuestionnaireDetailsPage() {
         createdAt: new Date().toISOString(),
       }));
     }
-    // Sinon utiliser les données calculées
+    
     if (!data?.responses) return [];
     let filtered = data.responses.filter((r) => r.rating <= 2 && r.comment);
     if (selectedRatingFilter) {
@@ -171,7 +161,7 @@ export default function QuestionnaireDetailsPage() {
   }, [data?.responses, selectedRatingFilter, allStatistics]);
 
   const strongPoints = useMemo(() => {
-    // Utiliser les données IA si disponibles
+    
     if (allStatistics?.strongPoints && allStatistics.strongPoints.length > 0) {
       return allStatistics.strongPoints.map((point: string, index: number) => ({
         id: `strong-${index}`,
@@ -181,7 +171,7 @@ export default function QuestionnaireDetailsPage() {
         createdAt: new Date().toISOString(),
       }));
     }
-    // Sinon utiliser les données calculées
+    
     if (!data?.responses) return [];
     let filtered = data.responses.filter((r) => r.rating >= 4 && r.comment);
     if (selectedRatingFilter) {
@@ -223,7 +213,6 @@ export default function QuestionnaireDetailsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-[1650px] pt-20 pb-8 px-4 sm:pt-[100px] sm:px-8 sm:pb-8">
-        {/* Bannière plan gratuit */}
         {!isPaidPlan && data.hiddenResponses > 0 && (
           <TrialBanner
             message1={`Débloquez vos réponses. ${data.visibleResponses} utilisées par membre [plan gratuit]`}
@@ -232,8 +221,6 @@ export default function QuestionnaireDetailsPage() {
             linkHref="/pricing"
           />
         )}
-
-        {/* En-tête */}
         <div className="mb-8">
           <Link
             href={routes.dashboard}
@@ -260,9 +247,7 @@ export default function QuestionnaireDetailsPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
-          {/* Colonne principale */}
           <div>
-            {/* Récap temporel */}
             <Section title="Récap' temporel">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <ChartCard title="Globalement vous avez trouvé ce cours">
@@ -337,10 +322,7 @@ export default function QuestionnaireDetailsPage() {
                 </ChartCard>
               </div>
             </Section>
-
-            {/* Le cours */}
             <Section title="Le cours">
-              {/* Filtres de date */}
               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
                 {availableDates.slice(0, 2).map((date) => (
                   <button
@@ -472,10 +454,7 @@ export default function QuestionnaireDetailsPage() {
                   )}
                 </ChartCard>
               </div>
-              
-              {/* Nouveaux graphiques en donut */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                {/* L'ambiance durant le cours était */}
                 <ChartCard title="L'ambiance durant le cours était">
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                     <ResponsiveContainer width="100%" height={180} className="min-h-[180px] md:h-[200px]">
@@ -523,8 +502,6 @@ export default function QuestionnaireDetailsPage() {
                     </div>
                   </div>
                 </ChartCard>
-
-                {/* Le nombre d'heures */}
                 <ChartCard title="Le nombre d'heures">
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                     <ResponsiveContainer width="100%" height={180} className="min-h-[180px] md:h-[200px]">
@@ -576,8 +553,6 @@ export default function QuestionnaireDetailsPage() {
                     </div>
                   </div>
                 </ChartCard>
-
-                {/* La pertinence des infos */}
                 <ChartCard title="La pertinence des infos par rapport à ce que vous imaginiez de ce cours">
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                     <ResponsiveContainer width="100%" height={180} className="min-h-[180px] md:h-[200px]">
@@ -632,7 +607,6 @@ export default function QuestionnaireDetailsPage() {
               </div>
             </Section>
 
-            {/* L'intervenant */}
             <Section title="L'intervenant">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ChartCard title="La clarté des informations et des notions">
@@ -735,8 +709,6 @@ export default function QuestionnaireDetailsPage() {
                 </ChartCard>
               </div>
             </Section>
-
-            {/* Analyse des tendances IA */}
             {aiStatistics?.trendAnalysis && (
               <Section title="Analyse des tendances (IA)">
                 <p className="text-sm md:text-base text-[#2F2E2C] leading-relaxed">
@@ -744,8 +716,6 @@ export default function QuestionnaireDetailsPage() {
                 </p>
               </Section>
             )}
-
-            {/* Insights et Recommandations IA */}
             {(aiStatistics?.insights.length > 0 || aiStatistics?.recommendations.length > 0) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 {aiStatistics.insights.length > 0 && (
@@ -772,10 +742,7 @@ export default function QuestionnaireDetailsPage() {
                 )}
               </div>
             )}
-
-            {/* Points faibles et forts */}
             <div className="mt-6">
-              {/* Barre de filtres par note */}
               <div 
                 style={{
                   display: 'flex',
@@ -894,10 +861,7 @@ export default function QuestionnaireDetailsPage() {
               </div>
             </div>
           </div>
-
-          {/* Sidebar */}
           <div className="lg:sticky lg:top-24">
-            {/* Partage */}
             <div
               className="bg-white rounded-lg p-4 md:p-6 mb-6"
               style={{
@@ -961,8 +925,6 @@ export default function QuestionnaireDetailsPage() {
                 <ArrowUpRight size={16} color="#2F2E2C" />
               </button>
             </div>
-
-            {/* Export */}
             <div
               className="bg-white rounded-lg p-4 md:p-6"
               style={{
@@ -1078,7 +1040,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 function generateTemporalData(responses: QuestionnaireDetails['responses']) {
-  // Grouper les réponses par date
+  
   const grouped = responses.reduce((acc, response) => {
     const date = new Date(response.createdAt).toLocaleDateString('fr-FR', {
       day: 'numeric',
@@ -1093,14 +1055,14 @@ function generateTemporalData(responses: QuestionnaireDetails['responses']) {
 
   return Object.entries(grouped)
     .sort(([dateA], [dateB]) => {
-      // Trier par date
+      
       const date1 = new Date(dateA.split(' ').reverse().join(' '));
       const date2 = new Date(dateB.split(' ').reverse().join(' '));
       return date1.getTime() - date2.getTime();
     })
     .map(([date, ratings]) => {
       const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-      // Convertir le rating de 1-5 à 0-20 pour le premier graphique
+      
       const ratingScaled = (avgRating / 5) * 20;
       return {
         date,
@@ -1109,4 +1071,3 @@ function generateTemporalData(responses: QuestionnaireDetails['responses']) {
       };
     });
 }
-

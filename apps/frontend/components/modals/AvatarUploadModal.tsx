@@ -29,19 +29,17 @@ export function AvatarUploadModal({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
+      
       if (!file.type.startsWith('image/')) {
         alert('Veuillez sélectionner une image');
         return;
       }
 
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('L\'image ne doit pas dépasser 5MB');
         return;
       }
 
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -209,4 +207,3 @@ export function AvatarUploadModal({
     />
   );
 }
-

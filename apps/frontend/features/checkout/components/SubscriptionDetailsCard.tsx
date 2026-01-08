@@ -25,7 +25,6 @@ export function SubscriptionDetailsCard({
         gap: '20px'
       }}
     >
-      {/* Badge */}
       <div
         className="w-fit"
         style={{
@@ -50,8 +49,6 @@ export function SubscriptionDetailsCard({
           ✨ Super Izzzi
         </span>
       </div>
-
-      {/* Titre */}
       <h2 
         className="font-mochiy"
         style={{
@@ -64,12 +61,8 @@ export function SubscriptionDetailsCard({
       >
         Détail de votre abonnement
       </h2>
-
-      {/* Détails */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {/* Ligne 1: Plan + Moyen de paiement (alignés horizontalement) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          {/* Plan */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"
@@ -93,8 +86,6 @@ export function SubscriptionDetailsCard({
               {plan}
             </span>
           </div>
-
-          {/* Moyen de paiement */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"
@@ -119,10 +110,7 @@ export function SubscriptionDetailsCard({
             </span>
           </div>
         </div>
-
-        {/* Ligne 2: Montant payé + Prochain paiement (alignés horizontalement) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          {/* Montant payé */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"
@@ -146,8 +134,6 @@ export function SubscriptionDetailsCard({
               {amount}€ TTC
             </span>
           </div>
-
-          {/* Prochain paiement */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"

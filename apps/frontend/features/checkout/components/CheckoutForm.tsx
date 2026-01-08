@@ -17,17 +17,15 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
   const { user } = useAuth();
   
   const [formData, setFormData] = useState({
-    // Informations de facturation pré-remplies avec les données utilisateur
+    
     email: user?.email || '',
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    
-    // Informations de carte
+
     cardNumber: '',
     expiryDate: '',
     cvc: '',
-    
-    // Adresse de facturation
+
     address: '',
     addressComplement: '',
     city: '',
@@ -37,41 +35,35 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
     siret: '',
   });
 
-  // Fonction pour formater le numéro de carte (ajoute des espaces tous les 4 chiffres)
   const formatCardNumber = (value: string): string => {
-    // Retirer tous les espaces et caractères non numériques
-    const numbers = value.replace(/\D/g, '');
-    // Limiter à 16 chiffres
-    const limitedNumbers = numbers.slice(0, 16);
     
-    // Formater avec des espaces tous les 4 chiffres
-    // Utiliser une approche qui évite l'espace final
+    const numbers = value.replace(/\D/g, '');
+    
+    const limitedNumbers = numbers.slice(0, 16);
+
     const formatted = limitedNumbers
-      .match(/.{1,4}/g) // Diviser en groupes de 4
-      ?.join(' ') || limitedNumbers; // Joindre avec des espaces
+      .match(/.{1,4}/g) 
+      ?.join(' ') || limitedNumbers; 
     
     return formatted;
   };
 
-  // Fonction pour formater la date d'expiration (MM/AA)
   const formatExpiryDate = (value: string): string => {
-    // Retirer tous les caractères non numériques
-    const numbers = value.replace(/\D/g, '');
-    // Limiter à 4 chiffres
-    let limitedNumbers = numbers.slice(0, 4);
     
-    // Valider le mois (ne peut pas dépasser 12)
+    const numbers = value.replace(/\D/g, '');
+    
+    let limitedNumbers = numbers.slice(0, 4);
+
     if (limitedNumbers.length >= 2) {
       const month = parseInt(limitedNumbers.slice(0, 2));
       if (month > 12) {
-        // Si le mois dépasse 12, le limiter à 12
+        
         limitedNumbers = '12' + limitedNumbers.slice(2);
       } else if (month === 0) {
   
         limitedNumbers = '01' + limitedNumbers.slice(2);
       }
     }
-    
 
     if (limitedNumbers.length >= 2) {
       return `${limitedNumbers.slice(0, 2)}/${limitedNumbers.slice(2)}`;
@@ -82,7 +74,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
 
   const handleChange = (field: string, value: string) => {
     let formattedValue = value;
-    
 
     if (field === 'cardNumber') {
       formattedValue = formatCardNumber(value);
@@ -112,7 +103,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
 
   return (
     <form id="checkout-form" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Titre de la section */}
       <div>
         <h2 style={{
           fontFamily: 'Mochiy Pop One',
@@ -131,8 +121,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
           Changez de plan pour débloquer les retours illimités
         </p>
       </div>
-
-      {/* Email de facturation */}
       <div>
         <h3 style={{
           fontFamily: 'Poppins',
@@ -152,8 +140,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
           style={{ width: '100%' }}
         />
       </div>
-
-      {/* Nom et Prénom */}
       <div>
         <h3 style={{
           fontFamily: 'Poppins',
@@ -208,8 +194,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
           </div>
         </div>
       </div>
-
-      {/* Informations de carte */}
       <div>
         <h3 style={{
           fontFamily: 'Poppins',
@@ -222,7 +206,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
         </h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Numéro de carte */}
           <div>
             <label style={{
               display: 'block',
@@ -245,8 +228,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
               style={{ width: '100%' }}
             />
           </div>
-
-          {/* Date d'expiration et CVC */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
               <label style={{
@@ -297,7 +278,6 @@ export function CheckoutForm({ classCount, isAnnual, totalAmount, onSubmit }: Ch
         </div>
       </div>
 
-      {/* Adresse de facturation */}
       <BillingAddressForm 
         formData={formData}
         onChange={handleChange}

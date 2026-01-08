@@ -84,7 +84,6 @@ export function SendMessageModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             padding: '24px',
@@ -134,8 +133,6 @@ export function SendMessageModal({
             <X size={24} color="#2F2E2C" />
           </button>
         </div>
-
-        {/* Content */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <div style={{ padding: '24px', flex: 1 }}>
             <div style={{ marginBottom: '16px' }}>
@@ -217,8 +214,6 @@ export function SendMessageModal({
               )}
             </div>
           </div>
-
-          {/* Footer */}
           <div
             style={{
               padding: '24px',
@@ -283,4 +278,3 @@ export function SendMessageModal({
     </div>
   );
 }
-

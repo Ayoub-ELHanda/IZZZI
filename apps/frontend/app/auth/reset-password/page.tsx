@@ -46,7 +46,6 @@ function ResetPasswordContent() {
       await authService.resetPassword(token, formData.password);
       router.push(routes.auth.login + '?reset=success');
     } catch (error: any) {
-      console.error('Reset password error:', error);
       setError(error.message || 'Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setIsLoading(false);
@@ -63,7 +62,6 @@ function ResetPasswordContent() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5] py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image
             src="/logo-izzzi.svg"
@@ -73,8 +71,6 @@ function ResetPasswordContent() {
             className="h-auto w-auto"
           />
         </div>
-
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-sm p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Définir un nouveau mot de passe
@@ -87,7 +83,6 @@ function ResetPasswordContent() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* New Password */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Nouveau mot de passe
@@ -116,8 +111,6 @@ function ResetPasswordContent() {
                 </button>
               </div>
             </div>
-
-            {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Confirmer le mot de passe
@@ -146,8 +139,6 @@ function ResetPasswordContent() {
                 </button>
               </div>
             </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}

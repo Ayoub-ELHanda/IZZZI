@@ -64,7 +64,6 @@ export function BaseModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           style={{
@@ -79,8 +78,6 @@ export function BaseModal({
         >
           <X size={16} color="#2F2E2C" strokeWidth={2} />
         </button>
-
-        {/* Title */}
         <h2
           style={{
             fontFamily: 'Mochiy Pop One, sans-serif',
@@ -92,8 +89,6 @@ export function BaseModal({
         >
           {title}
         </h2>
-
-        {/* Description */}
         <div
           style={{
             fontFamily: 'Poppins, sans-serif',
@@ -106,15 +101,11 @@ export function BaseModal({
         >
           {description}
         </div>
-
-        {/* Additional Content */}
         {additionalContent && (
           <div style={{ marginBottom: '32px' }}>
             {additionalContent}
           </div>
         )}
-
-        {/* Buttons */}
         <div
           style={{
             display: 'flex',

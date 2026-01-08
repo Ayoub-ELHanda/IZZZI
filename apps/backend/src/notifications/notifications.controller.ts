@@ -110,4 +110,3 @@ export class NotificationsController {
     return result;
   }
 }
-

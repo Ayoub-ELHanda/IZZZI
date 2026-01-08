@@ -31,8 +31,7 @@ export default function MyClassesPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   
   const { user } = useAuth();
-  
-  // Vérifier si l'utilisateur est en période d'essai ou plan gratuit
+
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
   const isFreePlan = user?.subscriptionStatus === 'FREE';
   
@@ -50,7 +49,6 @@ export default function MyClassesPage() {
       const data = await classesService.getAll(false);
       setClasses(data);
     } catch (error) {
-      console.error('Error loading classes:', error);
       toast.error('Erreur lors du chargement des classes');
     } finally {
       setIsLoading(false);
@@ -69,7 +67,6 @@ export default function MyClassesPage() {
       setIsModalOpen(false);
       loadClasses();
     } catch (error: any) {
-      console.error('Error creating class:', error);
       toast.error(error.message || 'Erreur lors de la création de la classe');
     }
   };
@@ -88,7 +85,6 @@ export default function MyClassesPage() {
       setEditingClass(null);
       loadClasses();
     } catch (error: any) {
-      console.error('Error updating class:', error);
       toast.error(error.message || 'Erreur lors de la modification');
     }
   };
@@ -102,7 +98,6 @@ export default function MyClassesPage() {
       setArchivingClassId(null);
       loadClasses();
     } catch (error: any) {
-      console.error('Error archiving class:', error);
       toast.error(error.message || 'Erreur lors de l\'archivage');
     }
   };
@@ -126,8 +121,6 @@ export default function MyClassesPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
       <div className="mx-auto max-w-[1650px]">
-      
-        {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
         {(isTrialing || isFreePlan) && (
           <TrialBanner
             message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
@@ -211,7 +204,6 @@ export default function MyClassesPage() {
           ))}
         </div>
 
-       
         <Link href="/classes/archived" prefetch={true} className="text-sm md:text-sm text-[#2F2E2C] underline cursor-pointer inline-flex items-center gap-2">
           Voir les classes archivées →
         </Link>

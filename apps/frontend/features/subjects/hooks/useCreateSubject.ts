@@ -32,7 +32,6 @@ export function useCreateSubject(classId: string) {
       router.push(`/my-subjects?classId=${classId}`);
       return newSubject;
     } catch (error: any) {
-      console.error('Error creating subject:', error);
       toast.error(error.message || 'Erreur lors de la création de la matière');
       throw error;
     } finally {
@@ -42,7 +41,6 @@ export function useCreateSubject(classId: string) {
 
   const handleCSVImport = (file: File) => {
     toast.info('Import CSV en cours de développement');
-    console.log('CSV file:', file);
   };
 
   return {

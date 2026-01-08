@@ -1,7 +1,6 @@
 export default function MentionsLegalesPage() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero Section with Title */}
       <section className="bg-[#F4F4F4] pt-32 pb-16">
         <div className="max-w-4xl mx-auto px-8">
           <h1 className="text-5xl font-bold text-gray-900 text-center mb-6">
@@ -14,12 +13,9 @@ export default function MentionsLegalesPage() {
           </p>
         </div>
       </section>
-
-      {/* Content Section */}
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-8">
           <div className="space-y-12">
-            {/* Edition du site */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Edition du site</h2>
               <div className="space-y-4 text-gray-700 leading-relaxed">
@@ -36,8 +32,6 @@ export default function MentionsLegalesPage() {
                 </p>
               </div>
             </div>
-
-            {/* Hébergement */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Hébergement</h2>
               <p className="text-gray-700 leading-relaxed">
@@ -45,16 +39,12 @@ export default function MentionsLegalesPage() {
                 Roubaix Cedex 1, (contact téléphonique ou email : 1007).
               </p>
             </div>
-
-            {/* Directeur de publication */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Directeur de publication</h2>
               <p className="text-gray-700 leading-relaxed">
                 Le Directeur de la publication du Site est Jeremy Serval.
               </p>
             </div>
-
-            {/* Nous contacter */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Nous contacter</h2>
               <div className="space-y-2 text-gray-700 leading-relaxed">
@@ -63,8 +53,6 @@ export default function MentionsLegalesPage() {
                 <p>Par courrier : 5 rue de charonne, 75011 Paris</p>
               </div>
             </div>
-
-            {/* Données personnelles */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Données personnelles</h2>
               <p className="text-gray-700 leading-relaxed">
@@ -80,4 +68,3 @@ export default function MentionsLegalesPage() {
     </div>
   );
 }
-

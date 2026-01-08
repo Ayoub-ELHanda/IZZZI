@@ -28,7 +28,6 @@ export function EmailReminderModal({
       await onSend();
       onClose();
     } catch (error) {
-      console.error('Error sending reminders:', error);
     } finally {
       setIsLoading(false);
     }

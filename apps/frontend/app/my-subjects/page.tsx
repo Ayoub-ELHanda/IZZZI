@@ -43,7 +43,6 @@ export default function MySubjectsPage() {
       setClassData(classInfo);
       setSubjects(subjectsData);
     } catch (error) {
-      console.error('Error loading data:', error);
       toast.error('Erreur lors du chargement des données');
     } finally {
       setIsLoading(false);
@@ -63,16 +62,15 @@ export default function MySubjectsPage() {
       await subjectsService.create({
         name: formData.name,
         teacherName: formData.teacherName,
-        teacherEmail: formData.teacherEmail || undefined, // Send if provided
+        teacherEmail: formData.teacherEmail || undefined, 
         startDate: parseDate(formData.startDate),
         endDate: parseDate(formData.endDate),
         classId: classId,
       });
       toast.success('Matière créée avec succès');
       setIsModalOpen(false);
-      await loadData(); // Recharger la liste
+      await loadData(); 
     } catch (error: any) {
-      console.error('Error creating subject:', error);
       toast.error(error.message || 'Erreur lors de la création de la matière');
     } finally {
       setIsCreating(false);
@@ -81,7 +79,6 @@ export default function MySubjectsPage() {
 
   const handleCSVImport = (file: File) => {
     toast.info('Import CSV en cours de développement');
-    console.log('CSV file:', file);
   };
 
   const handleValidate = () => {
@@ -90,7 +87,6 @@ export default function MySubjectsPage() {
 
   const handleEdit = (id: string) => {
     toast.info('Modification en cours de développement');
-    console.log('Edit subject:', id);
   };
 
   const handleDelete = async (id: string) => {
@@ -101,7 +97,6 @@ export default function MySubjectsPage() {
       toast.success('Matière supprimée avec succès');
       await loadData();
     } catch (error: any) {
-      console.error('Error deleting subject:', error);
       toast.error(error.message || 'Erreur lors de la suppression');
     }
   };
@@ -122,7 +117,6 @@ export default function MySubjectsPage() {
   return (
     <div className="min-h-screen bg-gray-50" style={{ paddingTop: '120px', paddingLeft: '32px', paddingRight: '32px', paddingBottom: '32px' }}>
       <div className="mx-auto" style={{ maxWidth: '1400px' }}>
-        {/* Back link */}
         <button
           onClick={() => router.back()}
           style={{
@@ -142,8 +136,6 @@ export default function MySubjectsPage() {
         >
           Retour aux uploads des matières
         </button>
-
-        {/* Header */}
         <div
           style={{
             display: 'flex',
@@ -192,15 +184,11 @@ export default function MySubjectsPage() {
             </Button>
           </div>
         </div>
-
-        {/* Table */}
         <SubjectsDataTable
           subjects={transformedSubjects}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-
-        {/* Modal */}
         <SubjectModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

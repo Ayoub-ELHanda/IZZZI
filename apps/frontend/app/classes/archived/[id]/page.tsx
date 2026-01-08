@@ -33,14 +33,12 @@ export default function ArchivedClassDetailPage() {
       setClassData(classInfo);
       setSubjects(subjectsData);
     } catch (error) {
-      console.error('Error loading archived class data:', error);
       toast.error('Erreur lors du chargement des données');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fonction pour formater une date en dd/MM/yyyy
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
@@ -124,7 +122,6 @@ export default function ArchivedClassDetailPage() {
           </button>
         </Link>
 
-
         <div
           style={{
             display: 'flex',
@@ -157,13 +154,11 @@ export default function ArchivedClassDetailPage() {
             </p>
           </div>
 
-      
-          <Button variant="export-class" onClick={() => console.log('Export PDF')}>
+          <Button variant="export-class" onClick={() => }>
             <span>Exporter la classe (PDF)</span>
             <Download size={16} />
           </Button>
         </div>
-
 
         <SubjectsTable subjects={transformedSubjects} isArchived={true} />
       </div>

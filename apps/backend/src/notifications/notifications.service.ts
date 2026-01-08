@@ -15,9 +15,6 @@ export class NotificationsService {
     private notificationsGateway: NotificationsGateway,
   ) {}
 
-  /**
-   * Créer une notification pour un utilisateur
-   */
   async createNotification(
     userId: string,
     type: NotificationType,
@@ -46,23 +43,19 @@ export class NotificationsService {
       },
     });
 
-    // Envoyer la notification via WebSocket en temps réel
     await this.notificationsGateway.sendNotificationToUser(userId, notification);
 
     this.logger.log(`Notification créée pour l'utilisateur ${userId}: ${title}`);
     return notification;
   }
 
-  /**
-   * Créer une alerte pour un utilisateur
-   */
   async createAlert(
     userId: string,
     questionnaireId: string,
     type: NotificationType,
     message: string,
   ) {
-    // Vérifier si une alerte existe déjà pour ce questionnaire
+    
     const existingAlert = await this.prisma.alert.findFirst({
       where: {
         userId,
@@ -72,7 +65,7 @@ export class NotificationsService {
     });
 
     if (existingAlert) {
-      // Mettre à jour l'alerte existante
+      
       const updatedAlert = await this.prisma.alert.update({
         where: { id: existingAlert.id },
         data: {
@@ -93,10 +86,8 @@ export class NotificationsService {
         },
       });
 
-      // Envoyer la mise à jour via WebSocket pour que l'alerte soit visible en temps réel
       await this.notificationsGateway.sendAlertToUser(userId, updatedAlert);
 
-      // Créer aussi une notification pour informer de la mise à jour
       await this.createNotification(
         userId,
         type,
@@ -110,7 +101,6 @@ export class NotificationsService {
       return updatedAlert;
     }
 
-    // Créer une nouvelle alerte
     const alert = await this.prisma.alert.create({
       data: {
         userId,
@@ -131,7 +121,6 @@ export class NotificationsService {
       },
     });
 
-    // Créer aussi une notification
     await this.createNotification(
       userId,
       type,
@@ -146,9 +135,6 @@ export class NotificationsService {
     return alert;
   }
 
-  /**
-   * Récupérer toutes les notifications d'un utilisateur
-   */
   async getUserNotifications(userId: string, isRead?: boolean) {
     const where: any = { userId };
     if (isRead !== undefined) {
@@ -174,9 +160,6 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Récupérer toutes les alertes d'un utilisateur
-   */
   async getUserAlerts(userId: string, status?: AlertStatus) {
     const where: any = { userId };
     if (status !== undefined) {
@@ -202,14 +185,11 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Marquer une notification comme lue
-   */
   async markNotificationAsRead(notificationId: string, userId: string) {
     return this.prisma.notification.updateMany({
       where: {
         id: notificationId,
-        userId, // Sécurité : s'assurer que l'utilisateur possède la notification
+        userId, 
       },
       data: {
         isRead: true,
@@ -218,9 +198,6 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Marquer toutes les notifications comme lues
-   */
   async markAllNotificationsAsRead(userId: string) {
     return this.prisma.notification.updateMany({
       where: {
@@ -234,14 +211,11 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Marquer une alerte comme traitée
-   */
   async markAlertAsTreated(alertId: string, userId: string) {
     return this.prisma.alert.updateMany({
       where: {
         id: alertId,
-        userId, // Sécurité : s'assurer que l'utilisateur possède l'alerte
+        userId, 
       },
       data: {
         status: AlertStatus.TREATED,
@@ -251,14 +225,11 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Mettre à jour le commentaire d'une alerte
-   */
   async updateAlertComment(alertId: string, userId: string, comment: string) {
     return this.prisma.alert.updateMany({
       where: {
         id: alertId,
-        userId, // Sécurité : s'assurer que l'utilisateur possède l'alerte
+        userId, 
       },
       data: {
         comment,
@@ -267,15 +238,12 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Envoyer un message personnalisé à tous les étudiants de la classe associée à une alerte
-   */
   async sendMessageToStudents(alertId: string, userId: string, message: string) {
-    // Récupérer l'alerte avec le questionnaire et la classe
+    
     const alert = await this.prisma.alert.findFirst({
       where: {
         id: alertId,
-        userId, // Sécurité : s'assurer que l'utilisateur possède l'alerte
+        userId, 
       },
       include: {
         questionnaire: {
@@ -304,10 +272,8 @@ export class NotificationsService {
       throw new BadRequestException('Aucun email étudiant trouvé pour cette classe');
     }
 
-    // Récupérer le nom de l'expéditeur
     const senderName = `${alert.user.firstName} ${alert.user.lastName}`;
 
-    // Envoyer l'email à tous les étudiants
     const emailPromises = studentEmails.map((email) =>
       this.mailerService.sendCustomMessageToStudents(email, {
         subjectName: subject.name,
@@ -333,9 +299,6 @@ export class NotificationsService {
     }
   }
 
-  /**
-   * Compter les notifications non lues
-   */
   async getUnreadNotificationCount(userId: string) {
     return this.prisma.notification.count({
       where: {
@@ -345,9 +308,6 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Compter les alertes non traitées
-   */
   async getUntreatedAlertCount(userId: string) {
     return this.prisma.alert.count({
       where: {
@@ -357,6 +317,3 @@ export class NotificationsService {
     });
   }
 }
-
-
-

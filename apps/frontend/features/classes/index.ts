@@ -1,4 +1,4 @@
-// Classes feature exports
+
 export * from './types';
 export * from './hooks/useCreateClass';
 export * from './components/ClassForm';

@@ -32,8 +32,7 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
       });
 
       toast.success('Invitation envoyée avec succès !');
-      
-      // Reset form
+
       setFormData({
         email: '',
         firstName: '',
@@ -43,7 +42,6 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
       onSuccess?.();
       onClose();
     } catch (error: any) {
-      console.error('Error inviting user:', error);
       toast.error(error.message || 'Erreur lors de l\'envoi de l\'invitation');
     } finally {
       setIsLoading(false);
@@ -62,7 +60,6 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">
             Inviter un responsable pédagogique
@@ -75,10 +72,7 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Adresse email <span className="text-red-500">*</span>
@@ -94,8 +88,6 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
               className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
-
-          {/* First Name */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Prénom <span className="text-red-500">*</span>
@@ -111,8 +103,6 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
               className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
-
-          {/* Last Name */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
               Nom <span className="text-red-500">*</span>
@@ -128,15 +118,12 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
               className="w-full h-12 px-4 bg-gray-50 border-0 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
-
-          {/* Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
               Un email d'invitation sera envoyé à cette adresse avec un lien pour créer son compte.
             </p>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -166,4 +153,3 @@ export function InviteUserModal({ isOpen, onClose, onSuccess }: InviteUserModalP
     </div>
   );
 }
-

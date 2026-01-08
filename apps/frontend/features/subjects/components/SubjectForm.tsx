@@ -104,8 +104,6 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
           >
             2/2
           </div>
-
-          {/* Title */}
           <h2
             className="font-mochiy mx-auto"
             style={{
@@ -121,8 +119,6 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
           >
             Entrer les matières
           </h2>
-
-          {/* Decorative text */}
           <div
             className="absolute"
             style={{
@@ -139,8 +135,6 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
           </div>
         </div>
       )}
-
-      {/* CSV Section */}
       <div style={{
         width: '800px',
         minHeight: '228px',
@@ -259,7 +253,6 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
         </div>
       </div>
 
-      {/* OU separator */}
       <div style={{
         width: '45px',
         height: '23px',
@@ -273,7 +266,6 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
         ou
       </div>
 
-      {/* Manual form section */}
       <div style={{
         width: '804px',
         minHeight: '506px',

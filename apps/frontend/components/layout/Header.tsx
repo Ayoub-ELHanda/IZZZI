@@ -22,7 +22,6 @@ export function Header() {
   const [isMounted, setIsMounted] = React.useState(false);
   const { unreadCount } = useNotifications();
 
-  // Éviter les problèmes d'hydratation en ne rendant le badge que côté client
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -32,12 +31,10 @@ export function Header() {
     router.push(routes.home);
   };
 
-  // Close mobile menu when pathname changes
   React.useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Close mobile menu when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -54,7 +51,6 @@ export function Header() {
     }
   }, [mobileMenuOpen]);
 
-  // During SSR or before hydration, show a neutral header to avoid mismatch
   if (!isMounted) {
     return (
       <header style={{ position: 'relative', width: '100%' }}>
@@ -85,14 +81,12 @@ export function Header() {
             />
           </Link>
           <div className="hidden md:flex items-center gap-4 flex-1 justify-end">
-            {/* Placeholder to maintain layout during SSR */}
           </div>
         </nav>
       </header>
     );
   }
 
-  // If authenticated, show header with same style as home page but with authenticated content
   if (isAuthenticated) {
     const isDashboardPage = pathname === "/dashboard";
     const isClassesPage = pathname?.startsWith("/classes") || pathname?.startsWith("/create-class");
@@ -102,7 +96,6 @@ export function Header() {
         <nav 
           className="fixed top-2 left-4 right-4 flex items-center justify-between bg-white rounded-lg backdrop-blur-[12px] z-50 shadow-sm border border-[#E5E5E5] px-4 py-2 sm:top-4 sm:left-8 sm:right-8 sm:px-8 sm:py-3"
         >
-          {/* Logo - Left */}
           <Link 
             href={routes.home} 
             prefetch={true} 
@@ -127,8 +120,6 @@ export function Header() {
               className="h-[32px] md:h-[41px] w-auto"
             />
           </Link>
-
-          {/* Navigation buttons - Centered - Desktop only */}
           <div 
             style={{
               position: 'absolute',
@@ -197,8 +188,6 @@ export function Header() {
               </button>
             </Link>
           </div>
-
-          {/* Right side - Profile and Actions - Desktop only */}
           <div 
             style={{ 
               gap: '8px',
@@ -207,7 +196,6 @@ export function Header() {
             }}
             className="hidden md:flex items-center justify-end gap-4"
           >
-            {/* Bell icon with notification badge */}
             <button
               onClick={() => setIsNotificationsModalOpen(true)}
               style={{
@@ -255,8 +243,6 @@ export function Header() {
                 </span>
               )}
             </button>
-
-            {/* User profile */}
             <Link 
               href={routes.account.profile}
               prefetch={false}
@@ -389,7 +375,6 @@ export function Header() {
               </div>
             </Link>
 
-      
             <button
               onClick={handleLogout}
               style={{
@@ -416,8 +401,6 @@ export function Header() {
               Déconnexion
             </button>
           </div>
-
-          {/* Menu Button - Yellow button with MENU text - Mobile only */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="flex md:hidden items-center justify-center gap-2"
@@ -457,8 +440,6 @@ export function Header() {
             )}
           </button>
         </nav>
-
-        {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
           <div
             style={{
@@ -480,7 +461,6 @@ export function Header() {
             }}
             className="sm:top-24 sm:w-[calc(100%-32px)]"
           >
-            {/* Navigation Links */}
             <Link 
               href="/classes/my-classes" 
               prefetch={true} 
@@ -529,11 +509,7 @@ export function Header() {
                 Dashboard
               </button>
             </Link>
-
-            {/* Divider */}
             <div style={{ height: '1px', backgroundColor: '#E5E5E5', margin: '8px 0' }} />
-
-            {/* Notifications */}
             <button
               style={{
                 width: '100%',
@@ -556,8 +532,6 @@ export function Header() {
               <Bell size={20} color="#2F2E2C" strokeWidth={1.5} />
               Notifications
             </button>
-
-            {/* User Profile */}
             <Link 
               href={routes.account.profile}
               prefetch={false}
@@ -693,11 +667,7 @@ export function Header() {
                 </div>
               </div>
             </Link>
-
-            {/* Divider */}
             <div style={{ height: '1px', backgroundColor: '#E5E5E5', margin: '8px 0' }} />
-
-            {/* Logout Button */}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -721,8 +691,6 @@ export function Header() {
             </button>
           </div>
         )}
-
-        {/* Notifications Modal */}
         {isAuthenticated && (
           <NotificationsModal
             isOpen={isNotificationsModalOpen}
@@ -733,13 +701,11 @@ export function Header() {
     );
   }
 
-
   return (
     <header style={{ position: 'relative', width: '100%' }}>
       <nav 
         className="fixed top-2 left-4 right-4 flex items-center justify-between bg-white rounded-lg backdrop-blur-[12px] z-50 shadow-sm border border-[#E5E5E5] px-4 py-2 sm:top-4 sm:left-8 sm:right-8 sm:px-8 sm:py-3"
       >
-        {/* Logo */}
         <Link 
           href={routes.home} 
           prefetch={true}
@@ -764,8 +730,6 @@ export function Header() {
             className="h-[32px] md:h-[41px] w-auto"
           />
         </Link>
-
-        {/* Desktop Navigation - Visible on desktop */}
         <div 
           className="hidden md:flex items-center gap-4 flex-1 justify-end"
         >
@@ -856,8 +820,6 @@ export function Header() {
             </button>
           </Link>
         </div>
-
-        {/* Menu Button - Yellow button with MENU text - Mobile only */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="flex md:hidden items-center justify-center gap-2 flex-shrink-0"
@@ -896,8 +858,6 @@ export function Header() {
         </button>
 
       </nav>
-
-      {/* Mobile Menu Overlay - Public */}
       {mobileMenuOpen && (
         <div
           style={{

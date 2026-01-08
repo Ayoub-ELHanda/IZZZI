@@ -1,10 +1,9 @@
-// Application routes configuration
+
 export const routes = {
-  // Public routes
+  
   home: '/',
   pricing: '/pricing',
-  
-  // Auth routes
+
   auth: {
     login: '/auth/login',
     register: '/auth/register',
@@ -12,8 +11,7 @@ export const routes = {
     forgotPassword: '/auth/forgot-password',
     resetPassword: (token: string) => `/auth/reset-password?token=${token}`,
   },
-  
-  // Protected routes
+
   dashboard: '/dashboard',
   superAdmin: '/super-admin',
   
@@ -50,7 +48,3 @@ export const routes = {
     billing: '/account/billing',
   },
 } as const;
-
-
-
-

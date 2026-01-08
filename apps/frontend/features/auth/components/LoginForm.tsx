@@ -1,4 +1,4 @@
-// Login form component
+
 'use client';
 
 import { useState } from 'react';
@@ -27,7 +27,7 @@ export function LoginForm() {
     try {
       const { authService } = await import('@/services/auth/auth.service');
       const response = await authService.login(formData);
-      // Redirect based on user role
+      
       const userRole = response?.user?.role || response?.role;
       if (userRole === 'SUPER_ADMIN') {
         router.push(routes.superAdmin);
@@ -37,7 +37,6 @@ export function LoginForm() {
         router.push(routes.dashboard);
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       alert(error.message || 'Email ou mot de passe incorrect');
     } finally {
       setIsLoading(false);
@@ -115,7 +114,3 @@ export function LoginForm() {
     </div>
   );
 }
-
-
-
-

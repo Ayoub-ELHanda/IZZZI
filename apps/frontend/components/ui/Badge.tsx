@@ -19,7 +19,6 @@ export function Badge({
     withIcon: "bg-white border border-gray-200 text-gray-800 px-4 py-2 text-sm"
   };
 
-  // Si c'est le variant withIcon, on affiche toujours l'icône
   const showIcon = variant === 'withIcon' || icon;
 
   return (
