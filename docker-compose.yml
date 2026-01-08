@@ -29,11 +29,7 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile.dev
     container_name: izzzi-backend
-<<<<<<< HEAD
     command: sh -c "cd /app && npm install && cd apps/backend && npx prisma migrate deploy && npx prisma generate && cd /app && npm run dev:backend"
-=======
-    command: sh -c "npm install && npx prisma migrate deploy && npx prisma generate && npm run dev"
->>>>>>> b9419498f13468bed3e28aca3b97d34b256dce16
     env_file:
       - env/.env
     environment:
@@ -41,11 +37,7 @@ services:
       REDIS_URL: redis://redis:6379
       MAIL_HOST: smtp.gmail.com
       MAIL_PORT: "587"
-<<<<<<< HEAD
       FRONTEND_URL: http://167.99.135.132:3000
-=======
-      FRONTEND_URL: http://localhost:3000
->>>>>>> b9419498f13468bed3e28aca3b97d34b256dce16
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
       # OPENAI_API_KEY will be loaded from env/.env file via env_file
@@ -54,12 +46,8 @@ services:
     volumes:
       - ./apps/backend:/app/apps/backend
       - ./packages:/app/packages
-<<<<<<< HEAD
       - backend_node_modules:/app/node_modules
     working_dir: /app
-=======
-      - backend_node_modules:/app/apps/backend/node_modules
->>>>>>> b9419498f13468bed3e28aca3b97d34b256dce16
     depends_on:
       - postgres
       - redis
@@ -73,11 +61,7 @@ services:
     env_file:
       - env/.env
     environment:
-<<<<<<< HEAD
       NEXT_PUBLIC_API_BASE_URL: http://167.99.135.132:4000/api
-=======
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000/api
->>>>>>> b9419498f13468bed3e28aca3b97d34b256dce16
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
     ports:
