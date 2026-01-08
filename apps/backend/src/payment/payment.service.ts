@@ -265,11 +265,8 @@ export class PaymentService {
       },
     });
 
- 
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { subscriptionStatus: SubscriptionStatus.ACTIVE },
-    });
+    // ✅ NOUVEAU: Partager l'abonnement avec tous les utilisateurs du même établissement
+    await this.updateEstablishmentSubscriptionStatus(userId, SubscriptionStatus.ACTIVE);
 
     // Envoyer l'email de confirmation d'abonnement
     try {
@@ -496,10 +493,8 @@ export class PaymentService {
       data: { status: 'PAST_DUE' },
     });
 
-    await this.prisma.user.update({
-      where: { id: subscription.userId },
-      data: { subscriptionStatus: 'PAST_DUE' },
-    });
+
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.PAST_DUE);
 
     this.logger.warn(`⚠️ Payment failed for subscription ${subscription.id}`);
   }
@@ -511,15 +506,20 @@ export class PaymentService {
 
     if (!subscription) return;
 
+    const newStatus = this.mapStripeStatus(stripeSubscription.status);
+
     await this.prisma.subscription.update({
       where: { id: subscription.id },
       data: {
-        status: this.mapStripeStatus(stripeSubscription.status),
+        status: newStatus,
         currentPeriodStart: new Date((stripeSubscription as any).current_period_start * 1000),
         currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
         cancelAtPeriodEnd: (stripeSubscription as any).cancel_at_period_end,
       },
     });
+
+    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, newStatus);
   }
 
   private async handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription) {
@@ -537,10 +537,8 @@ export class PaymentService {
       },
     });
 
-    await this.prisma.user.update({
-      where: { id: subscription.userId },
-      data: { subscriptionStatus: SubscriptionStatus.CANCELED },
-    });
+    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.CANCELED);
   }
 
   private mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
@@ -552,6 +550,64 @@ export class PaymentService {
       trialing: SubscriptionStatus.TRIALING,
     };
     return statusMap[status] || SubscriptionStatus.ACTIVE;
+  }
+
+  /**
+   * ✅ NOUVEAU: Mettre à jour le statut d'abonnement pour tous les utilisateurs du même établissement
+   * Cette méthode permet de partager l'abonnement entre l'admin et le responsable pédagogique
+   */
+  private async updateEstablishmentSubscriptionStatus(userId: string, status: SubscriptionStatus) {
+    try {
+  
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { establishmentId: true, role: true },
+      });
+
+      if (!user || !user.establishmentId) {
+        this.logger.warn(`User ${userId} has no establishment, skipping shared subscription update`);
+        return;
+      }
+
+    
+      const establishmentUsers = await this.prisma.user.findMany({
+        where: {
+          establishmentId: user.establishmentId,
+          role: {
+            in: ['ADMIN', 'RESPONSABLE_PEDAGOGIQUE'],
+          },
+        },
+        select: { id: true, email: true, role: true },
+      });
+
+      if (establishmentUsers.length === 0) {
+        this.logger.warn(`No users found for establishment ${user.establishmentId}`);
+        return;
+      }
+
+      // Mettre à jour le statut pour tous les utilisateurs de l'établissement
+      await this.prisma.user.updateMany({
+        where: {
+          id: {
+            in: establishmentUsers.map(u => u.id),
+          },
+        },
+        data: {
+          subscriptionStatus: status,
+        },
+      });
+
+      this.logger.log(
+        `✅ Shared subscription status (${status}) updated for ${establishmentUsers.length} user(s) in establishment ${user.establishmentId}`,
+      );
+
+   
+      establishmentUsers.forEach(u => {
+        this.logger.log(`   - ${u.role}: ${u.email} → ${status}`);
+      });
+    } catch (error) {
+      this.logger.error(`Error updating establishment subscription status: ${error.message}`);
+        }
   }
 
   
@@ -567,14 +623,14 @@ export class PaymentService {
           throw new Error('User ID not found in session metadata');
         }
         
-        // Récupérer le montant depuis la session Stripe
-        let amount = null;
+       
+      let amount: number | null = null;
         if (totalAmount) {
-          // Le montant est stocké en euros dans les métadonnées (voir ligne 136)
+        
           amount = parseInt(totalAmount);
           this.logger.debug(`Amount from metadata: ${amount}€`);
         } else if (session.amount_total) {
-          // Utiliser le montant total de la session Stripe (en centimes, donc diviser par 100)
+   
           amount = session.amount_total / 100;
           this.logger.debug(`Amount from session.amount_total: ${amount}€`);
         } else {
@@ -600,8 +656,8 @@ export class PaymentService {
           status: 'paid',
           userId,
           subscriptionStatus: SubscriptionStatus.ACTIVE,
-          amount: amount, // Montant payé en euros
-          totalAmount: amount, // Alias pour compatibilité
+          amount: amount, 
+          totalAmount: amount, 
           classCount: parseInt(session.metadata?.classCount || '0'),
           isAnnual: session.metadata?.isAnnual === 'true',
         };
@@ -648,6 +704,10 @@ export class PaymentService {
       where: { id: subscription.id },
       data: { cancelAtPeriodEnd: true },
     });
+
+    // Note: Le statut restera ACTIVE jusqu'à la fin de la période
+    // L'annulation effective sera gérée par le webhook customer.subscription.deleted
+    this.logger.log(`✅ Subscription ${subscription.id} will be canceled at period end for user ${userId} and their establishment`);
 
     return { success: true, message: 'Subscription will be canceled at period end' };
   }

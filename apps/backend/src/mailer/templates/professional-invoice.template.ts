@@ -25,7 +25,7 @@ export class ProfessionalInvoiceTemplate implements EmailTemplate<ProfessionalIn
   private template: string;
 
   constructor() {
-    // Load the HTML template file
+
     const templatePath = path.join(__dirname, 'invoice.html');
     try {
       this.template = fs.readFileSync(templatePath, 'utf-8');
@@ -38,7 +38,6 @@ export class ProfessionalInvoiceTemplate implements EmailTemplate<ProfessionalIn
   generate(data: ProfessionalInvoiceData): string {
     let html = this.template;
     
-    // Replace all template variables
     html = html.replace(/{{customerName}}/g, data.customerName);
     html = html.replace(/{{customerEmail}}/g, data.customerEmail);
     html = html.replace(/{{invoiceNumber}}/g, data.invoiceNumber);

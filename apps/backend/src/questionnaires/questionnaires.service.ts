@@ -326,9 +326,7 @@ export class QuestionnairesService {
     };
   }
 
-  /**
-   * Vérifier les critères d'alerte et générer des alertes si nécessaire
-   */
+
   private async checkAndGenerateAlerts(questionnaireId: string) {
     const questionnaire = await this.prisma.questionnaire.findUnique({
       where: { id: questionnaireId },
@@ -353,26 +351,38 @@ export class QuestionnairesService {
       questionnaire.responses.reduce((sum, r) => sum + r.rating, 0) /
       totalResponses;
 
-    // Critères d'alerte
-    const hasLowRating = averageRating < 3.5;
-    const hasLowResponses = totalResponses < 5;
+    // 🔥 NOUVELLE LOGIQUE: Créer des alertes dès la première réponse
+    let shouldCreateAlert = false;
+    let alertType: NotificationType = NotificationType.ALERT_POSITIVE;
+    let message = '';
 
-    // Générer des alertes selon les critères
-    if (hasLowRating || hasLowResponses) {
-      const alertType = questionnaire.type === QuestionnaireType.DURING_COURSE
-        ? NotificationType.ALERT_POSITIVE
-        : NotificationType.ALERT_NEGATIVE;
+    // Cas 1: Score faible détecté (dès la première réponse)
+    if (averageRating < 3.5) {
+      shouldCreateAlert = true;
+      alertType = NotificationType.ALERT_NEGATIVE;
+      message = `⚠️ Score faible détecté sur le cours "${questionnaire.subject.name}" de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 sur ${totalResponses} retour${totalResponses > 1 ? 's' : ''}).`;
+    }
+    // Cas 2: Excellent score (dès 3 réponses minimum)
+    else if (averageRating >= 4.5 && totalResponses >= 3) {
+      shouldCreateAlert = true;
+      alertType = NotificationType.ALERT_POSITIVE;
+      message = `🎉 Excellent score sur le cours "${questionnaire.subject.name}" de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 avec ${totalResponses} retours) !`;
+    }
+    // Cas 3: Alerte d'information - premiers retours reçus
+    else if (totalResponses === 1) {
+      shouldCreateAlert = true;
+      alertType = NotificationType.ALERT_POSITIVE;
+      message = `📝 Premier retour reçu sur le cours "${questionnaire.subject.name}" de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5).`;
+    }
+   
+    else if (totalResponses % 5 === 0) {
+      shouldCreateAlert = true;
+      alertType = averageRating >= 4.0 ? NotificationType.ALERT_POSITIVE : NotificationType.ALERT_NEGATIVE;
+      message = `📊 Mise à jour : ${totalResponses} retours reçus pour "${questionnaire.subject.name}" (moyenne: ${averageRating.toFixed(1)}/5).`;
+    }
 
-      let message = '';
-      if (hasLowRating && hasLowResponses) {
-        message = `Score moyen faible (${averageRating.toFixed(1)}/5) et nombre de retours insuffisant (${totalResponses} retours).`;
-      } else if (hasLowRating) {
-        message = `Score moyen faible détecté sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5).`;
-      } else if (hasLowResponses) {
-        message = `Nombre de retours insuffisant sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${totalResponses} retours).`;
-      }
-
-      // Créer l'alerte
+    if (shouldCreateAlert) {
+      
       const alert = await this.notificationsService.createAlert(
         userId,
         questionnaireId,
@@ -380,52 +390,25 @@ export class QuestionnairesService {
         message,
       );
 
-      // Envoyer via WebSocket
+      
       await this.notificationsGateway.sendAlertToUser(userId, alert);
 
-      // Générer la synthèse AI uniquement lors de la création d'une nouvelle alerte
-      // Vérifier si une synthèse existe déjà pour éviter les appels API inutiles
+      console.log(`✅ Alerte créée pour le questionnaire ${questionnaireId}: ${message}`);
+    }
+
+    // 🔥 GÉNÉRATION SYSTÉMATIQUE DE LA SYNTHÈSE IA (dès 1 réponse et à chaque nouvelle réponse)
+    if (totalResponses >= 1) {
       try {
-        const existingSummary = await this.prisma.feedbackSummary.findUnique({
-          where: { questionnaireId },
-        });
-
-        if (!existingSummary) {
-          // Générer la synthèse en arrière-plan (ne pas bloquer la réponse)
-          this.aiService.generateFeedbackSummary(questionnaireId).catch((error) => {
-            console.error('Error generating feedback summary:', error);
+        // Générer/Régénérer la synthèse IA à CHAQUE nouvelle réponse
+        this.aiService.generateFeedbackSummary(questionnaireId)
+          .then(() => {
+            console.log(`✅ Synthèse IA générée/mise à jour pour le questionnaire ${questionnaireId} (${totalResponses} retour${totalResponses > 1 ? 's' : ''})`);
+          })
+          .catch((error) => {
+            console.error(`❌ Erreur génération synthèse IA:`, error);
           });
-        }
       } catch (error) {
-        // Ignorer les erreurs de génération de synthèse pour ne pas bloquer la création d'alerte
-        console.error('Error checking/generating feedback summary:', error);
-      }
-    } else if (averageRating >= 4.5 && totalResponses >= 5) {
-      // Alerte positive pour les bons scores
-      const alert = await this.notificationsService.createAlert(
-        userId,
-        questionnaireId,
-        NotificationType.ALERT_POSITIVE,
-        `Excellent score détecté sur le cours ${questionnaire.subject.name} de ${questionnaire.subject.teacherName} (${averageRating.toFixed(1)}/5 avec ${totalResponses} retours).`,
-      );
-
-      await this.notificationsGateway.sendAlertToUser(userId, alert);
-
-      // Générer la synthèse AI uniquement lors de la création d'une nouvelle alerte
-      try {
-        const existingSummary = await this.prisma.feedbackSummary.findUnique({
-          where: { questionnaireId },
-        });
-
-        if (!existingSummary) {
-          // Générer la synthèse en arrière-plan (ne pas bloquer la réponse)
-          this.aiService.generateFeedbackSummary(questionnaireId).catch((error) => {
-            console.error('Error generating feedback summary:', error);
-          });
-        }
-      } catch (error) {
-        // Ignorer les erreurs de génération de synthèse pour ne pas bloquer la création d'alerte
-        console.error('Error checking/generating feedback summary:', error);
+        console.error('❌ Erreur lors de la génération de synthèse:', error);
       }
     }
   }

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,75 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  VISITEUR                    // Visiteur : accès uniquement à Accueil, Tarifs, Inscription/Connexion
-  RESPONSABLE_PEDAGOGIQUE     // Responsable pédagogique : crée classes/matières, consulte avis, envoie emails aux étudiants
-  ADMIN                       // Admin : super responsable pédagogique + accès facturation
-  SUPER_ADMIN                 // Super Admin : gestion globale des utilisateurs, abonnements et facturation
-}
-
-enum AuthProvider {
-  LOCAL           // Email/password
-  GOOGLE          // Google OAuth
-}
-
-enum SubscriptionStatus {
-  FREE            // Plan gratuit
-  ACTIVE          // Abonnement actif
-  PAST_DUE        // Paiement en retard
-  CANCELED        // Abonnement annulé
-  INCOMPLETE      // Paiement incomplet
-  TRIALING        // Période d'essai
-}
-
-enum BillingPeriod {
-  MONTHLY         // Facturation mensuelle
-  ANNUAL          // Facturation annuelle
-}
-
-enum PaymentStatus {
-  PENDING         // En attente
-  SUCCEEDED       // Réussi
-  FAILED          // Échoué
-  REFUNDED        // Remboursé
-}
-
 model User {
-  id                String        @id @default(uuid())
-  email             String        @unique
-  password          String?       // Null for OAuth users
-  firstName         String
-  lastName          String
-  role              UserRole      @default(VISITEUR)
-  authProvider      AuthProvider  @default(LOCAL)
-  googleId          String?       @unique
-  establishmentId   String?
-  establishment     Establishment? @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-  
-  isEmailVerified   Boolean       @default(false)
-  isActive          Boolean       @default(true)
-  profilePicture    String?
-  
-  resetPasswordToken      String?   @unique
-  resetPasswordExpires    DateTime?
-  emailVerificationToken  String?   @unique
-  invitedBy         String?       // User ID who invited this user
-  
-  // Stripe integration
-  stripeCustomerId  String?       @unique
-  subscriptionStatus SubscriptionStatus @default(FREE)
-  trialEndDate      DateTime?     // Date de fin de la période d'essai gratuite (4 mois)
-  
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  
-  classes           Class[]
-  subjects          Subject[]
-  subscriptions     Subscription[]
-  payments          Payment[]
-  notifications     Notification[]
-  alerts            Alert[]
-  
+  id                     String             @id @default(uuid())
+  email                  String             @unique
+  password               String?
+  firstName              String
+  lastName               String
+  role                   UserRole           @default(VISITEUR)
+  authProvider           AuthProvider       @default(LOCAL)
+  googleId               String?            @unique
+  establishmentId        String?
+  isEmailVerified        Boolean            @default(false)
+  isActive               Boolean            @default(true)
+  profilePicture         String?
+  resetPasswordToken     String?            @unique
+  resetPasswordExpires   DateTime?
+  emailVerificationToken String?            @unique
+  invitedBy              String?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  stripeCustomerId       String?            @unique
+  subscriptionStatus     SubscriptionStatus @default(FREE)
+  trialEndDate           DateTime?
+  alerts                 Alert[]
+  classes                Class[]
+  notifications          Notification[]
+  payments               Payment[]
+  subjects               Subject[]
+  subscriptions          Subscription[]
+  establishment          Establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+
   @@index([email])
   @@index([establishmentId])
   @@index([invitedBy])
@@ -86,202 +44,154 @@ model User {
 }
 
 model Establishment {
-  id          String    @id @default(uuid())
-  name        String
-  createdBy   String    // User ID of the admin who created this
-  
-  users       User[]
-  classes     Class[]
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
+  id        String   @id @default(uuid())
+  name      String
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  classes   Class[]
+  users     User[]
+
   @@index([createdBy])
 }
 
 model Class {
   id              String        @id @default(uuid())
   name            String
+  createdBy       String
+  establishmentId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   description     String?
   studentCount    Int
   studentEmails   String[]
-  
   isArchived      Boolean       @default(false)
   archivedAt      DateTime?
   archivedBy      String?
-  
-  createdBy       String
   user            User          @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  establishmentId String
   establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-  
   subjects        Subject[]
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
+
   @@index([createdBy])
   @@index([establishmentId])
   @@index([isArchived])
 }
 
 model Subject {
-  id              String    @id @default(uuid())
-  name            String
-  teacherName     String
-  teacherEmail    String?   // Optional teacher email
-  startDate       DateTime
-  endDate         DateTime
-  classId         String
-  class           Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
-  createdBy       String
-  user            User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  
-  questionnaires  Questionnaire[]
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
+  id             String          @id @default(uuid())
+  name           String
+  classId        String
+  createdBy      String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  teacherName    String
+  teacherEmail   String?
+  startDate      DateTime
+  endDate        DateTime
+  questionnaires Questionnaire[]
+  class          Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
   @@index([classId])
   @@index([createdBy])
 }
 
-enum QuestionnaireType {
-  DURING_COURSE   // Questionnaire pendant le cours
-  AFTER_COURSE    // Questionnaire après le cours
-}
-
-enum FormType {
-  BASIC           // Basique - adapté à tous les cours
-  TECHNICAL       // Adapté aux cours techniques
-  SOFT_SKILLS     // Adapté aux soft skills
-  LOGICIEL        // Adapté aux cours logiciel
-}
-
 model Questionnaire {
-  id              String              @id @default(uuid())
+  id              String                   @id @default(uuid())
   type            QuestionnaireType
-  formType        FormType            @default(BASIC)
   subjectId       String
-  subject         Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  token           String              @unique  // Public access token
+  token           String                   @unique
   qrCodeUrl       String?
-  
-  responses       Response[]
-  notifications   Notification[]
+  isActive        Boolean                  @default(true)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  formType        FormType                 @default(BASIC)
   alerts          Alert[]
   feedbackSummary FeedbackSummary?
+  notifications   Notification[]
+  subject         Subject                  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   statistics      QuestionnaireStatistics?
-  
-  isActive        Boolean             @default(true)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  
+  responses       Response[]
+
   @@index([subjectId])
   @@index([token])
 }
 
 model Response {
-  id                String         @id @default(uuid())
-  questionnaireId   String
-  questionnaire     Questionnaire  @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  // Student feedback
-  rating            Int            // 1-5 stars
-  comment           String?
-  isAnonymous       Boolean        @default(true)
-  studentEmail      String?
-  
-  createdAt         DateTime       @default(now())
-  
+  id              String        @id @default(uuid())
+  questionnaireId String
+  rating          Int
+  comment         String?
+  isAnonymous     Boolean       @default(true)
+  studentEmail    String?
+  createdAt       DateTime      @default(now())
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+
   @@index([questionnaireId])
   @@index([createdAt])
 }
 
 model Subscription {
-  id                      String              @id @default(uuid())
-  userId                  String
-  user                    User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  stripeSubscriptionId    String              @unique
-  stripePriceId           String
-  stripeProductId         String
-  
-  status                  SubscriptionStatus  @default(ACTIVE)
-  billingPeriod           BillingPeriod
-  classCount              Int                 // Nombre de classes dans l'abonnement
-  pricePerClass           Int                 // Prix par classe en centimes (ex: 1700 = 17€)
-  totalAmount             Int                 // Montant total en centimes
-  
-  currentPeriodStart      DateTime
-  currentPeriodEnd        DateTime
-  cancelAtPeriodEnd       Boolean             @default(false)
-  canceledAt              DateTime?
-  
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
-  
-  payments                Payment[]
-  
+  id                   String             @id @default(uuid())
+  userId               String
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  stripeProductId      String
+  status               SubscriptionStatus @default(ACTIVE)
+  billingPeriod        BillingPeriod
+  classCount           Int
+  pricePerClass        Int
+  totalAmount          Int
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  canceledAt           DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  payments             Payment[]
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([stripeSubscriptionId])
   @@index([status])
 }
 
 model Payment {
-  id                    String          @id @default(uuid())
+  id                    String        @id @default(uuid())
   userId                String
-  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscriptionId        String?
-  subscription          Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
-  
-  stripePaymentIntentId String          @unique
+  stripePaymentIntentId String        @unique
   stripeInvoiceId       String?
-  
-  amount                Int             // Montant en centimes
-  currency              String          @default("eur")
+  amount                Int
+  currency              String        @default("eur")
   status                PaymentStatus
-  
-  paymentMethod         String?         // Type de paiement (card, etc.)
-  last4                 String?         // 4 derniers chiffres de la carte
-  
-  metadata              Json?           // Métadonnées additionnelles
-  
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-  
+  paymentMethod         String?
+  last4                 String?
+  metadata              Json?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  subscription          Subscription? @relation(fields: [subscriptionId], references: [id])
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([subscriptionId])
   @@index([stripePaymentIntentId])
   @@index([status])
 }
 
-enum NotificationType {
-  ALERT_POSITIVE    // Alerte positive (score élevé, retours positifs)
-  ALERT_NEGATIVE    // Alerte négative (score faible, retours insuffisants)
-}
-
-enum AlertStatus {
-  UNTREATED         // Non traitée
-  TREATED           // Traitée
-}
-
 model Notification {
-  id                String            @id @default(uuid())
-  userId            String
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  type              NotificationType
-  title             String
-  message           String
-  questionnaireId   String?
-  questionnaire     Questionnaire?    @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  isRead            Boolean           @default(false)
-  readAt            DateTime?
-  
-  createdAt         DateTime          @default(now())
-  
+  id              String           @id @default(uuid())
+  userId          String
+  type            NotificationType
+  title           String
+  message         String
+  questionnaireId String?
+  isRead          Boolean          @default(false)
+  readAt          DateTime?
+  createdAt       DateTime         @default(now())
+  questionnaire   Questionnaire?   @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([isRead])
   @@index([createdAt])
@@ -289,24 +199,20 @@ model Notification {
 }
 
 model Alert {
-  id                String            @id @default(uuid())
-  userId            String
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  questionnaireId   String
-  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  type              NotificationType  // POSITIVE ou NEGATIVE
-  message           String
-  status            AlertStatus       @default(UNTREATED)
-  comment           String?           // Commentaire du responsable pédagogique
-  
-  treatedAt         DateTime?
-  treatedBy          String?
-  
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  
+  id              String           @id @default(uuid())
+  userId          String
+  questionnaireId String
+  type            NotificationType
+  message         String
+  status          AlertStatus      @default(UNTREATED)
+  treatedAt       DateTime?
+  treatedBy       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  comment         String?
+  questionnaire   Questionnaire    @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([questionnaireId])
   @@index([status])
@@ -314,50 +220,94 @@ model Alert {
 }
 
 model FeedbackSummary {
-  id                String            @id @default(uuid())
-  questionnaireId   String            @unique
-  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  summary           String            // Synthèse générée par l'IA
-  sentiment         String            // 'positive', 'neutral', 'negative'
-  strengths         String[]          // Points forts
-  improvements      String[]          // Axes d'amélioration
-  pedagogicalAlerts String[]         // Alertes pédagogiques
-  
-  generatedAt       DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  
+  id                String        @id @default(uuid())
+  questionnaireId   String        @unique
+  summary           String
+  sentiment         String
+  strengths         String[]
+  improvements      String[]
+  pedagogicalAlerts String[]
+  generatedAt       DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  questionnaire     Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+
   @@index([questionnaireId])
   @@index([generatedAt])
 }
 
 model QuestionnaireStatistics {
-  id                String            @id @default(uuid())
-  questionnaireId   String            @unique
-  questionnaire     Questionnaire     @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
-  
-  // Récap temporel
-  temporalRatingData Json?            // Données pour "Globalement vous avez trouvé ce cours"
-  temporalSatisfactionData Json?      // Données pour "Évolution de la satisfaction moyenne"
-  
-  // Le cours
-  overallRatingDistribution Json?     // Distribution des notes pour "Globalement vous avez trouvé ce cours"
-  theoryPracticeRatio Json?           // Ratio théorie/pratique
-  courseAtmosphere Json?              // L'ambiance durant le cours
-  courseHours Json?                   // Le nombre d'heures
-  contentRelevance Json?              // La pertinence des infos
-  
-  // L'intervenant
-  clarityDistribution Json?           // La clarté des informations
-  teachingSpeed Json?                 // Niveau vitesse
-  
-  // Points forts et faibles
-  strongPoints Json?                  // Points forts générés par IA
-  weakPoints Json?                   // Points faibles générés par IA
-  
-  generatedAt       DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  
+  id                        String        @id @default(uuid())
+  questionnaireId           String        @unique
+  temporalRatingData        Json?
+  temporalSatisfactionData  Json?
+  overallRatingDistribution Json?
+  theoryPracticeRatio       Json?
+  courseAtmosphere          Json?
+  courseHours               Json?
+  contentRelevance          Json?
+  clarityDistribution       Json?
+  teachingSpeed             Json?
+  strongPoints              Json?
+  weakPoints                Json?
+  generatedAt               DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+  questionnaire             Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+
   @@index([questionnaireId])
   @@index([generatedAt])
+}
+
+enum UserRole {
+  VISITEUR
+  RESPONSABLE_PEDAGOGIQUE
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+}
+
+enum SubscriptionStatus {
+  FREE
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
+}
+
+enum BillingPeriod {
+  MONTHLY
+  ANNUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum QuestionnaireType {
+  DURING_COURSE
+  AFTER_COURSE
+}
+
+enum FormType {
+  BASIC
+  TECHNICAL
+  SOFT_SKILLS
+  LOGICIEL
+}
+
+enum NotificationType {
+  ALERT_POSITIVE
+  ALERT_NEGATIVE
+}
+
+enum AlertStatus {
+  UNTREATED
+  TREATED
 }
