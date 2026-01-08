@@ -41,7 +41,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    // Calculer la date de fin d'essai (4 mois à partir de maintenant)
+ 
     const trialEndDate = new Date();
     trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
@@ -80,13 +80,13 @@ export class AuthService {
     
     const token = await this.generateToken(result.user.id, result.user.email, result.user.role);
 
-    // Envoyer l'email de bienvenue
+   
     try {
       await this.mailerService.sendWelcomeEmail(result.user.email, result.user.firstName);
       console.log(`✅ Welcome email sent successfully to ${result.user.email}`);
     } catch (error) {
       console.error(`❌ Failed to send welcome email to ${result.user.email}:`, error);
-      // Ne pas bloquer l'inscription si l'email échoue
+
     }
 
     return {
@@ -212,6 +212,24 @@ export class AuthService {
     const trialEndDate = new Date();
     trialEndDate.setMonth(trialEndDate.getMonth() + 4);
 
+
+    const establishmentUsersWithSubscription = await this.prisma.user.findFirst({
+      where: {
+        establishmentId: invitation.establishmentId,
+        role: {
+          in: ['ADMIN', 'RESPONSABLE_PEDAGOGIQUE'],
+        },
+        subscriptionStatus: {
+          in: ['ACTIVE', 'TRIALING'],
+        },
+      },
+    });
+
+   
+    const subscriptionStatus = establishmentUsersWithSubscription 
+      ? establishmentUsersWithSubscription.subscriptionStatus 
+      : 'FREE';
+
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -223,6 +241,7 @@ export class AuthService {
         invitedBy: invitation.invitedBy,
         authProvider: 'LOCAL',
         trialEndDate: trialEndDate,
+        subscriptionStatus: subscriptionStatus, // ✅ Hériter du statut de l'établissement
       },
       include: { establishment: true },
     });
@@ -233,13 +252,18 @@ export class AuthService {
 
     const token = await this.generateToken(user.id, user.email, user.role);
 
-    // Envoyer l'email de bienvenue
+
     try {
       await this.mailerService.sendWelcomeEmail(user.email, user.firstName);
       console.log(`✅ Welcome email sent successfully to ${user.email}`);
+      
+     
+      if (subscriptionStatus === 'ACTIVE') {
+        console.log(`✅ User inherited ACTIVE subscription from establishment ${invitation.establishmentId}`);
+      }
     } catch (error) {
       console.error(`❌ Failed to send welcome email to ${user.email}:`, error);
-      // Ne pas bloquer l'inscription si l'email échoue
+     
     }
 
     return {
@@ -509,27 +533,24 @@ export class AuthService {
       throw new NotFoundException('Utilisateur introuvable');
     }
 
-    // Si l'utilisateur est le créateur de l'établissement
+
     if (user.establishment && user.establishment.createdBy === userId) {
-      // Vérifier s'il y a d'autres utilisateurs dans l'établissement
+
       const otherUsers = user.establishment.users.filter(u => u.id !== userId);
       
       if (otherUsers.length > 0) {
-        // S'il y a d'autres utilisateurs, on ne supprime que l'utilisateur
-        // L'établissement reste actif pour les autres utilisateurs
+     
         await this.prisma.user.delete({
           where: { id: userId },
         });
       } else {
-        // Si c'est le seul utilisateur, on supprime l'établissement aussi
-        // (cela supprimera automatiquement l'utilisateur via cascade)
+   
         await this.prisma.establishment.delete({
           where: { id: user.establishment.id },
         });
       }
     } else {
-      // Sinon, on supprime juste l'utilisateur
-      // Les cascades géreront automatiquement les classes, subjects, subscriptions, payments
+    
       await this.prisma.user.delete({
         where: { id: userId },
       });

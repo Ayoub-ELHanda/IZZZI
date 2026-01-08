@@ -25,7 +25,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  // Swagger Configuration
+
   const config = new DocumentBuilder()
     .setTitle('IZZZI API')
     .setDescription('API Documentation for IZZZI - Plateforme de recueil d\'avis étudiants')

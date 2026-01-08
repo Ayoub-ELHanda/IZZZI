@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
+import { useState, useEffect, useMemo } from 'react';
+import {
   ClassCard, 
   ClassModal, 
   ArchiveModal, 
@@ -107,6 +107,18 @@ export default function MyClassesPage() {
     }
   };
 
+  const filteredClasses = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return classes;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return classes.filter(classItem => 
+      classItem.name.toLowerCase().includes(query) ||
+      classItem.description?.toLowerCase().includes(query)
+    );
+  }, [classes, searchQuery]);
+
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
   }
@@ -180,7 +192,7 @@ export default function MyClassesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4 mb-8">
-          {classes.map((classItem) => (
+          {filteredClasses.map((classItem) => (
             <ClassCard
               key={classItem.id}
               id={classItem.id}

@@ -1,6 +1,6 @@
 'use client';
 
-import { X, ArrowUpRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { SubjectForm } from './SubjectForm';
 import { SubjectFormData } from '../types';
 

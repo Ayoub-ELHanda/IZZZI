@@ -4,6 +4,7 @@ import {
   Put,
   Param,
   Query,
+  Body,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -19,21 +20,17 @@ import { UserRole } from '@prisma/client';
 export class SuperAdminController {
   constructor(private superAdminService: SuperAdminService) {}
 
-  /**
-   * Récupérer tous les utilisateurs avec filtrage optionnel par rôle
-   */
+
   @Get('users')
   async getAllUsers(@Query('role') role?: string) {
-    // Valider que le rôle est valide s'il est fourni
+
     if (role && !Object.values(UserRole).includes(role as UserRole)) {
       return this.superAdminService.getAllUsers(undefined);
     }
     return this.superAdminService.getAllUsers(role as UserRole | undefined);
   }
 
-  /**
-   * Récupérer un utilisateur par ID avec ses détails complets
-   */
+  
   @Get('users/:id')
   async getUserById(@Param('id') id: string) {
     return this.superAdminService.getUserById(id);

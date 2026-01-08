@@ -90,7 +90,19 @@ export default function ClassDetailPage() {
     return `${day}/${month}/${year}`;
   };
 
-  const transformedSubjects = useMemo(() => subjects.map((subject) => {
+  const transformedSubjects = useMemo(() => {
+    let filteredSubjects = subjects;
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filteredSubjects = subjects.filter(subject =>
+        subject.name.toLowerCase().includes(query) ||
+        subject.teacherName.toLowerCase().includes(query)
+      );
+    }
+    
+    return filteredSubjects.map((subject) => {
     const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
 
     const duringCourseQuestionnaire = subject.questionnaires?.find(
@@ -121,7 +133,7 @@ export default function ClassDetailPage() {
       duringCourseResponses,
       afterCourseResponses,
     };
-  }), [subjects, classData]);
+  })}, [subjects, classData, searchQuery]);
 
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;

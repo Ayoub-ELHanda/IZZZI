@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ClassCard } from '@/features/classes';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { classesService, Class } from '@/services/api/classes.service';
@@ -28,6 +28,18 @@ export default function ArchivedClassesPage() {
       setIsLoading(false);
     }
   };
+
+  const filteredClasses = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return archivedClasses;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return archivedClasses.filter(classItem => 
+      classItem.name.toLowerCase().includes(query) ||
+      classItem.description?.toLowerCase().includes(query)
+    );
+  }, [archivedClasses, searchQuery]);
 
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
@@ -82,7 +94,7 @@ export default function ArchivedClassesPage() {
           gap: '17px', 
           marginBottom: '32px',
         }}>
-          {archivedClasses.map((classItem) => (
+          {filteredClasses.map((classItem) => (
             <ClassCard
               key={classItem.id}
               id={classItem.id}

@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { ArrowUpRight, Download, Upload } from 'lucide-react';
 import { SubjectFormData } from '../types';
 
 interface SubjectFormProps {
@@ -142,7 +140,7 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
         </div>
       )}
 
-   
+      {/* CSV Section */}
       <div style={{
         width: '800px',
         minHeight: '228px',
@@ -198,10 +196,29 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
           display: 'flex',
           gap: '16px',
         }}>
-          <Button variant="download-csv">
+          <button
+            type="button"
+            style={{
+              height: '56px',
+              padding: '0 24px',
+              backgroundColor: '#FFFFFF',
+              color: '#2F2E2C',
+              border: '1px solid #E0E0E0',
+              borderRadius: '8px',
+              fontFamily: 'Poppins, sans-serif',
+              fontSize: '16px',
+              fontWeight: 400,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
             Télécharger notre modèle CSV
-            <Download size={16} strokeWidth={1.5} />
-          </Button>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
 
           <label style={{ cursor: 'pointer' }}>
             <input
@@ -210,12 +227,34 @@ export function SubjectForm({ onBack, onSubmit, onCSVImport, isLoading = false, 
               onChange={handleFileChange}
               style={{ display: 'none' }}
             />
-            <div style={{ display: 'inline-block' }}>
-              <Button variant="import-csv" type="button">
-                Importer un fichier CSV
-                <Upload size={16} strokeWidth={1.5} />
-              </Button>
-            </div>
+            <button
+              type="button"
+              style={{
+                height: '56px',
+                padding: '0 24px',
+                backgroundColor: '#FFE552',
+                color: '#2F2E2C',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontSize: '16px',
+                fontWeight: 400,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                const input = e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement;
+                input?.click();
+              }}
+            >
+              Importer un fichier CSV
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </label>
         </div>
       </div>
