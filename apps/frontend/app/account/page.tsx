@@ -183,7 +183,10 @@ export default function ProfilePage() {
       });
 
       await authService.updateProfile({
-        ...profileInitialData,
+        firstName: profileInitialData.firstName,
+        lastName: profileInitialData.lastName,
+        email: profileInitialData.email,
+        establishmentName: profileInitialData.organization || undefined,
         profilePicture: base64,
       });
 

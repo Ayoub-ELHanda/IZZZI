@@ -70,5 +70,40 @@ export class SuperAdminController {
   async renewSubscription(@Param('subscriptionId') subscriptionId: string) {
     return this.superAdminService.renewSubscription(subscriptionId);
   }
+
+  /**
+   * Récupérer tous les abonnements actifs avec les informations utilisateur
+   */
+  @Get('subscriptions/active')
+  async getAllActiveSubscriptions() {
+    return this.superAdminService.getAllActiveSubscriptions();
+  }
+
+  /**
+   * Récupérer tous les abonnements (pour debug)
+   */
+  @Get('subscriptions/all')
+  async getAllSubscriptions() {
+    return this.superAdminService.getAllSubscriptions();
+  }
+
+  /**
+   * Réassigner un RESPONSABLE_PEDAGOGIQUE à un autre ADMIN
+   */
+  @Put('teachers/:teacherId/reassign')
+  async reassignTeacherToAdmin(
+    @Param('teacherId') teacherId: string,
+    @Body() body: { newAdminId: string },
+  ) {
+    return this.superAdminService.reassignTeacherToAdmin(teacherId, body.newAdminId);
+  }
+
+  /**
+   * Récupérer tous les ADMIN pour la sélection
+   */
+  @Get('admins')
+  async getAllAdmins() {
+    return this.superAdminService.getAllAdmins();
+  }
 }
 

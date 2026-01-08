@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
+import { SubscriptionStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentService {
@@ -66,22 +67,27 @@ export class PaymentService {
 
      
       // Prix FIXE par palier (non multiplié par le nombre de classes)
-      let totalAmount: number;
+      let monthlyPrice: number;
       if (classCount >= 1 && classCount <= 5) {
-        totalAmount = 19;
+        monthlyPrice = 19;
       } else if (classCount >= 6 && classCount <= 10) {
-        totalAmount = 17;
+        monthlyPrice = 17;
       } else if (classCount >= 11 && classCount <= 15) {
-        totalAmount = 15;
+        monthlyPrice = 15;
       } else if (classCount >= 16 && classCount <= 20) {
-        totalAmount = 13;
+        monthlyPrice = 13;
       } else {
         throw new Error('Invalid class count');
       }
 
-      // Appliquer la réduction de 30% pour l'annuel
+      // Calculer le prix total selon la période
+      let totalAmount: number;
       if (isAnnual) {
-        totalAmount = Math.round(totalAmount * 0.7);
+        // Prix annuel avec réduction de 30% : (prix mensuel * 12) * 0.7
+        const annualPrice = monthlyPrice * 12;
+        totalAmount = Math.round(annualPrice * 0.7);
+      } else {
+        totalAmount = monthlyPrice;
       }
 
 
@@ -249,7 +255,7 @@ export class PaymentService {
         stripeSubscriptionId: stripeSubscription.id,
         stripePriceId: stripeSubscription.items.data[0].price.id,
         stripeProductId: stripeSubscription.items.data[0].price.product as string,
-        status: 'ACTIVE',
+        status: SubscriptionStatus.ACTIVE,
         billingPeriod: isAnnual ? 'ANNUAL' : 'MONTHLY',
         classCount,
         pricePerClass: totalAmount * 100, // Prix fixe du palier en cents
@@ -262,7 +268,7 @@ export class PaymentService {
  
     await this.prisma.user.update({
       where: { id: userId },
-      data: { subscriptionStatus: 'ACTIVE' },
+      data: { subscriptionStatus: SubscriptionStatus.ACTIVE },
     });
 
     // Envoyer l'email de confirmation d'abonnement
@@ -533,19 +539,19 @@ export class PaymentService {
 
     await this.prisma.user.update({
       where: { id: subscription.userId },
-      data: { subscriptionStatus: 'CANCELED' },
+      data: { subscriptionStatus: SubscriptionStatus.CANCELED },
     });
   }
 
-  private mapStripeStatus(status: Stripe.Subscription.Status): any {
-    const statusMap = {
-      active: 'ACTIVE',
-      past_due: 'PAST_DUE',
-      canceled: 'CANCELED',
-      incomplete: 'INCOMPLETE',
-      trialing: 'TRIALING',
+  private mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
+    const statusMap: Record<string, SubscriptionStatus> = {
+      active: SubscriptionStatus.ACTIVE,
+      past_due: SubscriptionStatus.PAST_DUE,
+      canceled: SubscriptionStatus.CANCELED,
+      incomplete: SubscriptionStatus.INCOMPLETE,
+      trialing: SubscriptionStatus.TRIALING,
     };
-    return statusMap[status] || 'ACTIVE';
+    return statusMap[status] || SubscriptionStatus.ACTIVE;
   }
 
   
@@ -555,9 +561,24 @@ export class PaymentService {
       
       if (session.payment_status === 'paid' && session.subscription) {
         const userId = session.metadata?.userId;
+        const totalAmount = session.metadata?.totalAmount;
         
         if (!userId) {
           throw new Error('User ID not found in session metadata');
+        }
+        
+        // Récupérer le montant depuis la session Stripe
+        let amount = null;
+        if (totalAmount) {
+          // Le montant est stocké en euros dans les métadonnées (voir ligne 136)
+          amount = parseInt(totalAmount);
+          this.logger.debug(`Amount from metadata: ${amount}€`);
+        } else if (session.amount_total) {
+          // Utiliser le montant total de la session Stripe (en centimes, donc diviser par 100)
+          amount = session.amount_total / 100;
+          this.logger.debug(`Amount from session.amount_total: ${amount}€`);
+        } else {
+          this.logger.warn('No amount found in session metadata or amount_total');
         }
 
         
@@ -573,11 +594,16 @@ export class PaymentService {
           await this.handleCheckoutSessionCompleted(session);
         }
 
+        this.logger.debug(`Returning payment verification: amount=${amount}, classCount=${session.metadata?.classCount}, isAnnual=${session.metadata?.isAnnual}`);
    
         return {
           status: 'paid',
           userId,
-          subscriptionStatus: 'ACTIVE',
+          subscriptionStatus: SubscriptionStatus.ACTIVE,
+          amount: amount, // Montant payé en euros
+          totalAmount: amount, // Alias pour compatibilité
+          classCount: parseInt(session.metadata?.classCount || '0'),
+          isAnnual: session.metadata?.isAnnual === 'true',
         };
       }
 

@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'in-progress' | 'completed'>('in-progress');
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isFreePlan = user?.subscriptionStatus === 'FREE';
   const isPaidPlan = user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING';
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<string>('');
@@ -220,8 +221,8 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Droite : Bannière période d'essai - Afficher UNIQUEMENT pour TRIALING */}
-            {isTrialing && (
+            {/* Droite : Bannière période d'essai - Afficher pour TRIALING et plan gratuit */}
+            {(isTrialing || isFreePlan) && (
               <div
                 style={{
                   backgroundColor: '#FFF4E0',
@@ -255,10 +256,10 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '14px', fontWeight: 500, color: '#FF6B35', margin: 0, lineHeight: '1.4' }}>
-                      Période d&apos;essai en cours :
+                      {isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
                     </p>
                     <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '14px', fontWeight: 500, color: '#FF6B35', margin: 0, lineHeight: '1.4' }}>
-                      tout est illimité jusqu&apos;au {trialEndDateStr}.
+                      {isTrialing ? `tout est illimité jusqu'au ${trialEndDateStr}.` : "Passez au plan Super Izzzi pour débloquer toutes les fonctionnalités."}
                     </p>
                   </div>
                 </div>
