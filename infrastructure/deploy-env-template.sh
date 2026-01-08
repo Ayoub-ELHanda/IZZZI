@@ -1,0 +1,51 @@
+#!/bin/bash
+# Production environment variables template for IZZZI
+# Server IP: 167.99.135.132
+
+cat > env/.env << 'EOF'
+# Common
+NODE_ENV=production
+
+# Backend
+PORT=4000
+DATABASE_URL=postgres://izzzi:izzzi@postgres:5432/izzzi
+REDIS_URL=redis://redis:6379
+JWT_SECRET=CHANGE_ME_LONG_SECRET_FOR_PRODUCTION_USE_A_STRONG_RANDOM_STRING
+JWT_EXPIRES_IN=15m
+REFRESH_TOKEN_EXPIRES_IN=7d
+
+# Stripe (REPLACE WITH YOUR ACTUAL KEYS)
+STRIPE_PRICE_MENSUEL=
+STRIPE_PRICE_ANNUEL=
+STRIPE_SECRET_KEY=sk_test_YOUR_STRIPE_SECRET_KEY_HERE
+STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE
+STRIPE_WEBHOOK_SECRET=whsec_YOUR_STRIPE_WEBHOOK_SECRET_HERE
+
+# Synthesis API (REPLACE WITH YOUR ACTUAL KEY)
+SYNTHESIS_API_KEY=sk-proj_YOUR_SYNTHESIS_API_KEY_HERE
+
+# Email Configuration - Gmail (REPLACE WITH YOUR ACTUAL CREDENTIALS)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=your-email@gmail.com
+MAIL_PASS=your-app-specific-password-here
+MAIL_FROM=IZZZI <your-email@gmail.com>
+SMTP_FROM=IZZZI <no-reply@localhost>
+
+# URLs - Updated for production server
+APP_BASE_URL=http://167.99.135.132:3000
+API_BASE_URL=http://167.99.135.132:4000
+FRONTEND_URL=http://167.99.135.132:3000
+
+# Frontend
+NEXT_PUBLIC_API_BASE_URL=http://167.99.135.132:4000/api
+NEXT_PUBLIC_SENTRY_DSN=
+NEXT_PUBLIC_ANALYTICS_ID=
+NEXTAUTH_URL=http://167.99.135.132:3000
+
+# OpenAI (REPLACE WITH YOUR ACTUAL KEY)
+OPENAI_API_KEY=sk-proj_YOUR_OPENAI_API_KEY_HERE
+EOF
+
+echo "✅ Production .env file created at env/.env"
+echo "⚠️  Please review and update sensitive values (JWT_SECRET, API keys) before deploying!"
