@@ -17,24 +17,22 @@ export function SubscriptionDetailsCard({
 }: SubscriptionDetailsCardProps) {
   return (
     <div 
-      className="bg-white rounded-lg shadow-sm"
+      className="bg-white rounded-lg shadow-sm w-full"
       style={{
-        width: '557px',
-        height: '317px',
-        padding: '40px',
+        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '24px'
+        gap: '20px'
       }}
     >
       {/* Badge */}
       <div
+        className="w-fit"
         style={{
-          width: '186px',
-          height: '50px',
+          height: '40px',
           backgroundColor: '#FFE552',
           borderRadius: '30px',
-          padding: '10px 40px',
+          padding: '8px 24px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center'
@@ -43,7 +41,7 @@ export function SubscriptionDetailsCard({
         <span 
           className="font-poppins"
           style={{
-            fontSize: '16px',
+            fontSize: '14px',
             fontWeight: 600,
             color: '#2F2E2C',
             whiteSpace: 'nowrap'
@@ -57,26 +55,26 @@ export function SubscriptionDetailsCard({
       <h2 
         className="font-mochiy"
         style={{
-          fontSize: '18px',
+          fontSize: '16px',
           fontWeight: 400,
           color: '#2F2E2C',
           lineHeight: '18px',
-          marginBottom: '8px'
+          marginBottom: '4px'
         }}
       >
         Détail de votre abonnement
       </h2>
 
       {/* Détails */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Ligne 1: Plan + Moyen de paiement (alignés horizontalement) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {/* Plan */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"
               style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 700,
                 color: '#2F2E2C'
               }}
@@ -86,7 +84,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 400,
                 color: '#2F2E2C',
                 whiteSpace: 'nowrap'
@@ -101,7 +99,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 700,
                 color: '#2F2E2C'
               }}
@@ -111,7 +109,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 400,
                 color: '#2F2E2C',
                 whiteSpace: 'nowrap'
@@ -123,13 +121,13 @@ export function SubscriptionDetailsCard({
         </div>
 
         {/* Ligne 2: Montant payé + Prochain paiement (alignés horizontalement) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {/* Montant payé */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span 
               className="font-poppins"
               style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 700,
                 color: '#2F2E2C'
               }}
@@ -139,7 +137,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 400,
                 color: '#2F2E2C',
                 whiteSpace: 'nowrap'
@@ -154,7 +152,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 700,
                 color: '#2F2E2C'
               }}
@@ -164,7 +162,7 @@ export function SubscriptionDetailsCard({
             <span 
               className="font-poppins"
               style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 400,
                 color: '#2F2E2C',
                 whiteSpace: 'nowrap'

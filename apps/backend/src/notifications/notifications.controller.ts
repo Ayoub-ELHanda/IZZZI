@@ -9,16 +9,22 @@ import {
   Req,
   Body,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AlertStatus } from '@prisma/client';
 
+@ApiTags('notifications')
+@ApiBearerAuth('JWT-auth')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 export class NotificationsController {
   constructor(private notificationsService: NotificationsService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Get user notifications' })
+  @ApiQuery({ name: 'isRead', required: false, type: String, description: 'Filter by read status (true/false)' })
+  @ApiResponse({ status: 200, description: 'Notifications retrieved successfully' })
   async getNotifications(@Req() req, @Query('isRead') isRead?: string) {
     const isReadBoolean = isRead === 'true' ? true : isRead === 'false' ? false : undefined;
     return this.notificationsService.getUserNotifications(
@@ -28,6 +34,8 @@ export class NotificationsController {
   }
 
   @Get('unread-count')
+  @ApiOperation({ summary: 'Get unread notifications count' })
+  @ApiResponse({ status: 200, description: 'Unread count retrieved', schema: { example: { count: 5 } } })
   async getUnreadCount(@Req() req) {
     const count =
       await this.notificationsService.getUnreadNotificationCount(

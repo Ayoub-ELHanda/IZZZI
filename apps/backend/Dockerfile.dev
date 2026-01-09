@@ -18,12 +18,10 @@ RUN npm ci
 # Copy Prisma schema (needed for migrations)
 COPY apps/backend/prisma ./apps/backend/prisma
 
-# Set working directory to backend
-WORKDIR /app/apps/backend
-
 # Expose port
 EXPOSE 4000
 
 # Default command (will be overridden in docker-compose)
-CMD ["npm", "run", "dev"]
+# Keep working directory at root for workspace commands
+CMD ["npm", "run", "dev", "--workspace=@izzzi/backend"]
 

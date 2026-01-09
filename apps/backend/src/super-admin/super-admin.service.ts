@@ -262,6 +262,84 @@ export class SuperAdminService {
   }
 
   /**
+   * Récupérer tous les abonnements actifs avec les informations utilisateur
+   * Inclut ACTIVE et TRIALING car les deux sont considérés comme des abonnements actifs
+   */
+  async getAllActiveSubscriptions() {
+    const subscriptions = await this.prisma.subscription.findMany({
+      where: {
+        status: {
+          in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING],
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            establishment: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        payments: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1, // Dernier paiement
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return subscriptions;
+  }
+
+  /**
+   * Récupérer tous les abonnements (pour debug)
+   */
+  async getAllSubscriptions() {
+    const subscriptions = await this.prisma.subscription.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+            establishment: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        payments: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return subscriptions;
+  }
+
+  /**
    * Vérifier si un utilisateur est Super Admin
    */
   async isSuperAdmin(userId: string): Promise<boolean> {
@@ -285,6 +363,95 @@ export class SuperAdminService {
     if (user?.role === UserRole.SUPER_ADMIN) {
       throw new ForbiddenException(`Vous ne pouvez pas ${action} un Super Admin`);
     }
+  }
+
+  /**
+   * Réassigner un RESPONSABLE_PEDAGOGIQUE à un autre ADMIN
+   */
+  async reassignTeacherToAdmin(teacherId: string, newAdminId: string) {
+    // Vérifier que le teacher existe et est bien un RESPONSABLE_PEDAGOGIQUE
+    const teacher = await this.prisma.user.findUnique({
+      where: { id: teacherId },
+      select: { role: true, establishmentId: true },
+    });
+
+    if (!teacher) {
+      throw new NotFoundException('Responsable pédagogique non trouvé');
+    }
+
+    if (teacher.role !== UserRole.RESPONSABLE_PEDAGOGIQUE) {
+      throw new BadRequestException('L\'utilisateur spécifié n\'est pas un Responsable pédagogique');
+    }
+
+    // Vérifier que le nouvel admin existe et est bien un ADMIN
+    const newAdmin = await this.prisma.user.findUnique({
+      where: { id: newAdminId },
+      select: { role: true, id: true },
+    });
+
+    if (!newAdmin) {
+      throw new NotFoundException('Admin non trouvé');
+    }
+
+    if (newAdmin.role !== UserRole.ADMIN) {
+      throw new BadRequestException('L\'utilisateur spécifié n\'est pas un Admin');
+    }
+
+    // Si le teacher a un établissement, vérifier si on doit le réassigner aussi
+    // Pour l'instant, on garde l'établissement mais on change juste l'invitedBy
+    // Si nécessaire, on pourra aussi changer l'établissement plus tard
+
+    // Mettre à jour le champ invitedBy
+    const updatedTeacher = await this.prisma.user.update({
+      where: { id: teacherId },
+      data: {
+        invitedBy: newAdminId,
+      },
+      include: {
+        establishment: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return updatedTeacher;
+  }
+
+  /**
+   * Récupérer tous les ADMIN pour la sélection lors de la réassignation
+   */
+  async getAllAdmins() {
+    const admins = await this.prisma.user.findMany({
+      where: {
+        role: UserRole.ADMIN,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        establishment: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            classes: true,
+            subjects: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return admins;
   }
 }
 

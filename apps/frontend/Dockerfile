@@ -1,43 +1,42 @@
 FROM node:20-alpine AS base
 
-# Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
-# Copy package files
+RUN apk add --no-cache libc6-compat
+
 COPY package*.json ./
 COPY apps/frontend/package*.json ./apps/frontend/
 COPY packages/types/package*.json ./packages/types/
 COPY packages/ui/package*.json ./packages/ui/
 
-# Install dependencies
 RUN npm ci
 
-# Install @svgr/webpack for SVG handling
-COPY --from=deps /app/node_modules/@svgr ./node_modules/@svgr
-
-# Build the application
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build frontend
+ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build --workspace=@izzzi/frontend
 
-# Production image
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built files
-COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
+COPY --from=builder /app/apps/frontend/public ./public
+
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
 COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./.next/static
 
 USER nextjs
 
@@ -46,7 +45,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "apps/frontend/server.js"]
-
-
-
+CMD ["node", "server.js"]

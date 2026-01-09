@@ -15,8 +15,7 @@ import { NotificationsModal } from "@/components/modals/NotificationsModal";
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuth();
-  const [mounted, setMounted] = React.useState(false);
+  const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth();
   const isSubscriptionPage = pathname === "/pricing";
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = React.useState(false);
@@ -26,10 +25,6 @@ export function Header() {
   // Éviter les problèmes d'hydratation en ne rendant le badge que côté client
   React.useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  React.useEffect(() => {
-    setMounted(true);
   }, []);
 
   const handleLogout = async () => {
@@ -58,6 +53,44 @@ export function Header() {
       };
     }
   }, [mobileMenuOpen]);
+
+  // During SSR or before hydration, show a neutral header to avoid mismatch
+  if (!isMounted) {
+    return (
+      <header style={{ position: 'relative', width: '100%' }}>
+        <nav 
+          className="fixed top-2 left-4 right-4 flex items-center justify-between bg-white rounded-lg backdrop-blur-[12px] z-50 shadow-sm border border-[#E5E5E5] px-4 py-2 sm:top-4 sm:left-8 sm:right-8 sm:px-8 sm:py-3"
+        >
+          <Link 
+            href={routes.home} 
+            prefetch={true} 
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center',
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            <Image 
+              src="/logo-izzzi.svg"
+              alt="izzzi logo"
+              width={86}
+              height={41}
+              style={{
+                height: 'auto',
+                width: 'auto',
+                maxHeight: '41px',
+              }}
+              className="h-[32px] md:h-[41px] w-auto"
+            />
+          </Link>
+          <div className="hidden md:flex items-center gap-4 flex-1 justify-end">
+            {/* Placeholder to maintain layout during SSR */}
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   // If authenticated, show header with same style as home page but with authenticated content
   if (isAuthenticated) {
@@ -600,7 +633,51 @@ export function Header() {
                   >
                     {user?.firstName} {user?.lastName}
                   </span>
-                  {user?.role !== 'SUPER_ADMIN' && (
+                  {user?.role === 'SUPER_ADMIN' ? (
+                    <span 
+                      style={{
+                        fontFamily: 'Poppins, sans-serif',
+                        fontSize: '12px',
+                        fontWeight: 400,
+                        color: '#6B6B6B',
+                        lineHeight: '1.2',
+                      }}
+                    >
+                      Super Admin
+                    </span>
+                  ) : user?.subscriptionStatus === 'ACTIVE' || user?.subscriptionStatus === 'TRIALING' ? (
+                    <div 
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        gap: '6px',
+                        width: 'fit-content',
+                        height: '24px',
+                        backgroundColor: '#F26103',
+                        borderRadius: '38px',
+                        padding: '0 10px',
+                        marginTop: '2px',
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2L4 7V12C4 16.97 7.84 21.5 12 22C16.16 21.5 20 16.97 20 12V7L12 2Z"/>
+                        <path d="M12 2L4 7V12C4 16.97 7.84 21.5 12 22C16.16 21.5 20 16.97 20 12V7L12 2Z" fill="none" stroke="white" strokeWidth="1"/>
+                      </svg>
+                      <span 
+                        style={{
+                          fontFamily: 'Poppins, sans-serif',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: '#FFFFFF',
+                          lineHeight: '1',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Super Izzzi
+                      </span>
+                    </div>
+                  ) : (
                     <span 
                       style={{
                         fontFamily: 'Poppins, sans-serif',
@@ -665,9 +742,12 @@ export function Header() {
         {/* Logo */}
         <Link 
           href={routes.home} 
-          className="inline-flex items-center flex-shrink-0"
+          prefetch={true}
           style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center',
             textDecoration: 'none',
+            flexShrink: 0,
           }}
           onClick={() => setMobileMenuOpen(false)}
         >

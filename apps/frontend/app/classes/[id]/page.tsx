@@ -19,6 +19,7 @@ export default function ClassDetailPage() {
   
 
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isFreePlan = user?.subscriptionStatus === 'FREE';
   const [searchQuery, setSearchQuery] = useState('');
   const [classData, setClassData] = useState<any>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -89,7 +90,19 @@ export default function ClassDetailPage() {
     return `${day}/${month}/${year}`;
   };
 
-  const transformedSubjects = useMemo(() => subjects.map((subject) => {
+  const transformedSubjects = useMemo(() => {
+    let filteredSubjects = subjects;
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filteredSubjects = subjects.filter(subject =>
+        subject.name.toLowerCase().includes(query) ||
+        subject.teacherName.toLowerCase().includes(query)
+      );
+    }
+    
+    return filteredSubjects.map((subject) => {
     const hasQuestionnaires = subject.questionnaires && subject.questionnaires.length > 0;
 
     const duringCourseQuestionnaire = subject.questionnaires?.find(
@@ -120,7 +133,7 @@ export default function ClassDetailPage() {
       duringCourseResponses,
       afterCourseResponses,
     };
-  }), [subjects, classData]);
+  })}, [subjects, classData, searchQuery]);
 
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
@@ -154,11 +167,11 @@ export default function ClassDetailPage() {
             </button>
           </Link>
 
-          {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
-          {isTrialing && (
+          {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
+          {(isTrialing || isFreePlan) && (
             <TrialBanner
-              message1="Période d'essai en cours :"
-              message2="Tout est illimité jusqu'au 18 septembre 2025."
+              message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
+              message2={isTrialing ? "Tout est illimité jusqu'au 18 septembre 2025." : "Passez au plan Super Izzzi pour débloquer toutes les fonctionnalités."}
               linkText="Je passe au plan Super Izzzi →"
               linkHref="/pricing"
               position="right"

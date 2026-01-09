@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
+import { SubscriptionStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentService {
@@ -66,22 +67,27 @@ export class PaymentService {
 
      
       // Prix FIXE par palier (non multiplié par le nombre de classes)
-      let totalAmount: number;
+      let monthlyPrice: number;
       if (classCount >= 1 && classCount <= 5) {
-        totalAmount = 19;
+        monthlyPrice = 19;
       } else if (classCount >= 6 && classCount <= 10) {
-        totalAmount = 17;
+        monthlyPrice = 17;
       } else if (classCount >= 11 && classCount <= 15) {
-        totalAmount = 15;
+        monthlyPrice = 15;
       } else if (classCount >= 16 && classCount <= 20) {
-        totalAmount = 13;
+        monthlyPrice = 13;
       } else {
         throw new Error('Invalid class count');
       }
 
-      // Appliquer la réduction de 30% pour l'annuel
+      // Calculer le prix total selon la période
+      let totalAmount: number;
       if (isAnnual) {
-        totalAmount = Math.round(totalAmount * 0.7);
+        // Prix annuel avec réduction de 30% : (prix mensuel * 12) * 0.7
+        const annualPrice = monthlyPrice * 12;
+        totalAmount = Math.round(annualPrice * 0.7);
+      } else {
+        totalAmount = monthlyPrice;
       }
 
 
@@ -249,7 +255,7 @@ export class PaymentService {
         stripeSubscriptionId: stripeSubscription.id,
         stripePriceId: stripeSubscription.items.data[0].price.id,
         stripeProductId: stripeSubscription.items.data[0].price.product as string,
-        status: 'ACTIVE',
+        status: SubscriptionStatus.ACTIVE,
         billingPeriod: isAnnual ? 'ANNUAL' : 'MONTHLY',
         classCount,
         pricePerClass: totalAmount * 100, // Prix fixe du palier en cents
@@ -259,11 +265,8 @@ export class PaymentService {
       },
     });
 
- 
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { subscriptionStatus: 'ACTIVE' },
-    });
+    // ✅ NOUVEAU: Partager l'abonnement avec tous les utilisateurs du même établissement
+    await this.updateEstablishmentSubscriptionStatus(userId, SubscriptionStatus.ACTIVE);
 
     // Envoyer l'email de confirmation d'abonnement
     try {
@@ -490,10 +493,8 @@ export class PaymentService {
       data: { status: 'PAST_DUE' },
     });
 
-    await this.prisma.user.update({
-      where: { id: subscription.userId },
-      data: { subscriptionStatus: 'PAST_DUE' },
-    });
+
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.PAST_DUE);
 
     this.logger.warn(`⚠️ Payment failed for subscription ${subscription.id}`);
   }
@@ -505,15 +506,20 @@ export class PaymentService {
 
     if (!subscription) return;
 
+    const newStatus = this.mapStripeStatus(stripeSubscription.status);
+
     await this.prisma.subscription.update({
       where: { id: subscription.id },
       data: {
-        status: this.mapStripeStatus(stripeSubscription.status),
+        status: newStatus,
         currentPeriodStart: new Date((stripeSubscription as any).current_period_start * 1000),
         currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
         cancelAtPeriodEnd: (stripeSubscription as any).cancel_at_period_end,
       },
     });
+
+    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, newStatus);
   }
 
   private async handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription) {
@@ -531,21 +537,77 @@ export class PaymentService {
       },
     });
 
-    await this.prisma.user.update({
-      where: { id: subscription.userId },
-      data: { subscriptionStatus: 'CANCELED' },
-    });
+    // ✅ NOUVEAU: Mettre à jour tous les utilisateurs de l'établissement
+    await this.updateEstablishmentSubscriptionStatus(subscription.userId, SubscriptionStatus.CANCELED);
   }
 
-  private mapStripeStatus(status: Stripe.Subscription.Status): any {
-    const statusMap = {
-      active: 'ACTIVE',
-      past_due: 'PAST_DUE',
-      canceled: 'CANCELED',
-      incomplete: 'INCOMPLETE',
-      trialing: 'TRIALING',
+  private mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus {
+    const statusMap: Record<string, SubscriptionStatus> = {
+      active: SubscriptionStatus.ACTIVE,
+      past_due: SubscriptionStatus.PAST_DUE,
+      canceled: SubscriptionStatus.CANCELED,
+      incomplete: SubscriptionStatus.INCOMPLETE,
+      trialing: SubscriptionStatus.TRIALING,
     };
-    return statusMap[status] || 'ACTIVE';
+    return statusMap[status] || SubscriptionStatus.ACTIVE;
+  }
+
+  /**
+   * ✅ NOUVEAU: Mettre à jour le statut d'abonnement pour tous les utilisateurs du même établissement
+   * Cette méthode permet de partager l'abonnement entre l'admin et le responsable pédagogique
+   */
+  private async updateEstablishmentSubscriptionStatus(userId: string, status: SubscriptionStatus) {
+    try {
+  
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { establishmentId: true, role: true },
+      });
+
+      if (!user || !user.establishmentId) {
+        this.logger.warn(`User ${userId} has no establishment, skipping shared subscription update`);
+        return;
+      }
+
+    
+      const establishmentUsers = await this.prisma.user.findMany({
+        where: {
+          establishmentId: user.establishmentId,
+          role: {
+            in: ['ADMIN', 'RESPONSABLE_PEDAGOGIQUE'],
+          },
+        },
+        select: { id: true, email: true, role: true },
+      });
+
+      if (establishmentUsers.length === 0) {
+        this.logger.warn(`No users found for establishment ${user.establishmentId}`);
+        return;
+      }
+
+      // Mettre à jour le statut pour tous les utilisateurs de l'établissement
+      await this.prisma.user.updateMany({
+        where: {
+          id: {
+            in: establishmentUsers.map(u => u.id),
+          },
+        },
+        data: {
+          subscriptionStatus: status,
+        },
+      });
+
+      this.logger.log(
+        `✅ Shared subscription status (${status}) updated for ${establishmentUsers.length} user(s) in establishment ${user.establishmentId}`,
+      );
+
+   
+      establishmentUsers.forEach(u => {
+        this.logger.log(`   - ${u.role}: ${u.email} → ${status}`);
+      });
+    } catch (error) {
+      this.logger.error(`Error updating establishment subscription status: ${error.message}`);
+        }
   }
 
   
@@ -555,9 +617,24 @@ export class PaymentService {
       
       if (session.payment_status === 'paid' && session.subscription) {
         const userId = session.metadata?.userId;
+        const totalAmount = session.metadata?.totalAmount;
         
         if (!userId) {
           throw new Error('User ID not found in session metadata');
+        }
+        
+       
+      let amount: number | null = null;
+        if (totalAmount) {
+        
+          amount = parseInt(totalAmount);
+          this.logger.debug(`Amount from metadata: ${amount}€`);
+        } else if (session.amount_total) {
+   
+          amount = session.amount_total / 100;
+          this.logger.debug(`Amount from session.amount_total: ${amount}€`);
+        } else {
+          this.logger.warn('No amount found in session metadata or amount_total');
         }
 
         
@@ -573,11 +650,16 @@ export class PaymentService {
           await this.handleCheckoutSessionCompleted(session);
         }
 
+        this.logger.debug(`Returning payment verification: amount=${amount}, classCount=${session.metadata?.classCount}, isAnnual=${session.metadata?.isAnnual}`);
    
         return {
           status: 'paid',
           userId,
-          subscriptionStatus: 'ACTIVE',
+          subscriptionStatus: SubscriptionStatus.ACTIVE,
+          amount: amount, 
+          totalAmount: amount, 
+          classCount: parseInt(session.metadata?.classCount || '0'),
+          isAnnual: session.metadata?.isAnnual === 'true',
         };
       }
 
@@ -622,6 +704,10 @@ export class PaymentService {
       where: { id: subscription.id },
       data: { cancelAtPeriodEnd: true },
     });
+
+    // Note: Le statut restera ACTIVE jusqu'à la fin de la période
+    // L'annulation effective sera gérée par le webhook customer.subscription.deleted
+    this.logger.log(`✅ Subscription ${subscription.id} will be canceled at period end for user ${userId} and their establishment`);
 
     return { success: true, message: 'Subscription will be canceled at period end' };
   }

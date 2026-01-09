@@ -1,0 +1,35 @@
+# DigitalOcean API Token
+do_token = "dop_v1_YOUR_TOKEN_HERE"
+
+# Project Configuration
+project_name = "izzzi"
+environment  = "production"
+region       = "fra1"
+
+# DigitalOcean Project ID
+do_project_id = "terraform-izzzi-project"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Droplet Configuration
+droplet_size  = "s-2vcpu-4gb"
+droplet_image = "ubuntu-24-04-x64"
+
+# SSH Configuration
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQ... your-key-here"
+ssh_key_name   = "izzzi-deploy-key"
+
+# Monitoring and Backups
+enable_monitoring = true
+enable_backups    = false
+enable_ipv6       = false
+
+# Security: Restrict SSH access to specific IPs
+allowed_ssh_ips = ["YOUR_IP_ADDRESS/32"]
+
+# DNS Configuration (optional)
+# domain_name = "izzzi.io"
+
+# Spaces Configuration (optional)
+create_spaces = false

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
+import { useState, useEffect, useMemo } from 'react';
+import {
   ClassCard, 
   ClassModal, 
   ArchiveModal, 
@@ -32,8 +32,9 @@ export default function MyClassesPage() {
   
   const { user } = useAuth();
   
-  // Vérifier si l'utilisateur est en période d'essai
+  // Vérifier si l'utilisateur est en période d'essai ou plan gratuit
   const isTrialing = user?.subscriptionStatus === 'TRIALING';
+  const isFreePlan = user?.subscriptionStatus === 'FREE';
   
   useEffect(() => {
     setIsAdmin(user?.role === UserRole.ADMIN);
@@ -106,6 +107,18 @@ export default function MyClassesPage() {
     }
   };
 
+  const filteredClasses = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return classes;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return classes.filter(classItem => 
+      classItem.name.toLowerCase().includes(query) ||
+      classItem.description?.toLowerCase().includes(query)
+    );
+  }, [classes, searchQuery]);
+
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 p-8">Chargement...</div>;
   }
@@ -114,11 +127,11 @@ export default function MyClassesPage() {
     <div className="min-h-screen bg-gray-50 pt-20 pb-8 px-4 sm:pt-[120px] sm:px-8">
       <div className="mx-auto max-w-[1650px]">
       
-        {/* Afficher la bannière UNIQUEMENT pour les utilisateurs en TRIALING */}
-        {isTrialing && (
+        {/* Afficher la bannière pour les utilisateurs en TRIALING et plan gratuit */}
+        {(isTrialing || isFreePlan) && (
           <TrialBanner
-            message1="Période d'essai en cours :"
-            message2="Tout est illimité jusqu'au 18 septembre 2025."
+            message1={isTrialing ? "Période d'essai en cours :" : "Plan gratuit :"}
+            message2={isTrialing ? "Tout est illimité jusqu'au 18 septembre 2025." : "Passez au plan Super Izzzi pour débloquer toutes les fonctionnalités."}
             linkText="Je passe au plan Super Izzzi →"
             linkHref="/pricing"
             position="left"
@@ -179,7 +192,7 @@ export default function MyClassesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4 mb-8">
-          {classes.map((classItem) => (
+          {filteredClasses.map((classItem) => (
             <ClassCard
               key={classItem.id}
               id={classItem.id}
